@@ -1,0 +1,8 @@
+{
+  "version": 0,
+  "updatedAt": "2026-09-09T00:00:00.000Z",
+  "_note": "Fallback khi chưa fetch được remote. Copy output của Apps Script test_() vào đây trước mỗi release. Số liệu dưới là VÍ DỤ, chưa phải công bố chính thức.",
+  "years": {
+    "2027": { "off": ["2027-02-05", "2027-02-06", "2027-02-07", "2027-02-08", "2027-02-09"], "work": [] }
+  }
+}
