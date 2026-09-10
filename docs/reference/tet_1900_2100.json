@@ -1,6 +1,6 @@
 {
  "source": "generated from amlich-aa98.js (Ho Ngoc Duc), timeZone +7",
- "generatedAt": "2026-09-09",
+ "generatedAt": "2026-09-10",
  "years": {
   "1900": {
    "tet": "1900-01-31",
@@ -12530,14 +12530,14 @@
     {
      "m": 3,
      "leap": false,
-     "days": 29,
+     "days": 30,
      "start": "2054-04-08"
     },
     {
      "m": 4,
      "leap": false,
-     "days": 30,
-     "start": "2054-05-07"
+     "days": 29,
+     "start": "2054-05-08"
     },
     {
      "m": 5,
@@ -13174,14 +13174,14 @@
     {
      "m": 2,
      "leap": false,
-     "days": 29,
+     "days": 30,
      "start": "2062-03-11"
     },
     {
      "m": 3,
      "leap": false,
-     "days": 30,
-     "start": "2062-04-09"
+     "days": 29,
+     "start": "2062-04-10"
     },
     {
      "m": 4,

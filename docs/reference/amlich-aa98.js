@@ -156,6 +156,12 @@ function convertSolar2Lunar(dd, mm, yy, timeZone) {
 	if (monthStart > dayNumber) {
 		monthStart = getNewMoonDay(k, timeZone);
 	}
+	/* Kade patch (DECISIONS D014, ERRORS E005): k uoc luong theo soc trung binh; khi soc thuc
+	 * tre hon va roi vao ngay hom sau (gio dia phuong), getNewMoonDay(k) van > dayNumber va ban goc
+	 * tra lunarDay = 0 (xay ra 2 lan trong 1900-2100: 2054-05-07, 2062-04-09). Lui them 1 soc. */
+	if (monthStart > dayNumber) {
+		monthStart = getNewMoonDay(k-1, timeZone);
+	}
 	//alert(dayNumber+" -> "+monthStart);
 	a11 = getLunarMonth11(yy, timeZone);
 	b11 = a11;

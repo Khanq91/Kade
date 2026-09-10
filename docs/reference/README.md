@@ -2,7 +2,7 @@
 
 ## amlich-aa98.js
 Thuật toán âm lịch Việt Nam của Hồ Ngọc Đức (2006), dựa trên Jean Meeus, *Astronomical Algorithms* (1998).
-Lấy nguyên bản từ GitHub `vanng822/amlich` (`lib/amlich-aa98.js`), 227 dòng, giữ nguyên header license.
+Lấy nguyên bản từ GitHub `vanng822/amlich` (`lib/amlich-aa98.js`), 227 dòng gốc, giữ nguyên header license. **Đã patch 1 chỗ** trong `convertSolar2Lunar` (mục "Patch" bên dưới).
 `lunar_core` port 1:1 từ file này — giữ tên hàm (`jdFromDate`, `NewMoon`, `SunLongitude`, `getLunarMonth11`,
 `getLeapMonthOffset`, `convertSolar2Lunar`, `convertLunar2Solar`) để đối chiếu từng hàm khi test.
 
@@ -48,3 +48,11 @@ rồi thêm vào bảng trên. Agent không tự thêm dòng vào bảng này.
 
 ## Sinh lại fixture
 Chỉ khi đổi `amlich-aa98.js` (không nên). `node tools/gen_fixture.js` → ghi đè `tet_1900_2100.json`.
+
+## Patch so với bản gốc (2026-09-10, DECISIONS D014, ERRORS E005)
+Bản gốc `convertSolar2Lunar` ước lượng `k = INT((jd − 2415021.076998695) / 29.530588853)` theo sóc trung bình rồi
+chỉ lùi tối đa 1 sóc. Khi sóc thực trễ hơn sóc trung bình và rơi vào ngày hôm sau (giờ +7), ngày đang xét bị gán
+`lunarDay = 0` của tháng kế: trong 1900–2100 xảy ra 2 lần — 2054-05-07 (gốc: 0/4/2054, đúng: 30/3/2054) và
+2062-04-09 (gốc: 0/3/2062, đúng: 30/2/2062). Patch: thêm 1 lần lùi sóc nữa (`getNewMoonDay(k-1, timeZone)`),
+đánh dấu `Kade patch` trong file JS; port Dart có cùng dòng. Fixture đã sinh lại từ bản đã patch.
+Test regression: `packages/lunar_core/test/reference_patch_test.dart`.

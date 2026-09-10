@@ -191,6 +191,12 @@ int getLeapMonthOffset(int a11, double timeZone) {
   if (monthStart > dayNumber) {
     monthStart = getNewMoonDay(k, timeZone);
   }
+  // Kade patch (D014, E005) — có trong reference đã patch: k ước lượng theo sóc
+  // trung bình; khi sóc thực trễ và rơi vào ngày hôm sau, bản gốc trả lunarDay = 0
+  // (2054-05-07, 2062-04-09). Lùi thêm 1 sóc.
+  if (monthStart > dayNumber) {
+    monthStart = getNewMoonDay(k - 1, timeZone);
+  }
   var a11 = getLunarMonth11(yy, timeZone);
   var b11 = a11;
   int lunarYear;

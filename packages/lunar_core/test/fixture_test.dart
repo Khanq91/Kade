@@ -1,16 +1,13 @@
 // Đối chiếu port với fixture sinh từ reference (spec: docs/reference/README.md):
 // - mọi năm 1900–2100: lunarToSolar(1/1/y) == tet
 // - mọi tháng: mùng 1 == start, số ngày == days, cờ nhuận đúng
-// - solarToLunar cho MỌI ngày trong năm trả đúng (tháng, nhuận) — và thêm số
-//   ngày == d+1, trừ 2 ngày reference trả ngày 0 (xem reference_quirks_test.dart)
+// - solarToLunar cho MỌI ngày trong năm trả đúng (ngày, tháng, năm, nhuận)
 // - hai chiều: lunarToSolar(solarToLunar(d)) == d cho mọi ngày 1900–2100
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:lunar_core/lunar_core.dart';
 import 'package:test/test.dart';
-
-import 'reference_quirks_test.dart' show referenceDayZero;
 
 /// Đường dẫn tính từ packages/lunar_core (cwd khi chạy `dart test`).
 const fixturePath = '../../docs/reference/tet_1900_2100.json';
@@ -62,6 +59,7 @@ void main() {
           final start = isoDate(m['start'] as String);
           final label = 'tháng $month${leap ? ' nhuận' : ''}/$y';
           totalDays += days;
+          expect(days, inInclusiveRange(29, 30), reason: label);
           if (leap) expect(month, leapMonth, reason: label);
           if (i + 1 < months.length) {
             expect(
@@ -71,36 +69,22 @@ void main() {
             );
           }
 
-          // Fixture ghi `start` = ngày đầu reference gán vào tháng này. Với 2
-          // tháng quirk, ngày đó là "ngày 0": mùng 1 thật là ngày kế tiếp, số
-          // ngày âm của cả tháng lệch 1 và `days` = số ngày thật + 1.
-          final startsWithDayZero = referenceDayZero.contains(start);
-          final firstDay = startsWithDayZero
-              ? start.add(const Duration(days: 1))
-              : start;
-          final realDays = startsWithDayZero ? days - 1 : days;
           expect(
             lunarToSolar(
               LunarDate(day: 1, month: month, year: y, isLeapMonth: leap),
             ),
-            firstDay,
+            start,
             reason: 'mùng 1 $label',
           );
           for (var d = 0; d < days; d++) {
             final solar = start.add(Duration(days: d));
-            final lunar = solarToLunar(solar);
             expect(
-              (lunar.month, lunar.year, lunar.isLeapMonth),
-              (month, y, leap),
+              solarToLunar(solar),
+              LunarDate(day: d + 1, month: month, year: y, isLeapMonth: leap),
               reason: 'solarToLunar($solar) trong $label',
             );
-            expect(
-              lunar.day,
-              startsWithDayZero ? d : d + 1,
-              reason: 'ngày âm của $solar trong $label',
-            );
           }
-          if (realDays == 29) {
+          if (days == 29) {
             expect(
               lunarToSolar(
                 LunarDate(day: 30, month: month, year: y, isLeapMonth: leap),
