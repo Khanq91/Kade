@@ -144,3 +144,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: API là `@protected` trong SchedulerBinding; Flutter ≥ 3.13 luôn sinh chuỗi trạng thái liền kề.
 - Cách xử lý: helper `sendLifecycle(tester, state)` trong `test/test_app.dart` gửi `StringCodec().encodeMessage('AppLifecycleState.paused')` qua `defaultBinaryMessenger.handlePlatformMessage(SystemChannels.lifecycle.name, …)` như Flutter thật. Observer phải chịu được trạng thái trung gian: `SyncTrigger` chỉ ghi mốc rời foreground ở lần chuyển đầu tiên (cờ `_foreground`), không ghi đè ở hidden/inactive trước resumed.
 - Trạng thái: fixed
+
+## 2026-09-10 — E018 — Font test rộng 1em/ký tự + layout medium làm ô ngày overflow; IDE diagnostics (SDK cũ) báo sai import
+- Bối cảnh: bước 14, viewport test 800×600 giờ là layout medium (lưới 3/5 chiều cao) và test 400px.
+- Triệu chứng: `RenderFlex overflowed by 1.9 pixels on the right` (Row số dương + số âm trong `DayTile` ở 400px) và `overflowed 5.7/9.6 px on the bottom` (Column nhãn trong ô khi hàng ~50px) → mọi widget test render MonthView đỏ lây (exception render = fail). Đồng thời hook IDE báo `import 'package:flutter/services.dart'` "unnecessary" nhưng `flutter analyze` 3.44.5 báo `LogicalKeyboardKey` undefined khi bỏ import.
+- Nguyên nhân: font test "FlutterTest" mỗi glyph rộng đúng 1em (chữ số 15px = 15px) nên text dài hơn thật ~2×; ô ngày thấp thì Column con (title + tags) không co được. IDE dùng Flutter 3.38.9 (E008) → analyzer khác bản build.
+- Cách xử lý: `DayTile`: số âm trong `Expanded(Text(maxLines 1, softWrap false, clip))`; phần nhãn bọc `ClipRect > OverflowBox(maxHeight ∞) > Column(min)` để cắt thay vì overflow. Test assert text trong lịch dùng `find.descendant(of: find.byType(MonthCalendar))` vì panel Sắp tới ở ≥ 600 cũng có tên sự kiện. Tin `flutter analyze` (3.44.5), không tin diagnostics IDE khi mâu thuẫn. Gửi 2 phím liên tiếp phải `pumpAndSettle` giữa chừng (widget cũ còn nhận phím thứ 2).
+- Trạng thái: fixed

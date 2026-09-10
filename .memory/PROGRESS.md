@@ -4,7 +4,7 @@ Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại ch�
 
 ## Bước hiện tại
 **Chế độ D031 (từ 2026-09-10):** session này làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
-Phase 2 bước 13 🧪 — `SyncTrigger` + 401 + "Xóa dữ liệu trên Drive" (D032): 104 test pass, analyze sạch, build web + APK OK (commit `1735642`); test tay: manual-test.md 2.10–2.12. Bước 12 🧪 (2.5–2.9). Đang làm tiếp: bước 14 (routing + responsive + PWA + phím) theo handover.md.
+Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar=1` + phím + PWA + cảnh báo web (D033, E018): 117 test pass, analyze sạch, build web (+wasm) + APK OK (commit `c4b0af4`); test tay: manual-test.md 3.1–3.4. Bước 13 🧪 (2.10–2.12), bước 12 🧪 (2.5–2.9). Đang làm tiếp: bước 15 (deploy GitHub Pages: workflow + hướng dẫn, ⏸ phần user) rồi 16, 17, 18.
 
 ## Đang dở
 (không)
@@ -95,7 +95,7 @@ Phase 2 bước 13 🧪 — `SyncTrigger` + 401 + "Xóa dữ liệu trên Drive"
 ### Phase 3 — Web release
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
-| 14 | Routing + responsive + PWA + phím tắt | ⬜ |
+| 14 | Routing + responsive + PWA + phím tắt | 🧪 |
 | 15 | Deploy + thêm origin vào OAuth | ⬜ |
 
 ### Phase 4 — Android release
@@ -112,7 +112,7 @@ Phase 2 bước 13 🧪 — `SyncTrigger` + 401 + "Xóa dữ liệu trên Drive"
 - Lớp hiển thị (D026) hiện chỉ lọc "Sắp tới"; muốn áp cho lịch tháng → hỏi user, ghi DECISIONS. `todayProvider` chưa tự đổi qua nửa đêm (invalidate khi resume: bước 13/16).
 - Bước 9 xong (D027, D028): bước 12 dùng lại `SyncEnvelope.encode()/parse()` (file Drive cùng format, D004), `deviceIdProvider`, `UserEventsNotifier.importAll` (ghi đè theo id, `updatedAt = now`) — merge theo `updatedAt` làm ở tầng sync trước khi gọi putAll. `FileIo`/`fileIoProvider` ở `lib/platform/file_io.dart`; file_picker 12 API xem E015 (không dùng `withData`).
 - Bước 12 xong (D030): `SyncNotifier.sync({interactive})` ở `lib/data/sync/sync_provider.dart`, `DriveStore`/`DriveApiStore` (googleapis), `merge.dart`, `UserEventsNotifier.replaceAll`. Bước 13 = trigger + debounce + 401: (a) app start nếu cờ `googleSignedIn` và đã có token im lặng (Android; web thường chưa có token → bỏ qua, không popup); (b) sau `create/update/remove` debounce 5s → `sync()`; (c) `WidgetsBindingObserver` resume > 15 phút → `sync()` + `ref.invalidate(todayProvider)`; (d) sau đăng nhập/cấp quyền → `sync()`; (e) `DriveException(401)` → `GoogleSignInAuth` gọi `clearAuthorizationToken(accessToken)` rồi `driveToken(interactive)` chỉ khi từ nút; trigger nền chỉ ghi `lastError` "Phiên Google hết hạn, bấm Đồng bộ ngay". Không sync khi `SyncState.running`. Tùy chọn "Xóa dữ liệu trên Drive" (plan §3.10) làm ở bước 13 nếu còn thời gian, không bắt buộc.
-- Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
+- Bước 14 xong (D033): giữ hash URL (GitHub Pages); `layoutOf()` ở `core/breakpoints.dart`; `openDay()` để mở DayDetail (dialog ≥ 1024); `TodayCardData.toJson` (`lib/data/today_card.dart`) là schema cho widget bước 17; test responsive dùng `setViewport()`, viewport mặc định 800×600 = layout medium (E018).
 - Test app: luôn `flutter test --timeout 90s`; widget test dùng Hive phải bọc `tester.runAsync` (E009); tile dưới viewport 600px là offstage → `ensureVisible`.
 - Chạy app: từ `apps/kade`, luôn kèm `--dart-define-from-file=../../dart_defines.json` (thiếu → remote config tắt, chỉ asset). Máy user: dùng Flutter 3.44.5 (E008), web port 5001 (E011).
 - Bước 13 xong (D032): `SyncTrigger` (`lib/data/sync/sync_trigger.dart`) tạo ở `AppLifecycle` (main.dart); bước 16/17 nối "sau sync / sau sửa / resume" → reschedule notification + widget bằng listener tương tự (`userEventsProvider`, `syncProvider` lastSyncAt, `onResume`). Test vòng đời: `sendLifecycle()` (E017); test giả giờ: `clock:` trong `testApp`/`testOverrides`.
@@ -145,3 +145,5 @@ Phase 2 bước 13 🧪 — `SyncTrigger` + 401 + "Xóa dữ liệu trên Drive"
 - 2026-09-10 — handover — user chốt D031 (chạy hết 13–18 không dừng chờ test tay; test tay gom cuối theo phase × Web/Android): docs/manual-test.md (checklist), docs/prompts/handover.md (prompt session sau), AGENTS.md §2/§3/§4/§5 sửa, trạng thái 🧪; bước 12 ⏸ → 🧪 — (hash ở dòng sau)
 - 2026-09-10 — handover — commit — b2941a2
 - 2026-09-10 — phase2-step13 — `SyncTrigger` (sau đăng nhập/cấp quyền/khôi phục phiên, debounce 5s sau sửa/nhập, resume ≥ 15 phút + invalidate todayProvider qua ngày) qua `AppLifecycle`; `sync()` đặt running trước khi xin token, 401 → `clearToken` + xin lại 1 lần (im lặng; popup chỉ từ nút) + "Phiên Google hết hạn — bấm Đồng bộ ngay"; `deleteRemote()` + nút "Xóa dữ liệu trên Drive" (D032, E017); 104 test pass, analyze sạch, build web + APK OK → 🧪 — 1735642
+- 2026-09-10 — phase2-step13 — DECISIONS D032, ERRORS E017, manual-test 2.10–2.12 — 8330df7
+- 2026-09-10 — phase3-step14 — `AppShell` rail ≥ 600 / bottom nav < 600; `MonthViewScreen` 3 layout (wide: lịch 65% + `TodayCard` hero + `UpcomingList(compact)`; medium: lịch trên Sắp tới dưới), `?lunar=1` + `shiftLunarMonth`, `/d/:date` `DialogPage` ≥ 1024 khi mở từ app (`openDay`, extra), phím ← → T (MonthView) + Esc (DayDetail), `TodayCardData`/`todayCardProvider`, cảnh báo lưu trữ web một lần (`webNoticeProvider`), manifest/index.html PWA (D033, E018); 117 test pass, analyze sạch, build web + wasm + APK OK → 🧪 — c4b0af4

@@ -49,13 +49,13 @@ Sanity ngoài: `docs/reference/README.md`.
 | 2.11 | Token hết hạn / bị thu hồi (web: > 1 h sau khi cấp quyền, hoặc gỡ quyền app tại myaccount.google.com → Bảo mật → Kết nối bên thứ ba → Kade): sửa 1 sự kiện → sau 5 s mục Đồng bộ hiện "Phiên Google hết hạn — bấm Đồng bộ ngay", KHÔNG có popup tự bật; bấm "Đồng bộ ngay" → popup consent → "Đã đồng bộ…", dòng lỗi biến mất. Android sau khi gỡ quyền: bấm "Đồng bộ ngay" → consent lại → OK (token hết hạn thường Android tự làm mới, không thấy gì) | ⬜ | ⬜ |
 | 2.12 | "Xóa dữ liệu trên Drive" → dialog → Hủy (không đổi) → lại → Xóa → SnackBar "Đã xóa dữ liệu trên Drive và đăng xuất", mục về nút đăng nhập, Sự kiện của tôi vẫn còn đủ; Drive → Manage apps → Kade: hidden app data trống / 0 B (hoặc "Delete hidden app data" không còn gì); đăng nhập lại → tự sync → file tạo lại từ local, máy B "Đồng bộ ngay" vẫn thấy sự kiện | ⬜ | ⬜ |
 
-## Phase 3 — Web release (session sau điền chi tiết theo plan §4.8)
+## Phase 3 — Web release
 | # | Kiểm tra | Web | Android |
 |---|---|---|---|
-| 3.1 | §4.8 đủ 6 mục: /2027/02 đúng + nghỉ bù từ Sheet; reload giữ tháng; tạo sự kiện âm → đóng tab → mở lại còn; đăng nhập Google → tạo sự kiện → trình duyệt khác cùng tài khoản thấy; xóa ở A → sync B → mất; Lighthouse PWA installable pass | ⬜ | — |
-| 3.2 | Responsive: ≥1024 2 cột (lịch + panel phải hero hôm nay + Sắp tới); 600–1023 1 cột; <600 bottom nav | ⬜ | — |
-| 3.3 | Phím: ← → đổi tháng, T về hôm nay, Esc đóng DayDetail; DayDetail là dialog ≥1024, full page <1024 | ⬜ | — |
-| 3.4 | URL path (không `#`) nếu bước 14 chọn path strategy; F5 ở URL sâu không 404 trên hosting | ⬜ | — |
+| 3.1 | §4.8 đủ 6 mục: (1) `/#/2027/02` đúng + nghỉ bù từ Sheet (như 1.1, 1.6); (2) F5 giữ tháng; (3) tạo sự kiện âm → đóng tab → mở lại còn (IndexedDB); (4) đăng nhập Google → tạo sự kiện → trình duyệt khác cùng tài khoản "Đồng bộ ngay" → thấy (2.5); (5) xóa ở A → sync B → mất (2.6); (6) Lighthouse (Chrome DevTools → Lighthouse → Progressive Web App / "Installable") pass trên bản deploy HTTPS (bước 15); bản `flutter run` localhost không có service worker → bỏ qua mục này ở localhost | ⬜ | — |
+| 3.2 | Responsive (kéo cửa sổ Chrome): ≥ 1024 px → rail trái + lịch bên trái + panel phải: hero "hôm nay" (thứ, số ngày to, "Tháng M năm YYYY", âm lịch + can chi năm, ngày can chi, chip Ngày nghỉ, ≤ 3 sự kiện) + "Sắp tới" gọn (không chip); 600–1023 → rail trái, lịch trên, Sắp tới gọn dưới, không hero; < 600 → bottom nav 4 tab, chỉ lịch. Tab "Sắp tới" riêng vẫn có 4 chip lớp. Tap hero → chi tiết hôm nay | ⬜ | — |
+| 3.3 | Phím (click vào lịch trước để có focus): ← → đổi tháng, T về tháng hôm nay; ≥ 1024: tap ô → DayDetail là dialog giữa màn (nút ✕ "Đóng", ◀ ▶ vẫn trong dialog, Esc hoặc click nền tối đóng); < 1024: trang riêng, Esc = Quay lại. F5 khi đang ở `/#/d/2027-02-06` trên màn rộng → trang riêng (không dialog) — đúng thiết kế D033 | ⬜ | — |
+| 3.4 | URL: giữ dạng hash `/#/2027/02` (D033, không path strategy) — F5 ở URL sâu (`/#/d/2027-02-06`, `/#/settings`) không 404 cả localhost lẫn GitHub Pages. "Tháng âm" → chọn tháng → URL có `?lunar=1`, nút "Tháng âm" tô nền, ◀ ▶ nhảy theo tháng âm (từ 2/2027 Giêng → ▶ = 3/2027 Hai, ◀ = 1/2027 Chạp); "Hôm nay" hoặc chọn tháng dương → hết `?lunar=1`. Lần đầu mở web: banner "Dữ liệu lưu trên trình duyệt này…" → "Đã hiểu" ẩn hẳn (F5 không hiện lại); "Bật đồng bộ" → Cài đặt. Manifest: DevTools → Application → Manifest: name "Kade — Lịch âm dương", theme màu đỏ | ⬜ | — |
 | 3.5 | Deploy: mở domain thật → đăng nhập Google được (origin đã thêm vào OAuth B.3) | ⬜ | — |
 
 ## Phase 4 — Android release (session sau điền chi tiết theo plan §5.7)
@@ -77,6 +77,8 @@ Sanity ngoài: `docs/reference/README.md`.
 | "Phiên Google hết hạn — bấm Đồng bộ ngay" | Bình thường trên web sau > 1 h (token GIS hết hạn) hoặc sau khi gỡ quyền app: sync nền không được phép popup → bấm "Đồng bộ ngay" (có popup) là xong (D032) |
 | "Đồng bộ không thành công (Drive 401: …)" | Token mới xin vẫn bị từ chối → thường do gỡ quyền app + cache; Đăng xuất rồi đăng nhập lại; còn lỗi → báo agent kèm log |
 | Sửa sự kiện mà "Đồng bộ lần cuối" không đổi sau 5 s | Chưa đăng nhập / web chưa bấm "Đồng bộ ngay" trong phiên này (chưa có token) → mục Đồng bộ hiện "Chưa cấp quyền Google Drive" |
+| Phím ← → T không ăn trên web | Focus đang ở ngoài lịch (thanh địa chỉ, tab khác) → click vào lưới lịch rồi bấm lại; tab Đổi ngày không có phím tắt (D033) |
+| Màn ≥ 1024 mà DayDetail vẫn trang riêng | Mở thẳng URL `/#/d/…` (F5) → đúng thiết kế; mở từ ô lịch / Sắp tới / hero mới là dialog |
 | "Drive 403 … Drive API has not been used" | Chưa Enable Drive API (B.1) |
 | "File trên Drive không đọc được" | Drive → Manage apps → Kade → Delete hidden app data → sync lại |
 | Nút Google (GIS) không hiện trên web | Client ID sai / console báo lỗi GIS → báo agent kèm log |
