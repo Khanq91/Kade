@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kade — Chính sách quyền riêng tư</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1c1b1f; }
+    h1 { color: #c62828; }
+    h2 { margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <h1>Kade — Chính sách quyền riêng tư</h1>
+  <p>Cập nhật: 10/09/2026.</p>
+
+  <h2>Kade là gì</h2>
+  <p>Kade là ứng dụng lịch âm dương Việt Nam (web và Android): xem lịch tháng, chi tiết ngày, ngày lễ, và ghi các sự kiện cá nhân (giỗ, sinh nhật, kỷ niệm). Ứng dụng không có máy chủ riêng, không quảng cáo, không dùng dịch vụ phân tích.</p>
+
+  <h2>Dữ liệu ứng dụng lưu</h2>
+  <ul>
+    <li><strong>Sự kiện cá nhân</strong> (tên, ngày, ghi chú, màu, cài đặt nhắc) được lưu trên chính thiết bị của bạn (trên web: trong trình duyệt).</li>
+    <li><strong>Cài đặt</strong> (lớp hiển thị, số ngày nhắc lễ) lưu trên thiết bị.</li>
+    <li><strong>Lịch nghỉ bù theo năm</strong> được tải về từ một địa chỉ công khai (không kèm thông tin về bạn).</li>
+  </ul>
+
+  <h2>Đồng bộ Google Drive (tùy chọn)</h2>
+  <p>Nếu bạn bật "Đồng bộ Google", ứng dụng xin quyền <code>drive.appdata</code> — chỉ được đọc/ghi thư mục riêng của ứng dụng trong Google Drive của bạn, không thấy các file khác. Sự kiện cá nhân được ghi vào một file (<code>kade_events.json</code>) trong thư mục đó để đồng bộ giữa các thiết bị của bạn. Dữ liệu đi thẳng từ thiết bị tới Google Drive qua HTTPS; không có máy chủ trung gian nào của Kade.</p>
+  <p>Ứng dụng đọc tên và email tài khoản Google chỉ để hiển thị bạn đang đăng nhập bằng tài khoản nào; không gửi thông tin này đi đâu khác.</p>
+
+  <h2>Thông báo và widget (Android)</h2>
+  <p>Nhắc nhở và widget màn hình chính được tính và hiển thị hoàn toàn trên thiết bị.</p>
+
+  <h2>Xóa dữ liệu</h2>
+  <ul>
+    <li>Trên Drive: Cài đặt → "Xóa dữ liệu trên Drive" (xóa file đồng bộ và đăng xuất), hoặc Google Drive → Cài đặt → Quản lý ứng dụng → Kade → Xóa dữ liệu ứng dụng ẩn.</li>
+    <li>Trên thiết bị: gỡ ứng dụng (Android) hoặc xóa dữ liệu trang web trong trình duyệt (web).</li>
+    <li>Thu hồi quyền truy cập Google: <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
+  </ul>
+
+  <h2>Liên hệ</h2>
+  <p>Mã nguồn và liên hệ: <a href="https://github.com/Khanq91/Kade">github.com/Khanq91/Kade</a>.</p>
+</body>
+</html>

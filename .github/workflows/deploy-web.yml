@@ -51,6 +51,10 @@ jobs:
           --dart-define=KADE_CONFIG_URL=${{ secrets.KADE_CONFIG_URL }}
           --dart-define=KADE_WEB_CLIENT_ID=${{ secrets.KADE_WEB_CLIENT_ID }}
 
+      # Privacy policy cho Play listing (bước 18): flutter build web không copy
+      # file lạ trong web/ nên chép thủ công → https://<user>.github.io/<repo>/privacy.html
+      - run: cp docs/privacy.html apps/kade/build/web/privacy.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/kade/build/web

@@ -6,13 +6,16 @@ Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại ch�
 **Chế độ D031 (từ 2026-09-10):** session này làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
 Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar=1` + phím + PWA + cảnh báo web (D033, E018): 117 test pass, analyze sạch, build web (+wasm) + APK OK (commit `c4b0af4`); test tay: manual-test.md 3.1–3.4. Bước 13 🧪 (2.10–2.12), bước 12 🧪 (2.5–2.9).
 Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-google.md` phần C xong (D034); chờ user bật Pages + secrets + origin (mục "Cần user làm").
-Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifications` + `ReminderScheduler`, form "Nhắc trước", Cài đặt "Nhắc lễ trước"; 128 test pass, analyze sạch, build web + APK OK (commit `8274606`); test tay: manual-test.md 4.2. Đang làm tiếp: bước 17 (widget 2x2 + 4x2) → 18 (release keystore, ⏸ phần user).
+Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifications` + `ReminderScheduler`, form "Nhắc trước", Cài đặt "Nhắc lễ trước"; 128 test pass, analyze sạch, build web + APK OK (commit `8274606`); test tay: manual-test.md 4.2.
+Phase 4 bước 17 🧪 — widget 2x2 + 4x2 (D036, E019): `computeWidgetData` 35 ngày + `WidgetUpdater` + `KadeWidgetSmall/WideProvider` Kotlin; 135 test pass, analyze sạch, build web + APK OK (commit `771ccff`); test tay: manual-test.md 4.1, 4.5.
+Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties` (fallback debug), `setup-google.md` phần D (keystore, SHA-1 release/Play, appbundle, listing), `docs/privacy.html` (workflow chép lên site); chờ user tạo keystore + OAuth client release + Play Console (mục "Cần user làm").
 
 ## Đang dở
 (không)
 
 ## Cần user làm
 - [ ] **Bước 15 — Deploy GitHub Pages (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần C):** (1) repo Settings → Pages → Source: **GitHub Actions**; (2) Secrets `KADE_CONFIG_URL`, `KADE_WEB_CLIENT_ID` (giá trị lấy từ `dart_defines.json`); (3) OAuth client Web (B.3) thêm origin `https://khanq91.github.io`; (4) push `main` hoặc Actions → deploy-web → Run workflow → mở `https://khanq91.github.io/Kade/` → test manual-test.md 3.5 (+ 3.1 mục 6 Lighthouse). Báo ok → 15 ⏸ → ✅.
+- [ ] **Bước 18 — Release Android (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần D):** (1) tạo keystore `kade-release.jks` NGOÀI repo (`keytool -genkey …`, D.1); (2) `apps/kade/android/key.properties` từ `key.properties.example` (gitignored); (3) SHA-1 release → OAuth client Android "Kade Android release" (B.4 / D.3); (4) `flutter build appbundle --release --dart-define-from-file=../../dart_defines.json` → upload Internal testing trên Play Console; (5) Play App Signing → SHA-1 của app signing key → OAuth client "Kade Android play"; (6) listing + Data safety + privacy policy `https://khanq91.github.io/Kade/privacy.html` (sau khi bước 15 deploy). Test manual-test.md 4.4. Báo ok → 18 ⏸ → ✅.
 - [ ] **Test tay toàn bộ (cuối, D031)** → theo `docs/manual-test.md`, chia phase × Web/Android; báo theo format "Ghi lỗi" ở cuối file đó. Các mục verify chi tiết bên dưới (bước 12, 11, 9, 6) đã gom vào file đó, giữ lại để tham khảo.
 - [~] **Verify bước 12 — sync Drive** (→ manual-test.md 2.5–2.9; tiêu chí §4.8 mục 4–5: đăng nhập cùng tài khoản ở 2 nơi thấy nhau; xóa ở A → sync B → mất, không resurrect). Cần 2 "máy": A = Chrome port 5001, B = trình duyệt khác (Edge/Cốc Cốc, hoặc Chrome profile khác — cùng port 5001, cùng origin đã đăng ký) hoặc Android. Lệnh như bước 11.
   1. A: đăng nhập → tạo 2 sự kiện (1 âm, 1 dương) → Cài đặt → "Đồng bộ ngay" → SnackBar "Đã đồng bộ với Google Drive", dòng "Đồng bộ lần cuối: …". (Web: nếu phiên chưa có quyền Drive, popup consent hiện ngay trong click này.)
@@ -105,8 +108,8 @@ Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifi
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
 | 16 | Notification | 🧪 |
-| 17 | Widget 2x2 + 4x2 | ⬜ |
-| 18 | Release keystore + SHA-1 + Play listing | ⬜ |
+| 17 | Widget 2x2 + 4x2 | 🧪 |
+| 18 | Release keystore + SHA-1 + Play listing | ⏸ |
 
 ## Ghi chú cho bước sau
 - Bước 6: home hiện là `SettingsScreen` (tạm) → thay bằng MonthView, Settings vào route `/settings`. MonthView `ref.watch(remoteConfigProvider)` lấy `overrides` cho `resolveMonth`; cache tháng invalidate khi state đổi. UI phải phân biệt `kind` (nghỉ/kỷ niệm/quốc tế) bằng màu/badge và `type` (âm/dương) bằng ký hiệu ÂL/DL (D021). go_router tối thiểu ngay ở bước 6 vì §4.8 mục 2 (reload giữ tháng) là tiêu chí verify của bước này; responsive/PWA/phím tắt để bước 14.
@@ -153,3 +156,6 @@ Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifi
 - 2026-09-10 — phase3-step14 — DECISIONS D033, ERRORS E018, manual-test 3.1–3.4 — dfc519f
 - 2026-09-10 — phase3-step15 — `.github/workflows/deploy-web.yml` (Flutter 3.44.5, build_runner, test, `flutter build web --release --base-href /<repo>/` + secrets → Pages), `setup-google.md` phần C (Pages, secrets, origin `https://khanq91.github.io`, lỗi hay gặp), manual-test 3.5 (D034); ⏸ chờ user — 4ebbc57
 - 2026-09-10 — phase4-step16 — `buildReminders` pure (cá nhân `remindBeforeDays` qua `userEventsOn`, nghỉ lễ qua `eventsOn`, ngày đầu, 08:00 giờ máy, 90 ngày, FNV id), `Notifications`/`LocalNotifications` (flutter_local_notifications 22.3.0 + timezone 0.11.1, inexactAllowWhileIdle, chạm → `/d/<date>`, mở từ thông báo khi app tắt) / `NoopNotifications` web, `ReminderScheduler` (start + nghe sự kiện/cài đặt + resume, tuần tự), form "Nhắc trước" + xin quyền lúc lưu, Cài đặt "Nhắc nhở → Nhắc lễ trước" (0/1/3/7/14, ẩn web), manifest receiver + `RECEIVE_BOOT_COMPLETED`, desugaring (D035); 128 test pass, analyze sạch, build web + APK OK → 🧪 — 8274606
+- 2026-09-10 — phase4-step16 — DECISIONS D035, manual-test 4.2 — be5263c
+- 2026-09-10 — phase4-step17 — `computeWidgetData`/`widgetDataProvider` (35 ngày, `TodayCardData.toJson`, lọc lớp), `HomeWidgets`/`AndroidHomeWidgets` (home_widget 0.9.4: saveWidgetData + updateWidget + scheduleWidgetUpdates 00:00:05 ×35) / Noop, `WidgetUpdater` (start/nghe Notifier nguồn/resume, chạm widget + mở từ widget → `router.go`), Kotlin `KadeWidgetProvider` + Small/Wide, layout 2x2/4x2 + widget_bg + colors (night) + strings + xml info, manifest 2 receiver + HomeWidgetScheduledUpdateReceiver (D036, E019); 135 test pass, analyze sạch, build web + APK OK → 🧪 — 771ccff
+- 2026-09-10 — phase4-step18 — `build.gradle.kts` signingConfig release từ `android/key.properties` (fallback debug), `android/key.properties.example`, `.gitignore` key/jks, `setup-google.md` phần D, `docs/privacy.html` + bước copy trong workflow deploy-web, manual-test 4.4 (D037); build apk debug + appbundle release (fallback debug) + web OK; ⏸ chờ user — (hash ở dòng sau)

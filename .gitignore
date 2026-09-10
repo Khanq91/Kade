@@ -50,3 +50,8 @@ app.*.map.json
 .env
 
 dart_defines.json
+
+# Android release signing (bước 18) — không bao giờ commit
+key.properties
+*.jks
+*.keystore

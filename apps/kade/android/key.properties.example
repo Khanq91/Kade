@@ -1,0 +1,6 @@
+# Copy thành android/key.properties (gitignored) sau khi tạo keystore (docs/setup-google.md phần D).
+# storeFile: đường dẫn tuyệt đối tới file .jks, dùng dấu / (giữ keystore NGOÀI repo).
+storeFile=D:/khang/keys/kade-release.jks
+storePassword=<mật khẩu keystore>
+keyAlias=kade
+keyPassword=<mật khẩu key>

@@ -163,3 +163,65 @@ B.3 → client `Kade Web` → **Authorized JavaScript origins → Add URI**: `ht
 | Nút Google không hiện / popup trắng / console `origin_mismatch` | C.3 chưa thêm hoặc gõ sai origin |
 | "access blocked" khi đăng nhập | Consent screen còn Testing → tài khoản phải nằm trong Test users (B.2), hoặc Publish app |
 | Cài đặt báo "Chưa cấu hình KADE_CONFIG_URL" / "KADE_WEB_CLIENT_ID" | C.2 thiếu secret hoặc sai tên → thêm rồi Run workflow lại |
+
+## D. Android release — keystore, SHA-1, Play (Phase 4 bước 18, plan §5.5, §5.7)
+
+Agent đã làm: `apps/kade/android/app/build.gradle.kts` ký release bằng `android/key.properties` nếu có (thiếu → ký debug, build vẫn chạy); mẫu `android/key.properties.example`; `.gitignore` chặn `key.properties`, `*.jks`; trang `docs/privacy.html` (privacy policy cho Play — workflow bước 15 chép vào site: `https://khanq91.github.io/Kade/privacy.html`). Phần dưới chỉ user làm được.
+
+### D.1 Tạo keystore (một lần, giữ cẩn thận — mất là không cập nhật app được)
+PowerShell, tạo thư mục ngoài repo:
+```
+mkdir D:\khang\keys
+keytool -genkey -v -keystore D:\khang\keys\kade-release.jks -alias kade -keyalg RSA -keysize 2048 -validity 10000
+```
+Nhập mật khẩu keystore + key (ghi lại), tên/tổ chức tùy ý. Backup file `.jks` + mật khẩu ở nơi khác (không đưa vào repo, không Drive chung).
+
+### D.2 key.properties
+Copy `apps/kade/android/key.properties.example` → `apps/kade/android/key.properties`, điền:
+```
+storeFile=D:/khang/keys/kade-release.jks
+storePassword=…
+keyAlias=kade
+keyPassword=…
+```
+(`git status` không được thấy file này — đã gitignore.)
+
+### D.3 SHA-1 release → OAuth client Android "Kade Android release"
+```
+keytool -list -v -keystore D:\khang\keys\kade-release.jks -alias kade
+```
+Copy dòng `SHA1:` → Google Cloud → Credentials → Create credentials → OAuth client ID → Android: name `Kade Android release`, package `vn.kade.kade`, SHA-1 vừa copy (như B.4). Không cần copy Client ID vào code. Thiếu bước này → bản release đăng nhập báo `clientConfigurationError` (E002).
+
+### D.4 Build
+Từ `apps/kade` (Flutter 3.44.5, E008; cần `dart_defines.json` ở root để có `KADE_WEB_CLIENT_ID` làm `serverClientId`):
+```
+flutter build appbundle --release --dart-define-from-file=../../dart_defines.json
+   → build/app/outputs/bundle/release/app-release.aab   (upload Play)
+flutter build apk --release --dart-define-from-file=../../dart_defines.json
+   → build/app/outputs/flutter-apk/app-release.apk        (cài thử máy thật, manual-test 4.4)
+```
+Log Gradle không được có "Signing with debug keys". Kiểm tra chữ ký: `keytool -printcert -jarfile build\app\outputs\flutter-apk\app-release.apk` → SHA1 phải trùng D.3.
+Tăng phiên bản mỗi lần upload: `version: 1.0.0+1` trong `apps/kade/pubspec.yaml` (`+N` = versionCode, phải tăng).
+
+### D.5 Play Console
+1. https://play.google.com/console → tài khoản developer (phí 25 USD một lần) → Create app: tên `Kade`, ngôn ngữ mặc định Tiếng Việt, App, Free.
+2. **Testing → Internal testing → Create new release** → upload `app-release.aab` → Google hỏi bật **Play App Signing** → chấp nhận (Google giữ khóa ký cuối; khóa D.1 thành upload key).
+3. **Setup → App signing** (hoặc Test and release → App integrity) → copy **SHA-1 của "App signing key certificate"** → tạo thêm OAuth client Android `Kade Android play` với SHA-1 này (B.4). Không có bước này, bản tải từ Play đăng nhập Google fail dù bản APK local chạy tốt.
+4. Thêm tester (email) vào Internal testing → link opt-in → cài từ Play → manual-test 4.4.
+
+### D.6 Listing + Data safety (trước khi lên Production)
+- Store listing: tên `Kade`; mô tả ngắn (≤ 80): "Lịch âm dương Việt Nam: ngày lễ, can chi, giờ hoàng đạo, sự kiện cá nhân đồng bộ Google Drive."; mô tả đầy đủ: lịch tháng âm + dương, chi tiết ngày (can chi, tiết khí, hoàng đạo, giờ hoàng đạo), ngày nghỉ/nghỉ bù cập nhật theo năm, sự kiện cá nhân âm/dương lặp hàng năm, nhắc trước N ngày, widget 2x2/4x2, đồng bộ qua thư mục riêng của app trên Google Drive, không quảng cáo, không máy chủ riêng.
+- Ảnh: icon 512×512, feature graphic 1024×500, ≥ 2 ảnh chụp điện thoại (lịch tháng, chi tiết ngày, widget). Icon app hiện là mặc định Flutter → nên thay (`flutter_launcher_icons` hoặc thay mipmap) trước khi lên Production.
+- Privacy policy URL: `https://khanq91.github.io/Kade/privacy.html` (có sau khi bước 15 deploy; nội dung `docs/privacy.html`, workflow chép vào site).
+- Data safety: thu thập email/tên tài khoản Google (chỉ để đăng nhập, không gửi đi đâu); dữ liệu sự kiện lưu trên máy và trong appDataFolder Google Drive của chính user; mã hóa khi truyền (HTTPS); user xóa được ("Xóa dữ liệu trên Drive" + gỡ app); không chia sẻ bên thứ ba; không quảng cáo.
+- Content rating: bảng câu hỏi → Everyone. Target audience: 18+ hoặc mọi lứa tuổi (không nhắm trẻ em).
+- OAuth consent screen (B.2) khi lên Production: **Publish app** để tài khoản ngoài Test users đăng nhập được (scope drive.appdata non-sensitive → không cần verify).
+
+### D.7 Lỗi hay gặp
+| Triệu chứng | Xử lý |
+|---|---|
+| Gradle: "Keystore file not found" | `storeFile` sai đường dẫn (dùng `/`, tuyệt đối) |
+| "Signing with debug keys" trong log build release | Chưa có `android/key.properties` hoặc sai tên file |
+| Bản release đăng nhập `clientConfigurationError` / `canceled` | Thiếu OAuth client Android với SHA-1 release (D.3) hoặc SHA-1 Play (D.5.3); chờ vài phút sau khi tạo |
+| Play từ chối AAB "version code already used" | Tăng `+N` trong pubspec |
+| Play yêu cầu privacy policy | D.6, cần bước 15 đã deploy |
