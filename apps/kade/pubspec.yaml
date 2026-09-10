@@ -1,7 +1,7 @@
 name: kade
 description: Kade — lịch âm/dương Việt Nam (web + Android).
 publish_to: none
-version: 1.0.0+1
+version: 1.0.0+2
 resolution: workspace
 
 environment:
