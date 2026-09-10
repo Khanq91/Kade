@@ -1,0 +1,94 @@
+# Release Android lên GitHub Releases (bước 18, D038): push tag `v*` (hoặc Run
+# workflow) → test → build APK + AAB ký release → đính vào Release của tag.
+# Secrets (docs/setup-google.md D.8): KADE_KEYSTORE_BASE64, KADE_KEYSTORE_PASSWORD,
+# KADE_KEY_ALIAS, KADE_KEY_PASSWORD, KADE_CONFIG_URL, KADE_WEB_CLIENT_ID.
+# Thiếu keystore → vẫn build nhưng ký debug (không dùng bản đó để phát hành).
+name: release-android
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.5"
+          channel: stable
+          cache: true
+
+      - run: dart pub get
+
+      - run: dart run build_runner build
+        working-directory: apps/kade
+
+      - run: flutter test --timeout 90s
+        working-directory: apps/kade
+
+      # Keystore từ secret base64 → android/kade-release.jks + key.properties
+      # (cả hai gitignored). build.gradle.kts đọc key.properties nếu có.
+      - name: Keystore
+        working-directory: apps/kade/android
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KADE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::Thiếu secret KADE_KEYSTORE_BASE64 - APK sẽ ký bằng debug key"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > kade-release.jks
+          cat > key.properties <<EOF
+          storeFile=${{ github.workspace }}/apps/kade/android/kade-release.jks
+          storePassword=${{ secrets.KADE_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.KADE_KEY_ALIAS }}
+          keyPassword=${{ secrets.KADE_KEY_PASSWORD }}
+          EOF
+
+      - name: Build APK + AAB
+        working-directory: apps/kade
+        run: |
+          flutter build apk --release \
+            --dart-define=KADE_CONFIG_URL=${{ secrets.KADE_CONFIG_URL }} \
+            --dart-define=KADE_WEB_CLIENT_ID=${{ secrets.KADE_WEB_CLIENT_ID }}
+          flutter build appbundle --release \
+            --dart-define=KADE_CONFIG_URL=${{ secrets.KADE_CONFIG_URL }} \
+            --dart-define=KADE_WEB_CLIENT_ID=${{ secrets.KADE_WEB_CLIENT_ID }}
+
+      # Tên file theo tag (hoặc "manual-<run>" khi Run workflow).
+      - name: Đặt tên file
+        id: name
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then v="${{ github.ref_name }}"; else v="manual-${{ github.run_number }}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          mkdir -p out
+          cp apps/kade/build/app/outputs/flutter-apk/app-release.apk "out/kade-$v.apk"
+          cp apps/kade/build/app/outputs/bundle/release/app-release.aab "out/kade-$v.aab"
+          ls -la out
+
+      # Luôn giữ artifact (kể cả chạy tay không có tag).
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kade-${{ steps.name.outputs.version }}
+          path: out/*
+
+      # Có tag → tạo GitHub Release và đính APK + AAB.
+      - if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Kade ${{ github.ref_name }}
+          files: out/*
+          generate_release_notes: true

@@ -217,10 +217,32 @@ Tăng phiên bản mỗi lần upload: `version: 1.0.0+1` trong `apps/kade/pubsp
 - Content rating: bảng câu hỏi → Everyone. Target audience: 18+ hoặc mọi lứa tuổi (không nhắm trẻ em).
 - OAuth consent screen (B.2) khi lên Production: **Publish app** để tài khoản ngoài Test users đăng nhập được (scope drive.appdata non-sensitive → không cần verify).
 
+### D.8 Release APK trên GitHub bằng workflow (không cần build ở máy)
+Workflow `.github/workflows/release-android.yml` (D038): push tag `v*` → test → build APK + AAB ký release → tạo **GitHub Release** của tag kèm `kade-<tag>.apk` và `kade-<tag>.aab`. Chạy tay (Actions → release-android → Run workflow) thì chỉ lưu artifact, không tạo Release.
+
+1. Secrets (Settings → Secrets and variables → Actions), ngoài 2 secret của phần C:
+   - `KADE_KEYSTORE_BASE64`: nội dung file `.jks` mã hóa base64. PowerShell:
+     ```
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes("D:\khang\keys\kade-release.jks")) | Set-Clipboard
+     ```
+     rồi dán (một dòng dài) vào secret.
+   - `KADE_KEYSTORE_PASSWORD`, `KADE_KEY_ALIAS` (= `kade`), `KADE_KEY_PASSWORD` như `key.properties`.
+   Thiếu `KADE_KEYSTORE_BASE64` → workflow vẫn chạy nhưng cảnh báo và ký debug — bản đó chỉ để test, không đưa lên Play.
+2. Tăng `+N` trong `apps/kade/pubspec.yaml`, commit, rồi gắn tag và push:
+   ```
+   git tag v1.0.0
+   git push origin main --tags
+   ```
+3. Actions → release-android xanh → tab **Releases** của repo có `Kade v1.0.0` với APK (cài trực tiếp, cần bật "cài từ nguồn không rõ") và AAB (upload Play D.5).
+4. Kiểm tra chữ ký như D.4 (`keytool -printcert -jarfile kade-v1.0.0.apk` → SHA-1 trùng D.3).
+
 ### D.7 Lỗi hay gặp
 | Triệu chứng | Xử lý |
 |---|---|
 | Gradle: "Keystore file not found" | `storeFile` sai đường dẫn (dùng `/`, tuyệt đối) |
+| Workflow release-android: "::warning:: Thiếu secret KADE_KEYSTORE_BASE64" | Chưa tạo secret D.8 → APK ký debug |
+| Workflow: `base64: invalid input` | Secret dán thiếu/thừa ký tự → tạo lại bằng lệnh PowerShell D.8 |
+| Release không được tạo | Chạy bằng Run workflow (không tag) → chỉ có artifact; muốn Release thì push tag `v*` |
 | "Signing with debug keys" trong log build release | Chưa có `android/key.properties` hoặc sai tên file |
 | Bản release đăng nhập `clientConfigurationError` / `canceled` | Thiếu OAuth client Android với SHA-1 release (D.3) hoặc SHA-1 Play (D.5.3); chờ vài phút sau khi tạo |
 | Play từ chối AAB "version code already used" | Tăng `+N` trong pubspec |
