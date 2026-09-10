@@ -10,11 +10,14 @@ import '../../data/models/sync_envelope.dart';
 import '../../data/remote/remote_config.dart';
 import '../../data/remote/remote_config_provider.dart';
 import '../../data/settings_provider.dart';
+import '../../data/sync/auth_provider.dart';
+import '../../data/sync/google_auth.dart';
 import '../../data/user_events_provider.dart';
 import '../../platform/file_io.dart';
+import '../../platform/sign_in_button.dart';
 
-/// Màn Cài đặt (plan §5.1): Sự kiện của tôi, Sao lưu (bước 9), khối "Lịch
-/// nghỉ bù theo năm" + nút Kiểm tra cập nhật (bước 5).
+/// Màn Cài đặt (plan §5.1): Sự kiện của tôi, Đồng bộ Google (bước 11), Sao
+/// lưu (bước 9), khối "Lịch nghỉ bù theo năm" + nút Kiểm tra cập nhật (bước 5).
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -50,6 +53,8 @@ class _RemoteConfigSection extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.push('/events'),
         ),
+        const Divider(),
+        const _SyncSection(),
         const Divider(),
         const _BackupSection(),
         const Divider(),
@@ -120,6 +125,118 @@ class _RemoteConfigSection extends ConsumerWidget {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(fetchResultText(result))));
+  }
+}
+
+/// Mục "Đồng bộ Google" (plan §3.10, bước 11): đăng nhập + quyền Drive
+/// appData. Android: nút của app → `authenticate()` rồi xin quyền luôn. Web:
+/// nút GIS (`googleSignInButton`) rồi nút "Cấp quyền Drive" (popup cần thao
+/// tác user). Bước 12/13 thêm "Đồng bộ ngay" + thời điểm sync.
+class _SyncSection extends ConsumerWidget {
+  const _SyncSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authProvider);
+    final user = auth.user;
+    final error = auth.error;
+    final notifier = ref.read(authProvider.notifier);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const ListTile(
+          title: Text(Strings.syncSection),
+          subtitle: Text(Strings.syncHint),
+        ),
+        if (!auth.configured)
+          const ListTile(
+            leading: Icon(Icons.warning_amber_outlined),
+            title: Text(Strings.noWebClientId),
+          )
+        else if (user != null) ...[
+          ListTile(
+            leading: const Icon(Icons.account_circle_outlined),
+            title: Text(user.displayName ?? user.email),
+            subtitle: Text(user.email),
+          ),
+          ListTile(
+            key: const ValueKey('sync-drive-status'),
+            leading: Icon(
+              auth.driveGranted
+                  ? Icons.cloud_done_outlined
+                  : Icons.cloud_off_outlined,
+            ),
+            title: Text(
+              auth.driveGranted
+                  ? Strings.driveGranted
+                  : Strings.driveNotGranted,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (!auth.driveGranted)
+                  FilledButton.icon(
+                    key: const ValueKey('sync-grant'),
+                    onPressed: auth.busy
+                        ? null
+                        : () => notifier.driveToken(interactive: true),
+                    icon: const Icon(Icons.cloud_outlined),
+                    label: const Text(Strings.grantDrive),
+                  ),
+                OutlinedButton.icon(
+                  key: const ValueKey('sync-signout'),
+                  onPressed: auth.busy ? null : notifier.signOut,
+                  icon: const Icon(Icons.logout),
+                  label: const Text(Strings.signOut),
+                ),
+              ],
+            ),
+          ),
+        ] else
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: auth.busy
+                ? const Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 12),
+                      Text(Strings.signingIn),
+                    ],
+                  )
+                : ref.watch(googleAuthProvider).supportsAuthenticate
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.icon(
+                      key: const ValueKey('sync-signin'),
+                      onPressed: notifier.signIn,
+                      icon: const Icon(Icons.login),
+                      label: const Text(Strings.signInGoogle),
+                    ),
+                  )
+                : Align(
+                    alignment: Alignment.centerLeft,
+                    child: googleSignInButton(),
+                  ),
+          ),
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              error,
+              key: const ValueKey('sync-error'),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+      ],
+    );
   }
 }
 

@@ -178,6 +178,30 @@ abstract final class Strings {
   /// "Năm 2027".
   static String yearTitle(int year) => 'Năm $year';
 
+  // Đồng bộ Google (plan §5.1, §3.10)
+  static const syncSection = 'Đồng bộ Google';
+  static const syncHint =
+      'Lưu sự kiện cá nhân vào thư mục riêng của app trên Google Drive và đồng bộ giữa các máy.';
+  static const signInGoogle = 'Đồng bộ với Google';
+  static const signingIn = 'Đang đăng nhập…';
+  static const signOut = 'Đăng xuất';
+  static const grantDrive = 'Cấp quyền Drive';
+  static const driveGranted =
+      'Đã cấp quyền Google Drive (thư mục riêng của app)';
+  static const driveNotGranted = 'Chưa cấp quyền Google Drive';
+  static const signInFailed = 'Đăng nhập không thành công';
+  static const driveFailed = 'Không xin được quyền Drive';
+  static const noWebClientId =
+      'Chưa cấu hình KADE_WEB_CLIENT_ID trong dart_defines.json — tắt đồng bộ Google.';
+
+  /// "Đăng nhập không thành công (clientConfigurationError: …)".
+  static String signInError(String code, String? detail) =>
+      '$signInFailed ($code${detail == null ? '' : ': $detail'})';
+
+  /// "Không xin được quyền Drive (…)".
+  static String driveAuthError(String code, String? detail) =>
+      '$driveFailed ($code${detail == null ? '' : ': $detail'})';
+
   // Sao lưu (Export/Import JSON, plan §5.1)
   static const backupSection = 'Sao lưu';
   static const backupHint =

@@ -12,6 +12,9 @@ abstract final class Env {
     'KADE_WEB_CLIENT_ID',
   );
 
+  /// Có Web Client ID (đăng nhập Google, Phase 2) không.
+  static bool get hasWebClientId => webClientId.isNotEmpty;
+
   /// Có URL remote config không.
   static bool get hasConfigUrl => configUrl.isNotEmpty;
 

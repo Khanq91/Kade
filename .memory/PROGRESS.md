@@ -3,12 +3,24 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang ở Phase 2 bước 10 — Google Cloud + OAuth clients (việc user, `docs/setup-google.md` phần B); agent đã đổi `applicationId` → `vn.kade.kade`, cập nhật hướng dẫn, ghi checklist ở "Cần user làm". Bước 11 (Sign-in web + Android) chỉ bắt đầu khi user báo xong bước 10; template prompt ở `docs/prompts/phase1.md`.
+Phase 2 bước 11 🔄 — Sign-in web + Android (`google_sign_in` ≥ 7, E003). Bước 10 ✅ (user xác nhận 2026-09-10 "gg cloud setup xong rồi"). Verify §6 bước 11: access token có scope `drive.appdata` trên cả web + Android — chạy thật là việc user.
 
 ## Đang dở
 (không)
 
 ## Cần user làm
+- [ ] **Verify bước 11 — Sign-in web + Android** (tiêu chí §6: lấy được access token scope `drive.appdata` trên cả 2; app hiện "Đã cấp quyền Google Drive" khi có token). Tài khoản dùng phải nằm trong Test users (B.2).
+  **Web** (từ `apps/kade`, Flutter 3.44.5 — E008): `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
+  1. Cài đặt → mục "Đồng bộ Google" có nút Google "Tiếp tục với Google" (GIS vẽ, không phải nút app). Bấm → popup chọn tài khoản → mục hiện tên + email, dòng "Chưa cấp quyền Google Drive" + nút "Cấp quyền Drive".
+  2. Bấm "Cấp quyền Drive" → popup consent "See, edit, create, and delete its own configuration data in your Google Drive" → Allow → "Đã cấp quyền Google Drive (thư mục riêng của app)". ← tiêu chí bước 11 trên web.
+  3. F5 → có thể hiện One Tap/FedCM (cờ đã đăng nhập); đăng nhập lại thì email hiện lại nhưng quyền Drive về "Chưa cấp" — đúng thiết kế (web không giữ token qua reload, D029). Đăng xuất → về nút Google.
+  Lỗi hay gặp: popup trắng / console `origin_mismatch` → thiếu origin `http://localhost:5001` ở B.3; "access blocked / app chưa verify" → tài khoản không có trong Test users; nút Google không hiện → xem console (client ID sai) và báo agent.
+  **Android** (thiết bị thật hoặc emulator có Google Play): `flutter run -d <device> --dart-define-from-file=../../dart_defines.json`
+  1. Cài đặt → nút "Đồng bộ với Google" → bottom sheet chọn tài khoản → (consent Drive nếu hỏi) → tên + email + "Đã cấp quyền Google Drive". ← tiêu chí bước 11 trên Android.
+  2. Đóng hẳn app, mở lại → email tự hiện (khôi phục im lặng); dòng Drive có thể "Chưa cấp" cho tới khi bấm "Cấp quyền Drive" → phải qua ngay, không hỏi lại.
+  3. Đăng xuất → về nút.
+  Lỗi hay gặp: `clientConfigurationError` hoặc `canceled` ngay sau khi chọn tài khoản → SHA-1/package sai (E002; client Android phải là package `vn.kade.kade` + SHA-1 debug đã ghi ở B.4); `serverClientId must be provided` → thiếu `KADE_WEB_CLIENT_ID`.
+  Báo "ok" (kèm nền tảng đã thử) hoặc dán dòng lỗi đỏ trong mục Đồng bộ → agent sửa rồi đổi bước 11 sang ✅.
 - [x] **Verify bước 9 trên web** → user xác nhận 2026-09-10 "ok tốt". (Export/Import, tiêu chí §6: export → xóa hết → import → giống hệt). Từ `apps/kade` (Flutter 3.44.5 — E008; port 5001 — E011):
   `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
   1. Có sẵn vài sự kiện cá nhân (nếu chưa: Cài đặt → Sự kiện của tôi → + tạo 2–3 cái, có 1 âm lịch, 1 cái ghi chú).
@@ -28,7 +40,7 @@ Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang 
   Báo "ok" hoặc chỗ sai → agent sửa rồi đổi bước 6 sang ✅.
 - [x] Chốt Android `applicationId` `vn.kade.kade` (user chốt) → agent đã đổi `namespace` + `applicationId` trong `apps/kade/android/app/build.gradle.kts` và `MainActivity.kt` sang `vn/kade/kade` (bước 10, 2026-09-10)
 - [x] `docs/setup-google.md` phần A: deploy Apps Script → URL đã có trong `dart_defines.json` (gitignored) — agent đã đọc, dùng qua `--dart-define-from-file`
-- [ ] **Bước 10 — Google Cloud + OAuth clients** (`docs/setup-google.md` phần B). `dart_defines.json` đã có `KADE_WEB_CLIENT_ID` (72 ký tự, đúng dạng) → web client có vẻ đã tạo; cần xác nhận/bổ sung:
+- [x] **Bước 10 — Google Cloud + OAuth clients** → user xác nhận 2026-09-10 "gg cloud setup xong rồi". (`docs/setup-google.md` phần B). `dart_defines.json` đã có `KADE_WEB_CLIENT_ID` (72 ký tự, đúng dạng); checklist đã làm:
   1. B.1: project Kade có **Google Drive API** đã Enable.
   2. B.2: consent screen External, scope `drive.appdata`, **Test users** có Gmail sẽ dùng test (còn Testing → chỉ tài khoản này đăng nhập được).
   3. B.3: web client `Kade Web` → Authorized JavaScript origins có **cả** `http://localhost:5000` và `http://localhost:5001` (E011). Client ID trong `dart_defines.json` đúng client này.
@@ -66,8 +78,8 @@ Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang 
 ### Phase 2 — Sync
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
-| 10 | Google Cloud + OAuth clients (user) | ⏸ |
-| 11 | Sign-in web + Android | ⬜ |
+| 10 | Google Cloud + OAuth clients (user) | ✅ |
+| 11 | Sign-in web + Android | ⏸ |
 | 12 | `sync()` + merge + test 4 case | ⬜ |
 | 13 | Trigger + debounce + xử lý 401 web | ⬜ |
 
@@ -90,7 +102,7 @@ Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang 
 - Test widget dùng `test/test_app.dart`: `await testApp('/2027/02')` (async vì mở box in-memory), `FakeRemoteConfig`, `memoryUserEventsBox()`, `FakeFileIo` (param `fileIo`, mặc định có sẵn), `testTall` (viewport 1600, cũng trong test_app.dart; màn có ListView dài bắt buộc dùng — E009). Không cần Hive file/runAsync trừ khi test chính Hive.
 - Lớp hiển thị (D026) hiện chỉ lọc "Sắp tới"; muốn áp cho lịch tháng → hỏi user, ghi DECISIONS. `todayProvider` chưa tự đổi qua nửa đêm (invalidate khi resume: bước 13/16).
 - Bước 9 xong (D027, D028): bước 12 dùng lại `SyncEnvelope.encode()/parse()` (file Drive cùng format, D004), `deviceIdProvider`, `UserEventsNotifier.importAll` (ghi đè theo id, `updatedAt = now`) — merge theo `updatedAt` làm ở tầng sync trước khi gọi putAll. `FileIo`/`fileIoProvider` ở `lib/platform/file_io.dart`; file_picker 12 API xem E015 (không dùng `withData`).
-- Bước 12: merge theo `updatedAt` (tombstone cũng là 1 bản) → `putAll`; purge tombstone > 90 ngày sau khi sync (chưa làm ở bước 7, D025).
+- Bước 12: merge theo `updatedAt` (tombstone cũng là 1 bản) → `putAll`; purge tombstone > 90 ngày sau khi sync (chưa làm ở bước 7, D025). Token: `ref.read(authProvider.notifier).driveToken()` (im lặng; null → không sync) — web mỗi phiên cần 1 lần `driveToken(interactive: true)` từ nút (D029). Drive REST: `files.list?spaces=appDataFolder`, `files.create` (multipart, `parents: ['appDataFolder']`), `files/{id}?alt=media`, `files/{id}` PATCH media — dùng `http` thẳng hay `googleapis` (D003) chốt khi code. 401 → `clearAuthorizationToken` rồi xin lại (bước 13).
 - Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
 - Test app: luôn `flutter test --timeout 90s`; widget test dùng Hive phải bọc `tester.runAsync` (E009); tile dưới viewport 600px là offstage → `ensureVisible`.
 - Chạy app: từ `apps/kade`, luôn kèm `--dart-define-from-file=../../dart_defines.json` (thiếu → remote config tắt, chỉ asset). Máy user: dùng Flutter 3.44.5 (E008), web port 5001 (E011).
@@ -116,3 +128,4 @@ Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang 
 - 2026-09-10 — phase1-step9 — user verify web "ok tốt" → ✅; Phase 1 xong — (hash ở dòng sau)
 - 2026-09-10 — phase2-step10 — đổi applicationId/namespace/MainActivity → vn.kade.kade (APK debug build OK, aapt: package vn.kade.kade); setup-google.md phần B: origin 5001, package name, SHA-1 debug, lệnh chạy từ apps/kade; kotlin.incremental=false cho android_file_picker 1.1.1 (E016); ⏸ chờ user: Android OAuth client + origin 5001 + test users — (hash ở dòng sau)
 - 2026-09-10 — phase2-step10 — commit (bước 9 ✅ + bước 10 ⏸) — b8569c6
+- 2026-09-10 — phase2-step11 — `GoogleAuth`/`GoogleSignInAuth` (google_sign_in 7.2.0: web clientId qua initialize, Android serverClientId), `AuthNotifier` (signIn/driveToken/signOut, cờ googleSignedIn), nút GIS web qua conditional import, Cài đặt → "Đồng bộ Google" (D029); FakeGoogleAuth mặc định trong test_app; 72 test pass, analyze sạch, build web + APK debug OK; ⏸ chờ user verify sign-in web + Android — (hash ở dòng sau)

@@ -1,6 +1,7 @@
 // Helper chung cho widget test: remote config giả (không HTTP), box sự kiện
-// in-memory (không IO → không cần `tester.runAsync`, tránh E009), FileIo giả
-// + app thật với router; `testTall` cho màn dài (E009).
+// in-memory (không IO → không cần `tester.runAsync`, tránh E009), FileIo giả,
+// GoogleAuth giả + app thật với router; `testTall` cho màn dài (E009).
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -15,10 +16,82 @@ import 'package:kade/data/local/user_event_repository.dart';
 import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/data/settings_provider.dart';
+import 'package:kade/data/sync/google_auth.dart';
 import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/main.dart';
 import 'package:kade/platform/file_io.dart';
+
+/// GoogleAuth giả. Android-like mặc định (`supportsAuthenticate` true):
+/// [signIn] trả [signInUser] hoặc throw [signInError]. Web-like
+/// (`supportsAuthenticate: false`): test gọi [emitSignIn] thay nút GIS.
+/// [accessToken]: có [silentToken] → trả luôn; không thì chỉ khi interactive
+/// (đếm [interactiveCalls]) hoặc throw [authorizeError].
+class FakeGoogleAuth implements GoogleAuth {
+  FakeGoogleAuth({this.supportsAuthenticate = true, this.isConfigured = true});
+
+  @override
+  final bool supportsAuthenticate;
+
+  @override
+  final bool isConfigured;
+
+  final _events = StreamController<AuthUser?>.broadcast();
+
+  /// Giá trị `restore` của lần [init] gần nhất; null = chưa init.
+  bool? initRestore;
+
+  AuthUser? current;
+  AuthUser signInUser = const AuthUser(
+    id: 'u1',
+    email: 'a@gmail.com',
+    displayName: 'Nguyễn A',
+  );
+  Object? signInError;
+  Object? authorizeError;
+  String? silentToken;
+  int interactiveCalls = 0;
+
+  @override
+  Stream<AuthUser?> get userChanges => _events.stream;
+
+  @override
+  Future<void> init({required bool restore}) async {
+    initRestore = restore;
+  }
+
+  /// Giả lập nút GIS trên web / khôi phục im lặng: đẩy sự kiện đăng nhập.
+  void emitSignIn(AuthUser user) {
+    current = user;
+    _events.add(user);
+  }
+
+  @override
+  Future<AuthUser> signIn() async {
+    final e = signInError;
+    if (e != null) throw e;
+    current = signInUser;
+    _events.add(signInUser);
+    return signInUser;
+  }
+
+  @override
+  Future<void> signOut() async {
+    current = null;
+    _events.add(null);
+  }
+
+  @override
+  Future<String?> accessToken({bool interactive = false}) async {
+    if (current == null) return null;
+    if (silentToken != null) return silentToken;
+    if (!interactive) return null;
+    final e = authorizeError;
+    if (e != null) throw e;
+    interactiveCalls++;
+    return 'tok-$interactiveCalls';
+  }
+}
 
 /// FileIo giả: `saveJson` ghi lại (tên, nội dung) vào [saved] và trả
 /// [saveResult]; `pickJson` trả [pickResult] (null = user hủy).
@@ -98,13 +171,14 @@ Future<Box<dynamic>> memorySettingsBox() async {
 
 /// Override Riverpod: [FakeRemoteConfig] với [overrides] (mặc định asset),
 /// repository sự kiện trên [userEventsBox], box settings [settingsBox] (mặc
-/// định box in-memory mới), [fileIo] (mặc định [FakeFileIo] mới) và [today]
-/// cho "Sắp tới" nếu truyền.
+/// định box in-memory mới), [fileIo] (mặc định [FakeFileIo] mới), [googleAuth]
+/// (mặc định [FakeGoogleAuth] mới) và [today] cho "Sắp tới" nếu truyền.
 Future<List<Override>> testOverrides({
   YearOverrides? overrides,
   Box<String>? userEventsBox,
   Box<dynamic>? settingsBox,
   FileIo? fileIo,
+  GoogleAuth? googleAuth,
   DateTime? today,
 }) async => [
   remoteConfigProvider.overrideWith(
@@ -117,6 +191,7 @@ Future<List<Override>> testOverrides({
     settingsBox ?? await memorySettingsBox(),
   ),
   fileIoProvider.overrideWithValue(fileIo ?? FakeFileIo()),
+  googleAuthProvider.overrideWithValue(googleAuth ?? FakeGoogleAuth()),
   if (today != null) todayProvider.overrideWithValue(today),
 ];
 
@@ -127,6 +202,7 @@ Future<Widget> testApp(
   Box<String>? userEventsBox,
   Box<dynamic>? settingsBox,
   FileIo? fileIo,
+  GoogleAuth? googleAuth,
   DateTime? today,
 }) async => ProviderScope(
   overrides: await testOverrides(
@@ -134,6 +210,7 @@ Future<Widget> testApp(
     userEventsBox: userEventsBox,
     settingsBox: settingsBox,
     fileIo: fileIo,
+    googleAuth: googleAuth,
     today: today,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),

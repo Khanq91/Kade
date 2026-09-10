@@ -122,8 +122,8 @@ Cần **1 client cho mỗi SHA-1**. Tối thiểu 2 (debug + release), 3 nếu d
    - chrome: `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
    - edge: `flutter run -d edge --web-port 5001 --dart-define-from-file=../../dart_defines.json`
    - Cốc Cốc: `$env:CHROME_EXECUTABLE = "C:\Program Files\CocCoc\Browser\Application\browser.exe"` rồi chạy lệnh chrome ở trên.
-   → Cài đặt → Đồng bộ với Google → popup chọn tài khoản → thấy scope "See, edit, create, and delete its own configuration data in your Google Drive" → Allow.
-- Android debug: cài bản debug → tương tự. Lỗi `10` / `DEVELOPER_ERROR` = SHA-1 hoặc package sai (E002).
+   → Cài đặt → mục "Đồng bộ Google" → nút Google "Tiếp tục với Google" (do GIS vẽ) → popup chọn tài khoản → hiện email → bấm "Cấp quyền Drive" → popup consent scope "See, edit, create, and delete its own configuration data in your Google Drive" → Allow → "Đã cấp quyền Google Drive". (google_sign_in 7: web tách 2 bước đăng nhập / cấp quyền, D029.)
+- Android debug: cài bản debug → Cài đặt → nút "Đồng bộ với Google" → bottom sheet chọn tài khoản → consent Drive → "Đã cấp quyền Google Drive" (một thao tác). Lỗi `clientConfigurationError` hoặc `canceled` ngay sau khi chọn tài khoản = SHA-1 hoặc package sai (E002); `serverClientId must be provided` = thiếu `KADE_WEB_CLIENT_ID`.
 - Xem file sync đã tạo chưa: không thấy được trong Drive UI (appDataFolder ẩn). Kiểm tra qua **Drive → Settings → Manage apps** → Kade → hiện dung lượng "hidden app data".
 
 ### B.6 Xóa dữ liệu test

@@ -9,6 +9,8 @@ import 'package:http/testing.dart';
 import 'package:kade/core/strings.dart';
 import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
+import 'package:kade/data/settings_provider.dart';
+import 'package:kade/data/sync/google_auth.dart';
 import 'package:kade/features/settings/settings_screen.dart';
 
 import 'test_app.dart';
@@ -20,12 +22,15 @@ import 'test_app.dart';
 void main() {
   late Directory tmp;
   late Box<String> box;
+  late Box<dynamic> settingsBox;
   final assetJson = File('assets/overrides.json').readAsStringSync();
 
   setUp(() async {
     tmp = await Directory.systemTemp.createTemp('kade_settings_');
     Hive.init(tmp.path);
     box = await Hive.openBox<String>('remote_config');
+    // Sau box file thật, vì memorySettingsBox có thể Hive.init lại (lần đầu).
+    settingsBox = await memorySettingsBox();
   });
 
   tearDown(() async {
@@ -33,8 +38,13 @@ void main() {
     await tmp.delete(recursive: true);
   });
 
+  // Mục Đồng bộ Google (bước 11) watch authProvider → cần box settings + auth giả.
   Widget app(RemoteConfigRepository repo) => ProviderScope(
-    overrides: [remoteConfigRepositoryProvider.overrideWithValue(repo)],
+    overrides: [
+      remoteConfigRepositoryProvider.overrideWithValue(repo),
+      settingsBoxProvider.overrideWithValue(settingsBox),
+      googleAuthProvider.overrideWithValue(FakeGoogleAuth()),
+    ],
     child: const MaterialApp(home: SettingsScreen()),
   );
 
@@ -75,7 +85,9 @@ void main() {
       expect(find.textContaining('05/02/2027'), findsOneWidget);
       // Env.configUrl rỗng trong test → cảnh báo + nút disabled.
       expect(find.text(Strings.noConfigUrl), findsOneWidget);
-      final button = tester.widget<FilledButton>(find.byType(FilledButton));
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, Strings.checkUpdates),
+      );
       expect(button.onPressed, isNull);
     });
   });

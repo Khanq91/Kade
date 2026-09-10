@@ -13,6 +13,7 @@ import 'data/local/user_event_repository.dart';
 import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
 import 'data/settings_provider.dart';
+import 'data/sync/google_auth.dart';
 import 'data/user_events_provider.dart';
 import 'platform/file_io.dart';
 
@@ -37,6 +38,7 @@ Future<void> main() async {
           Hive.box<dynamic>(HiveBoxes.settings),
         ),
         fileIoProvider.overrideWithValue(FilePickerFileIo()),
+        googleAuthProvider.overrideWithValue(GoogleSignInAuth()),
       ],
       child: const KadeApp(),
     ),
