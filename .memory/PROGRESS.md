@@ -164,4 +164,4 @@ Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties
 - 2026-09-10 — phase4-step18 — `build.gradle.kts` signingConfig release từ `android/key.properties` (fallback debug), `android/key.properties.example`, `.gitignore` key/jks, `setup-google.md` phần D, `docs/privacy.html` + bước copy trong workflow deploy-web, manual-test 4.4 (D037); build apk debug + appbundle release (fallback debug) + web OK; ⏸ chờ user — 584a659
 - 2026-09-10 — phase4-step18 — PROGRESS bước hiện tại 13–18 — c17e09f
 - 2026-09-10 — phase3-step15 — user chạy workflow lần đầu: job build xanh (CI test + build web OK), job deploy đỏ vì OIDC timeout (E020) → workflow thêm retry deploy-pages + timeout; user Re-run — 74e57b7
-- 2026-09-10 — phase4-step18 — user yêu cầu: `.github/workflows/release-android.yml` (tag `v*` → test → APK + AAB ký từ secret keystore base64 → GitHub Release; Run workflow → artifact), setup-google D.8 (D038) — (hash ở dòng sau)
+- 2026-09-10 — phase4-step18 — user yêu cầu: `.github/workflows/release-android.yml` (tag `v*` → test → APK + AAB ký từ secret keystore base64 → GitHub Release; Run workflow → artifact), setup-google D.8 (D038) — 19cf091
