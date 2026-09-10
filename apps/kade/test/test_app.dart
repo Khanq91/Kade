@@ -16,6 +16,7 @@ import 'package:kade/data/local/user_event_repository.dart';
 import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/data/settings_provider.dart';
+import 'package:kade/data/sync/drive_store.dart';
 import 'package:kade/data/sync/google_auth.dart';
 import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
@@ -110,6 +111,41 @@ class FakeFileIo implements FileIo {
   }
 }
 
+/// DriveStore giả: [file] là "file trên Drive"; ghi lại [calls] và [tokens];
+/// [error] → ném ở mọi lệnh (giả 401…).
+class FakeDriveStore implements DriveStore {
+  RemoteFile? file;
+  DriveException? error;
+  final calls = <String>[];
+  final tokens = <String>[];
+
+  void _check(String token, String op) {
+    tokens.add(token);
+    calls.add(op);
+    final e = error;
+    if (e != null) throw e;
+  }
+
+  @override
+  Future<RemoteFile?> find(String token) async {
+    _check(token, 'find');
+    return file;
+  }
+
+  @override
+  Future<String> create(String token, String content) async {
+    _check(token, 'create');
+    file = RemoteFile(id: 'f1', content: content);
+    return 'f1';
+  }
+
+  @override
+  Future<void> update(String token, String id, String content) async {
+    _check(token, 'update');
+    file = RemoteFile(id: id, content: content);
+  }
+}
+
 /// testWidgets với viewport 800×1600 để form/DayDetail/Settings không bị
 /// offstage (E009).
 void testTall(String description, WidgetTesterCallback callback) {
@@ -172,13 +208,15 @@ Future<Box<dynamic>> memorySettingsBox() async {
 /// Override Riverpod: [FakeRemoteConfig] với [overrides] (mặc định asset),
 /// repository sự kiện trên [userEventsBox], box settings [settingsBox] (mặc
 /// định box in-memory mới), [fileIo] (mặc định [FakeFileIo] mới), [googleAuth]
-/// (mặc định [FakeGoogleAuth] mới) và [today] cho "Sắp tới" nếu truyền.
+/// (mặc định [FakeGoogleAuth] mới), [driveStore] (mặc định [FakeDriveStore]
+/// mới) và [today] cho "Sắp tới" nếu truyền.
 Future<List<Override>> testOverrides({
   YearOverrides? overrides,
   Box<String>? userEventsBox,
   Box<dynamic>? settingsBox,
   FileIo? fileIo,
   GoogleAuth? googleAuth,
+  DriveStore? driveStore,
   DateTime? today,
 }) async => [
   remoteConfigProvider.overrideWith(
@@ -192,6 +230,7 @@ Future<List<Override>> testOverrides({
   ),
   fileIoProvider.overrideWithValue(fileIo ?? FakeFileIo()),
   googleAuthProvider.overrideWithValue(googleAuth ?? FakeGoogleAuth()),
+  driveStoreProvider.overrideWithValue(driveStore ?? FakeDriveStore()),
   if (today != null) todayProvider.overrideWithValue(today),
 ];
 
@@ -203,6 +242,7 @@ Future<Widget> testApp(
   Box<dynamic>? settingsBox,
   FileIo? fileIo,
   GoogleAuth? googleAuth,
+  DriveStore? driveStore,
   DateTime? today,
 }) async => ProviderScope(
   overrides: await testOverrides(
@@ -211,6 +251,7 @@ Future<Widget> testApp(
     settingsBox: settingsBox,
     fileIo: fileIo,
     googleAuth: googleAuth,
+    driveStore: driveStore,
     today: today,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),

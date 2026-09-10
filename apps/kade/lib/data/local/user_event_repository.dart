@@ -33,4 +33,17 @@ class UserEventRepository {
   /// Ghi nhiều sự kiện một lần (import/sync).
   Future<void> putAll(Iterable<UserEvent> events) =>
       box.putAll({for (final e in events) e.id: jsonEncode(e.toJson())});
+
+  /// Thay toàn bộ box bằng [events] (kết quả merge sync): ghi đè theo id và
+  /// xóa cứng key không còn — tombstone đã purge > 90 ngày, ngoại lệ duy nhất
+  /// của "không xóa cứng" (D007, D030).
+  Future<void> replaceAll(Iterable<UserEvent> events) async {
+    final keep = {for (final e in events) e.id};
+    final gone = [
+      for (final k in box.keys)
+        if (!keep.contains(k)) k,
+    ];
+    if (gone.isNotEmpty) await box.deleteAll(gone);
+    await putAll(events);
+  }
 }

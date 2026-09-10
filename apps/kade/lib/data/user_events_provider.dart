@@ -84,6 +84,13 @@ class UserEventsNotifier extends Notifier<List<UserEvent>> {
     await _repo.putAll([for (final e in events) e.copyWith(updatedAt: t)]);
     state = _repo.all();
   }
+
+  /// Sau sync (bước 12): ghi kết quả merge nguyên trạng (giữ `updatedAt`),
+  /// xóa cứng tombstone đã purge, đọc lại box → cache tháng/Sắp tới tính lại.
+  Future<void> replaceAll(List<UserEvent> events) async {
+    await _repo.replaceAll(events);
+    state = _repo.all();
+  }
 }
 
 /// Provider chính (kể cả tombstone — Export/Sync dùng).

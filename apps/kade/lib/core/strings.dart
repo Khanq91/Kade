@@ -202,6 +202,31 @@ abstract final class Strings {
   static String driveAuthError(String code, String? detail) =>
       '$driveFailed ($code${detail == null ? '' : ': $detail'})';
 
+  // Sync Drive (plan §3.10)
+  static const syncNow = 'Đồng bộ ngay';
+  static const syncing = 'Đang đồng bộ…';
+  static const neverSynced = 'Chưa đồng bộ lần nào';
+  static const syncDone = 'Đã đồng bộ với Google Drive';
+  static const syncNoAuth =
+      'Chưa có quyền Drive — bấm Đồng bộ ngay và cấp quyền';
+  static const syncBusy = 'Đang đồng bộ, chờ xong đã';
+  static const syncFailed = 'Đồng bộ không thành công';
+
+  /// "Đồng bộ lần cuối: 10/09/2026 16:40".
+  static String lastSync(String when) => 'Đồng bộ lần cuối: $when';
+
+  /// "Đã đồng bộ, nhận 3 thay đổi từ Drive".
+  static String syncDoneChanged(int n) =>
+      'Đã đồng bộ, nhận $n thay đổi từ Drive';
+
+  /// "File trên Drive không đọc được (…) — không ghi đè".
+  static String syncRemoteBad(String detail) =>
+      'File trên Drive không đọc được ($detail) — không ghi đè';
+
+  /// "Đồng bộ không thành công (Drive 401: Invalid Credentials)".
+  static String syncDriveError(int? status, String detail) =>
+      '$syncFailed (Drive${status == null ? '' : ' $status'}: $detail)';
+
   // Sao lưu (Export/Import JSON, plan §5.1)
   static const backupSection = 'Sao lưu';
   static const backupHint =

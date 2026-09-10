@@ -12,6 +12,7 @@ import '../../data/remote/remote_config_provider.dart';
 import '../../data/settings_provider.dart';
 import '../../data/sync/auth_provider.dart';
 import '../../data/sync/google_auth.dart';
+import '../../data/sync/sync_provider.dart';
 import '../../data/user_events_provider.dart';
 import '../../platform/file_io.dart';
 import '../../platform/sign_in_button.dart';
@@ -128,19 +129,21 @@ class _RemoteConfigSection extends ConsumerWidget {
   }
 }
 
-/// Mục "Đồng bộ Google" (plan §3.10, bước 11): đăng nhập + quyền Drive
-/// appData. Android: nút của app → `authenticate()` rồi xin quyền luôn. Web:
-/// nút GIS (`googleSignInButton`) rồi nút "Cấp quyền Drive" (popup cần thao
-/// tác user). Bước 12/13 thêm "Đồng bộ ngay" + thời điểm sync.
+/// Mục "Đồng bộ Google" (plan §3.10, bước 11–12): đăng nhập + quyền Drive
+/// appData + "Đồng bộ ngay". Android: nút của app → `authenticate()` rồi xin
+/// quyền luôn. Web: nút GIS (`googleSignInButton`); "Đồng bộ ngay" xin quyền
+/// Drive (popup) ngay trong thao tác đó nếu phiên chưa có token.
 class _SyncSection extends ConsumerWidget {
   const _SyncSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
+    final sync = ref.watch(syncProvider);
     final user = auth.user;
-    final error = auth.error;
+    final error = auth.error ?? sync.lastError;
     final notifier = ref.read(authProvider.notifier);
+    final busy = auth.busy || sync.running;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -172,24 +175,36 @@ class _SyncSection extends ConsumerWidget {
                   : Strings.driveNotGranted,
             ),
           ),
+          ListTile(
+            key: const ValueKey('sync-last'),
+            leading: const Icon(Icons.history),
+            title: Text(
+              sync.lastSyncAt == null
+                  ? Strings.neverSynced
+                  : Strings.lastSync(formatDateTime(sync.lastSyncAt!)),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                if (!auth.driveGranted)
-                  FilledButton.icon(
-                    key: const ValueKey('sync-grant'),
-                    onPressed: auth.busy
-                        ? null
-                        : () => notifier.driveToken(interactive: true),
-                    icon: const Icon(Icons.cloud_outlined),
-                    label: const Text(Strings.grantDrive),
-                  ),
+                FilledButton.icon(
+                  key: const ValueKey('sync-now'),
+                  onPressed: busy ? null : () => _syncNow(context, ref),
+                  icon: sync.running
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.sync),
+                  label: Text(sync.running ? Strings.syncing : Strings.syncNow),
+                ),
                 OutlinedButton.icon(
                   key: const ValueKey('sync-signout'),
-                  onPressed: auth.busy ? null : notifier.signOut,
+                  onPressed: busy ? null : notifier.signOut,
                   icon: const Icon(Icons.logout),
                   label: const Text(Strings.signOut),
                 ),
@@ -237,6 +252,24 @@ class _SyncSection extends ConsumerWidget {
           ),
       ],
     );
+  }
+
+  /// "Đồng bộ ngay": interactive để web xin quyền Drive ngay trong click này.
+  Future<void> _syncNow(BuildContext context, WidgetRef ref) async {
+    final r = await ref.read(syncProvider.notifier).sync(interactive: true);
+    if (!context.mounted) return;
+    final text = switch (r.outcome) {
+      SyncOutcome.synced =>
+        r.changedLocal > 0
+            ? Strings.syncDoneChanged(r.changedLocal)
+            : Strings.syncDone,
+      SyncOutcome.noAuth => Strings.syncNoAuth,
+      SyncOutcome.busy => Strings.syncBusy,
+      SyncOutcome.failed => r.error ?? Strings.syncFailed,
+    };
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(text)));
   }
 }
 

@@ -3,13 +3,20 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 2 bước 11 ⏸ — Sign-in web + Android (google_sign_in 7.2.0, D029): code + 72 test pass + build web/APK OK (commit `c0ef79d`); chờ user verify sign-in thật trên web và Android (mục đầu "Cần user làm"). Bước 10 ✅ (user xác nhận 2026-09-10 "gg cloud setup xong rồi"). User báo ok → 11 ✅ → bước 12 `sync()` + merge (ghi chú ở "Ghi chú cho bước sau").
+Phase 2 bước 12 ⏸ — `sync()` + merge (D030): code + 92 test pass (merge 4 case + sync 8 kịch bản + DriveApiStore MockClient) + analyze sạch; chờ user verify §4.8 mục 4–5 bằng 2 trình duyệt/máy (mục đầu "Cần user làm"). Bước 11 ✅ (ảnh web 2026-09-10; Android chưa báo — verify chung với bước 12). User báo ok → 12 ✅ → bước 13 trigger + debounce + 401 web (ghi chú ở "Ghi chú cho bước sau").
 
 ## Đang dở
 (không)
 
 ## Cần user làm
-- [ ] **Verify bước 11 — Sign-in web + Android** (tiêu chí §6: lấy được access token scope `drive.appdata` trên cả 2; app hiện "Đã cấp quyền Google Drive" khi có token). Tài khoản dùng phải nằm trong Test users (B.2).
+- [ ] **Verify bước 12 — sync Drive** (tiêu chí §4.8 mục 4–5: đăng nhập cùng tài khoản ở 2 nơi thấy nhau; xóa ở A → sync B → mất, không resurrect). Cần 2 "máy": A = Chrome port 5001, B = trình duyệt khác (Edge/Cốc Cốc, hoặc Chrome profile khác — cùng port 5001, cùng origin đã đăng ký) hoặc Android. Lệnh như bước 11.
+  1. A: đăng nhập → tạo 2 sự kiện (1 âm, 1 dương) → Cài đặt → "Đồng bộ ngay" → SnackBar "Đã đồng bộ với Google Drive", dòng "Đồng bộ lần cuối: …". (Web: nếu phiên chưa có quyền Drive, popup consent hiện ngay trong click này.)
+  2. B: đăng nhập cùng tài khoản → "Đồng bộ ngay" → SnackBar "Đã đồng bộ, nhận 2 thay đổi từ Drive" → Sự kiện của tôi có 2 sự kiện, ô lịch tháng/Sắp tới có nhãn.
+  3. A: xóa 1 sự kiện → "Đồng bộ ngay". B: "Đồng bộ ngay" → sự kiện đó biến mất. B: sửa tên sự kiện còn lại → "Đồng bộ ngay". A: "Đồng bộ ngay" → thấy tên mới. Bấm "Đồng bộ ngay" lần nữa khi không đổi gì → vẫn "Đã đồng bộ…" (không nhận thay đổi).
+  4. Drive web → ⚙ Settings → Manage apps → Kade → hiện "hidden app data" (file `kade_events.json` không thấy trong My Drive — đúng, appDataFolder ẩn).
+  Lỗi hay gặp: "Đồng bộ không thành công (Drive 401: …)" → token web hết hạn (1h) → bấm lại "Đồng bộ ngay" (bước 13 sẽ tự xin lại); "File trên Drive không đọc được" → Drive → Manage apps → Kade → Delete hidden app data rồi sync lại; "Drive 403 … Drive API has not been used" → B.1 chưa Enable Drive API.
+  Báo "ok" (kèm A/B là gì) hoặc dán dòng lỗi → agent sửa rồi đổi 12 sang ✅.
+- [x] **Verify bước 11 — Sign-in web + Android** → user gửi ảnh web 2026-09-10 (Cài đặt hiện tên + email + "Đã cấp quyền Google Drive") "có vẻ ổn r đó" → web đạt. **Android chưa thấy báo** → verify chung khi chạy bước 12/13 trên máy thật (mục Android bên dưới vẫn áp dụng; lỗi `clientConfigurationError`/`canceled` → E002). (Tiêu chí §6: lấy được access token scope `drive.appdata` trên cả 2; app hiện "Đã cấp quyền Google Drive" khi có token). Tài khoản dùng phải nằm trong Test users (B.2).
   **Web** (từ `apps/kade`, Flutter 3.44.5 — E008): `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
   1. Cài đặt → mục "Đồng bộ Google" có nút Google "Tiếp tục với Google" (GIS vẽ, không phải nút app). Bấm → popup chọn tài khoản → mục hiện tên + email, dòng "Chưa cấp quyền Google Drive" + nút "Cấp quyền Drive".
   2. Bấm "Cấp quyền Drive" → popup consent "See, edit, create, and delete its own configuration data in your Google Drive" → Allow → "Đã cấp quyền Google Drive (thư mục riêng của app)". ← tiêu chí bước 11 trên web.
@@ -79,8 +86,8 @@ Phase 2 bước 11 ⏸ — Sign-in web + Android (google_sign_in 7.2.0, D029): c
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
 | 10 | Google Cloud + OAuth clients (user) | ✅ |
-| 11 | Sign-in web + Android | ⏸ |
-| 12 | `sync()` + merge + test 4 case | ⬜ |
+| 11 | Sign-in web + Android | ✅ |
+| 12 | `sync()` + merge + test 4 case | ⏸ |
 | 13 | Trigger + debounce + xử lý 401 web | ⬜ |
 
 ### Phase 3 — Web release
@@ -102,7 +109,7 @@ Phase 2 bước 11 ⏸ — Sign-in web + Android (google_sign_in 7.2.0, D029): c
 - Test widget dùng `test/test_app.dart`: `await testApp('/2027/02')` (async vì mở box in-memory), `FakeRemoteConfig`, `memoryUserEventsBox()`, `FakeFileIo` (param `fileIo`, mặc định có sẵn), `testTall` (viewport 1600, cũng trong test_app.dart; màn có ListView dài bắt buộc dùng — E009). Không cần Hive file/runAsync trừ khi test chính Hive.
 - Lớp hiển thị (D026) hiện chỉ lọc "Sắp tới"; muốn áp cho lịch tháng → hỏi user, ghi DECISIONS. `todayProvider` chưa tự đổi qua nửa đêm (invalidate khi resume: bước 13/16).
 - Bước 9 xong (D027, D028): bước 12 dùng lại `SyncEnvelope.encode()/parse()` (file Drive cùng format, D004), `deviceIdProvider`, `UserEventsNotifier.importAll` (ghi đè theo id, `updatedAt = now`) — merge theo `updatedAt` làm ở tầng sync trước khi gọi putAll. `FileIo`/`fileIoProvider` ở `lib/platform/file_io.dart`; file_picker 12 API xem E015 (không dùng `withData`).
-- Bước 12: merge theo `updatedAt` (tombstone cũng là 1 bản) → `putAll`; purge tombstone > 90 ngày sau khi sync (chưa làm ở bước 7, D025). Token: `ref.read(authProvider.notifier).driveToken()` (im lặng; null → không sync) — web mỗi phiên cần 1 lần `driveToken(interactive: true)` từ nút (D029). Drive REST: `files.list?spaces=appDataFolder`, `files.create` (multipart, `parents: ['appDataFolder']`), `files/{id}?alt=media`, `files/{id}` PATCH media — dùng `http` thẳng hay `googleapis` (D003) chốt khi code. 401 → `clearAuthorizationToken` rồi xin lại (bước 13).
+- Bước 12 xong (D030): `SyncNotifier.sync({interactive})` ở `lib/data/sync/sync_provider.dart`, `DriveStore`/`DriveApiStore` (googleapis), `merge.dart`, `UserEventsNotifier.replaceAll`. Bước 13 = trigger + debounce + 401: (a) app start nếu cờ `googleSignedIn` và đã có token im lặng (Android; web thường chưa có token → bỏ qua, không popup); (b) sau `create/update/remove` debounce 5s → `sync()`; (c) `WidgetsBindingObserver` resume > 15 phút → `sync()` + `ref.invalidate(todayProvider)`; (d) sau đăng nhập/cấp quyền → `sync()`; (e) `DriveException(401)` → `GoogleSignInAuth` gọi `clearAuthorizationToken(accessToken)` rồi `driveToken(interactive)` chỉ khi từ nút; trigger nền chỉ ghi `lastError` "Phiên Google hết hạn, bấm Đồng bộ ngay". Không sync khi `SyncState.running`. Tùy chọn "Xóa dữ liệu trên Drive" (plan §3.10) làm ở bước 13 nếu còn thời gian, không bắt buộc.
 - Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
 - Test app: luôn `flutter test --timeout 90s`; widget test dùng Hive phải bọc `tester.runAsync` (E009); tile dưới viewport 600px là offstage → `ensureVisible`.
 - Chạy app: từ `apps/kade`, luôn kèm `--dart-define-from-file=../../dart_defines.json` (thiếu → remote config tắt, chỉ asset). Máy user: dùng Flutter 3.44.5 (E008), web port 5001 (E011).
@@ -130,3 +137,4 @@ Phase 2 bước 11 ⏸ — Sign-in web + Android (google_sign_in 7.2.0, D029): c
 - 2026-09-10 — phase2-step10 — commit (bước 9 ✅ + bước 10 ⏸) — b8569c6
 - 2026-09-10 — phase2-step11 — `GoogleAuth`/`GoogleSignInAuth` (google_sign_in 7.2.0: web clientId qua initialize, Android serverClientId), `AuthNotifier` (signIn/driveToken/signOut, cờ googleSignedIn), nút GIS web qua conditional import, Cài đặt → "Đồng bộ Google" (D029); FakeGoogleAuth mặc định trong test_app; 72 test pass, analyze sạch, build web + APK debug OK; ⏸ chờ user verify sign-in web + Android — (hash ở dòng sau)
 - 2026-09-10 — phase2-step11 — commit — c0ef79d
+- 2026-09-10 — phase2-step12 — `DriveStore`/`DriveApiStore` (googleapis 17, Bearer client, list/get alt=media/create/update multipart), `merge.dart` (mergeEvents/purgeTombstones/sameEvents), `SyncNotifier.sync` (find → parse → merge+purge → replaceAll → create/update → lastSyncAt), `UserEventRepository/UserEventsNotifier.replaceAll` (xóa cứng tombstone purge), Cài đặt: "Đồng bộ ngay" + "Đồng bộ lần cuối" thay "Cấp quyền Drive" (D030); 92 test pass (merge 4 case, sync 8 kịch bản, MockClient), analyze sạch, build web + APK OK; ⏸ chờ user verify §4.8 mục 4–5 — (hash ở dòng sau)
