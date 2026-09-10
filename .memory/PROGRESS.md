@@ -5,7 +5,8 @@ Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại ch�
 ## Bước hiện tại
 **Chế độ D031 (từ 2026-09-10):** session này làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
 Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar=1` + phím + PWA + cảnh báo web (D033, E018): 117 test pass, analyze sạch, build web (+wasm) + APK OK (commit `c4b0af4`); test tay: manual-test.md 3.1–3.4. Bước 13 🧪 (2.10–2.12), bước 12 🧪 (2.5–2.9).
-Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-google.md` phần C xong (D034); chờ user bật Pages + secrets + origin (mục "Cần user làm"). Đang làm tiếp: bước 16 (notification) → 17 (widget) → 18 (release keystore, ⏸ phần user).
+Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-google.md` phần C xong (D034); chờ user bật Pages + secrets + origin (mục "Cần user làm").
+Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifications` + `ReminderScheduler`, form "Nhắc trước", Cài đặt "Nhắc lễ trước"; 128 test pass, analyze sạch, build web + APK OK (commit `8274606`); test tay: manual-test.md 4.2. Đang làm tiếp: bước 17 (widget 2x2 + 4x2) → 18 (release keystore, ⏸ phần user).
 
 ## Đang dở
 (không)
@@ -103,7 +104,7 @@ Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-
 ### Phase 4 — Android release
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
-| 16 | Notification | ⬜ |
+| 16 | Notification | 🧪 |
 | 17 | Widget 2x2 + 4x2 | ⬜ |
 | 18 | Release keystore + SHA-1 + Play listing | ⬜ |
 
@@ -150,4 +151,5 @@ Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-
 - 2026-09-10 — phase2-step13 — DECISIONS D032, ERRORS E017, manual-test 2.10–2.12 — 8330df7
 - 2026-09-10 — phase3-step14 — `AppShell` rail ≥ 600 / bottom nav < 600; `MonthViewScreen` 3 layout (wide: lịch 65% + `TodayCard` hero + `UpcomingList(compact)`; medium: lịch trên Sắp tới dưới), `?lunar=1` + `shiftLunarMonth`, `/d/:date` `DialogPage` ≥ 1024 khi mở từ app (`openDay`, extra), phím ← → T (MonthView) + Esc (DayDetail), `TodayCardData`/`todayCardProvider`, cảnh báo lưu trữ web một lần (`webNoticeProvider`), manifest/index.html PWA (D033, E018); 117 test pass, analyze sạch, build web + wasm + APK OK → 🧪 — c4b0af4
 - 2026-09-10 — phase3-step14 — DECISIONS D033, ERRORS E018, manual-test 3.1–3.4 — dfc519f
-- 2026-09-10 — phase3-step15 — `.github/workflows/deploy-web.yml` (Flutter 3.44.5, build_runner, test, `flutter build web --release --base-href /<repo>/` + secrets → Pages), `setup-google.md` phần C (Pages, secrets, origin `https://khanq91.github.io`, lỗi hay gặp), manual-test 3.5 (D034); ⏸ chờ user — (hash ở dòng sau)
+- 2026-09-10 — phase3-step15 — `.github/workflows/deploy-web.yml` (Flutter 3.44.5, build_runner, test, `flutter build web --release --base-href /<repo>/` + secrets → Pages), `setup-google.md` phần C (Pages, secrets, origin `https://khanq91.github.io`, lỗi hay gặp), manual-test 3.5 (D034); ⏸ chờ user — 4ebbc57
+- 2026-09-10 — phase4-step16 — `buildReminders` pure (cá nhân `remindBeforeDays` qua `userEventsOn`, nghỉ lễ qua `eventsOn`, ngày đầu, 08:00 giờ máy, 90 ngày, FNV id), `Notifications`/`LocalNotifications` (flutter_local_notifications 22.3.0 + timezone 0.11.1, inexactAllowWhileIdle, chạm → `/d/<date>`, mở từ thông báo khi app tắt) / `NoopNotifications` web, `ReminderScheduler` (start + nghe sự kiện/cài đặt + resume, tuần tự), form "Nhắc trước" + xin quyền lúc lưu, Cài đặt "Nhắc nhở → Nhắc lễ trước" (0/1/3/7/14, ẩn web), manifest receiver + `RECEIVE_BOOT_COMPLETED`, desugaring (D035); 128 test pass, analyze sạch, build web + APK OK → 🧪 — 8274606

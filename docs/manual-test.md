@@ -62,7 +62,7 @@ Sanity ngoài: `docs/reference/README.md`.
 | # | Kiểm tra | Web | Android |
 |---|---|---|---|
 | 4.1 | Widget 2x2 + 4x2 đúng ngày; đổi giờ máy qua 0h → widget tự đổi không mở app; đổi giờ máy +30 ngày → vẫn đúng | — | ⬜ |
-| 4.2 | Giỗ 15/7 âm nhắc trước 3 ngày → notification đúng ngày dương 08:00, tap mở đúng DayDetail; xin quyền thông báo khi bật nhắc (Android 13+) | — | ⬜ |
+| 4.2 | Nhắc nhở (bước 16, D035). (a) Mở app lần đầu: KHÔNG có hộp xin quyền thông báo. (b) Sự kiện của tôi → + → "Giỗ ông", Âm lịch 15/7, "Nhắc trước" = "3 ngày trước" → Lưu → Android 13+ hiện hộp xin quyền thông báo → Cho phép. (c) Kiểm tra nhanh không chờ 3 ngày: đổi giờ máy (Cài đặt hệ thống → Ngày giờ, tắt tự động) sang 07:59 của ngày (15/7 âm − 3) rồi chờ qua 08:00 → thông báo "Giỗ ông — Còn 3 ngày · Thứ …, dd/mm/yyyy (15/7 ÂL)"; chạm → mở đúng DayDetail ngày 15/7 âm (URL `/d/<ngày dương>`). Với app đang tắt hẳn: chạm thông báo → app mở thẳng DayDetail. (d) Cài đặt → Nhắc nhở → "Nhắc lễ trước" mặc định "7 ngày trước"; chọn "Không nhắc" rồi chọn lại "3 ngày trước" → hộp xin quyền (nếu chưa cho); đổi giờ máy tới 08:00 của (Tết − 3 ngày) → thông báo "Tết Nguyên đán — Còn 3 ngày…" (chỉ 1 thông báo cho Tết 3 ngày; Giao thừa có thông báo riêng). (e) Từ chối quyền → SnackBar "Chưa được phép hiện thông báo…"; bật lại trong Cài đặt hệ thống → Ứng dụng → Kade → Thông báo. (f) Khởi động lại máy → thông báo vẫn tới (receiver BOOT_COMPLETED). (g) Kênh thông báo "Nhắc sự kiện" hiện trong Cài đặt hệ thống → Kade → Thông báo. Trả giờ máy về tự động sau khi test | — | ⬜ |
 | 4.3 | Sync 2 chiều với web (như 2.5–2.7) | ⬜ | ⬜ |
 | 4.4 | Bản release ký keystore thật đăng nhập Google được (SHA-1 release đã thêm OAuth) | — | ⬜ |
 | 4.5 | Dark mode app + widget không vỡ | ⬜ | ⬜ |
@@ -79,6 +79,9 @@ Sanity ngoài: `docs/reference/README.md`.
 | Sửa sự kiện mà "Đồng bộ lần cuối" không đổi sau 5 s | Chưa đăng nhập / web chưa bấm "Đồng bộ ngay" trong phiên này (chưa có token) → mục Đồng bộ hiện "Chưa cấp quyền Google Drive" |
 | Phím ← → T không ăn trên web | Focus đang ở ngoài lịch (thanh địa chỉ, tab khác) → click vào lưới lịch rồi bấm lại; tab Đổi ngày không có phím tắt (D033) |
 | Màn ≥ 1024 mà DayDetail vẫn trang riêng | Mở thẳng URL `/#/d/…` (F5) → đúng thiết kế; mở từ ô lịch / Sắp tới / hero mới là dialog |
+| Android: không có thông báo đúng 08:00 | Chế độ `inexactAllowWhileIdle` → hệ thống có thể trễ vài phút (Doze); pin tiết kiệm của hãng (Xiaomi/Oppo…) chặn → cho Kade chạy nền không giới hạn. Quyền thông báo phải bật (Cài đặt hệ thống → Kade → Thông báo) |
+| Android: đổi giờ máy mà thông báo không tới | Thông báo đã đặt theo mốc tuyệt đối trước khi đổi giờ; mở app lại (resume → đặt lại) rồi mới đổi giờ tới mốc mới; hoặc tạo sự kiện SAU khi đổi giờ |
+| Icon thông báo là khối trắng/xám trên status bar | Đang dùng icon launcher (chưa có icon đơn sắc); nội dung trong thanh thông báo vẫn đúng — đổi khi có logo |
 | "Drive 403 … Drive API has not been used" | Chưa Enable Drive API (B.1) |
 | "File trên Drive không đọc được" | Drive → Manage apps → Kade → Delete hidden app data → sync lại |
 | Nút Google (GIS) không hiện trên web | Client ID sai / console báo lỗi GIS → báo agent kèm log |
