@@ -1,4 +1,4 @@
-package com.kade.kade
+package vn.kade.kade
 
 import io.flutter.embedding.android.FlutterActivity
 

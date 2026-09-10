@@ -80,12 +80,14 @@ Chưa có `apps/kade` (trước Phase 1) thì chỉ cần tạo file, chưa ch�
 ### B.3 OAuth client — Web
 1. **APIs & Services → Credentials → Create credentials → OAuth client ID**.
 2. Application type: **Web application**, name `Kade Web`.
-3. **Authorized JavaScript origins** — thêm cả hai:
+3. **Authorized JavaScript origins** — thêm đủ:
    - `http://localhost:5000` (dev — khớp `flutter run -d chrome --web-port 5000`)
+   - `http://localhost:5001` (máy hiện tại port 5000 bị app khác chiếm → chạy 5001, ERRORS E011)
    - domain thật khi deploy, vd `https://kade.example.com` (thêm sau ở Phase 3 bước 15)
+   Origin phải khớp **đúng port** đang chạy, nếu không GIS báo `origin_mismatch` / popup trắng.
 4. Authorized redirect URIs: để trống (GIS popup không cần).
 5. Create → copy **Client ID** (dạng `1234-abc.apps.googleusercontent.com`).
-6. Đưa vào app qua \--dart-define=KADE_WEB_CLIENT_ID=...`. Agent chèn→Điền vào `KADE_WEB_CLIENT_ID` trong `dart_defines.json`. Agent chèn`
+6. Điền vào `KADE_WEB_CLIENT_ID` trong `dart_defines.json` (root repo, gitignored; mẫu `dart_defines.example.json`). App đọc qua `--dart-define-from-file`, không hardcode.
 
 ### B.4 OAuth client — Android
 Cần **1 client cho mỗi SHA-1**. Tối thiểu 2 (debug + release), 3 nếu dùng Play App Signing.
@@ -110,17 +112,17 @@ Cần **1 client cho mỗi SHA-1**. Tối thiểu 2 (debug + release), 3 nếu d
 3. Nếu dùng Play App Signing: Play Console → app → **Setup → App signing** → copy SHA-1 của *App signing key certificate*.
 4. Với mỗi SHA-1: **Create credentials → OAuth client ID → Android**:
    - Name: `Kade Android debug` / `release` / `play`
-   - Package name: `applicationId` đã chốt (xem PROGRESS "Cần user làm")
-   - SHA-1: dán vào
+   - Package name: `vn.kade.kade` (đã chốt D001; `applicationId` + `namespace` trong `apps/kade/android/app/build.gradle.kts`, đổi ở Phase 2 bước 10)
+   - SHA-1: dán vào. Máy hiện tại (debug.keystore tạo 2026-08-18) agent đã đọc:
+     `54:F9:E3:8D:28:67:96:BA:E0:80:DC:B1:06:1E:6C:51:CA:35:1C:14`
 5. Create. **Không cần copy Client ID Android vào code** — `google_sign_in` trên Android tự khớp theo package + SHA-1.
 
 ### B.5 Kiểm tra nhanh
-- Web: 
-   - chrome: `flutter run -d chrome --web-port 5000 --dart-define-from-file=dart_defines.json` 
-   - edge: `flutter run -d edge --web-port 5000 --dart-define-from-file=dart_defines.jsonn`
-   - Coccoc: `$env:CHROME_EXECUTABLE = "C:\Program Files\CocCoc\Browser\Application\browser.exe"
-flutter run -d chrome --web-port 5000 --dart-define-from-file=dart_defines.json`
-   → Settings → Đồng bộ với Google → popup chọn tài khoản → thấy scope "See, edit, create, and delete its own configuration data in your Google Drive" → Allow.
+- Web (chạy từ `apps/kade`, Flutter 3.44.5 — E008; port phải nằm trong Authorized JavaScript origins ở B.3):
+   - chrome: `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
+   - edge: `flutter run -d edge --web-port 5001 --dart-define-from-file=../../dart_defines.json`
+   - Cốc Cốc: `$env:CHROME_EXECUTABLE = "C:\Program Files\CocCoc\Browser\Application\browser.exe"` rồi chạy lệnh chrome ở trên.
+   → Cài đặt → Đồng bộ với Google → popup chọn tài khoản → thấy scope "See, edit, create, and delete its own configuration data in your Google Drive" → Allow.
 - Android debug: cài bản debug → tương tự. Lỗi `10` / `DEVELOPER_ERROR` = SHA-1 hoặc package sai (E002).
 - Xem file sync đã tạo chưa: không thấy được trong Drive UI (appDataFolder ẩn). Kiểm tra qua **Drive → Settings → Manage apps** → Kade → hiện dung lượng "hidden app data".
 

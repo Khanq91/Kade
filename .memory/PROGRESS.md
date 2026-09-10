@@ -3,13 +3,13 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 bước 9 ⏸ — Export/Import JSON: code xong, 63 test pass, `flutter analyze` sạch, `flutter build web` OK; chờ user verify trên web thật (mục đầu "Cần user làm"). User báo ok → đổi 9 sang ✅ → Phase 1 xong. Tiếp: Phase 2 bước 10 là việc user (Google Cloud + OAuth clients, `docs/setup-google.md` phần B); template prompt bước 11+ ở `docs/prompts/phase1.md`.
+Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang ở Phase 2 bước 10 — Google Cloud + OAuth clients (việc user, `docs/setup-google.md` phần B); agent đã đổi `applicationId` → `vn.kade.kade`, cập nhật hướng dẫn, ghi checklist ở "Cần user làm". Bước 11 (Sign-in web + Android) chỉ bắt đầu khi user báo xong bước 10; template prompt ở `docs/prompts/phase1.md`.
 
 ## Đang dở
 (không)
 
 ## Cần user làm
-- [ ] **Verify bước 9 trên web** (Export/Import, tiêu chí §6: export → xóa hết → import → giống hệt). Từ `apps/kade` (Flutter 3.44.5 — E008; port 5001 — E011):
+- [x] **Verify bước 9 trên web** → user xác nhận 2026-09-10 "ok tốt". (Export/Import, tiêu chí §6: export → xóa hết → import → giống hệt). Từ `apps/kade` (Flutter 3.44.5 — E008; port 5001 — E011):
   `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
   1. Có sẵn vài sự kiện cá nhân (nếu chưa: Cài đặt → Sự kiện của tôi → + tạo 2–3 cái, có 1 âm lịch, 1 cái ghi chú).
   2. Cài đặt → mục "Sao lưu" → "Xuất file JSON" → trình duyệt tải `kade_events_YYYY-MM-DD.json`, SnackBar "Đã xuất N sự kiện" (N = số đang có, không tính đã xóa). Mở file thấy `schema: 1`, `exportedAt`, `deviceId`, `events` (sự kiện đã xóa vẫn nằm trong file với `deletedAt` — đúng thiết kế D025).
@@ -26,9 +26,14 @@ Phase 1 bước 9 ⏸ — Export/Import JSON: code xong, 63 test pass, `flutter 
   4. Tab Đổi ngày: chọn ngày dương → âm + can chi; nhập 1/1/2027 → "Thứ Bảy, 06/02/2027"; 1/5/2027 tick nhuận → "Năm 2027 không có tháng 5 nhuận".
   5. Tiêu đề "Tháng 2/2027" → picker tháng dương; "Tháng âm" → picker âm (năm nhuận có chip "X nhuận").
   Báo "ok" hoặc chỗ sai → agent sửa rồi đổi bước 6 sang ✅.
-- [ ] Chốt Android `applicationId` (T đã chốt (Project chưa giống thì sửa cho thống nhất) `vn.kade.kade`) — cần trước Phase 2 bước 10 (project hiện `com.kade.kade`, đổi khi làm bước 10)
+- [x] Chốt Android `applicationId` `vn.kade.kade` (user chốt) → agent đã đổi `namespace` + `applicationId` trong `apps/kade/android/app/build.gradle.kts` và `MainActivity.kt` sang `vn/kade/kade` (bước 10, 2026-09-10)
 - [x] `docs/setup-google.md` phần A: deploy Apps Script → URL đã có trong `dart_defines.json` (gitignored) — agent đã đọc, dùng qua `--dart-define-from-file`
-- [ ] `docs/setup-google.md` phần B: Google Cloud project + OAuth clients — cần trước Phase 2 bước 10 (`KADE_WEB_CLIENT_ID` đã có trong dart_defines.json, chưa dùng). Origin web: thêm cả `http://localhost:5001` vì port 5000 bị app khác chiếm (E011)
+- [ ] **Bước 10 — Google Cloud + OAuth clients** (`docs/setup-google.md` phần B). `dart_defines.json` đã có `KADE_WEB_CLIENT_ID` (72 ký tự, đúng dạng) → web client có vẻ đã tạo; cần xác nhận/bổ sung:
+  1. B.1: project Kade có **Google Drive API** đã Enable.
+  2. B.2: consent screen External, scope `drive.appdata`, **Test users** có Gmail sẽ dùng test (còn Testing → chỉ tài khoản này đăng nhập được).
+  3. B.3: web client `Kade Web` → Authorized JavaScript origins có **cả** `http://localhost:5000` và `http://localhost:5001` (E011). Client ID trong `dart_defines.json` đúng client này.
+  4. B.4: tạo OAuth client **Android** `Kade Android debug`: package `vn.kade.kade`, SHA-1 debug máy này `54:F9:E3:8D:28:67:96:BA:E0:80:DC:B1:06:1E:6C:51:CA:35:1C:14` (agent đọc từ `%USERPROFILE%\.android\debug.keystore`; nếu build Android trên máy khác thì lấy SHA-1 máy đó). Không cần copy Client ID Android vào code. Release/Play: Phase 4 bước 18.
+  Xong → báo "xong bước 10" → agent đổi 10 sang ✅, làm bước 11 (Sign-in web + Android; verify: access token có scope drive.appdata trên cả 2).
 - [x] Trả lời D006 → giữ Ngày của Mẹ/Cha (D019) — `f2ca73a`
 - [ ] Trả lời D009 (license reference, commercial?) — cần trước Phase 3
 - [x] Trả lời D013 → user chốt sửa (D014), đã patch + sinh lại fixture — `92b7a6d`
@@ -56,12 +61,12 @@ Phase 1 bước 9 ⏸ — Export/Import JSON: code xong, 63 test pass, `flutter 
 | 6 | MonthView + DayDetail + Converter | ✅ |
 | 7 | UserEvent CRUD + tombstone + Hive | ✅ |
 | 8 | Upcoming | ✅ |
-| 9 | Export/Import JSON | ⏸ |
+| 9 | Export/Import JSON | ✅ |
 
 ### Phase 2 — Sync
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
-| 10 | Google Cloud + OAuth clients (user) | ⬜ |
+| 10 | Google Cloud + OAuth clients (user) | ⏸ |
 | 11 | Sign-in web + Android | ⬜ |
 | 12 | `sync()` + merge + test 4 case | ⬜ |
 | 13 | Trigger + debounce + xử lý 401 web | ⬜ |
@@ -108,3 +113,5 @@ Phase 1 bước 9 ⏸ — Export/Import JSON: code xong, 63 test pass, `flutter 
 - 2026-09-10 — phase1-step8 — `EventLayer` + `settingsBoxProvider`/`layersProvider` (box settings), `todayProvider`, `upcomingProvider` (60 ngày qua cache tháng, nhiều ngày 1 dòng, đang diễn ra ở Hôm nay), `UpcomingScreen` 4 chip + gom theo ngày, tab "Sắp tới" vị trí 2 (D026); 55 test pass (Tết 06/02/2027 còn 36 ngày, Tết 2028 từ 01/12/2027, cá nhân âm 1/1 năm nay/năm sau, lớp lưu/đọc lại), build web OK → ✅ — 1f471ca
 - 2026-09-10 — phase1-step9 — `SyncEnvelope` freezed/json + `parse` lỗi tiếng Việt, `deviceIdProvider`, `FileIo`/`FilePickerFileIo` (file_picker 12.2.0, E015), `UserEventsNotifier.importAll` (D027, D028), Cài đặt → "Sao lưu" Xuất/Nhập + dialog xác nhận; `testTall`/`FakeFileIo` vào test_app; 2 test cũ Settings sang `testTall` (E009); 63 test pass, analyze sạch, build web OK; ⏸ chờ user verify web — (hash ở dòng sau)
 - 2026-09-10 — phase1-step9 — commit code + .memory (D027, D028, E015) — 4047362
+- 2026-09-10 — phase1-step9 — user verify web "ok tốt" → ✅; Phase 1 xong — (hash ở dòng sau)
+- 2026-09-10 — phase2-step10 — đổi applicationId/namespace/MainActivity → vn.kade.kade (APK debug build OK, aapt: package vn.kade.kade); setup-google.md phần B: origin 5001, package name, SHA-1 debug, lệnh chạy từ apps/kade; kotlin.incremental=false cho android_file_picker 1.1.1 (E016); ⏸ chờ user: Android OAuth client + origin 5001 + test users — (hash ở dòng sau)
