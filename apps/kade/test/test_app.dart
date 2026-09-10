@@ -3,10 +3,10 @@
 // GoogleAuth giả + app thật với router; `testTall` cho màn dài (E009).
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:calendar_data/calendar_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +18,7 @@ import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/data/settings_provider.dart';
 import 'package:kade/data/sync/drive_store.dart';
 import 'package:kade/data/sync/google_auth.dart';
+import 'package:kade/data/sync/sync_trigger.dart';
 import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/main.dart';
@@ -26,8 +27,11 @@ import 'package:kade/platform/file_io.dart';
 /// GoogleAuth giả. Android-like mặc định (`supportsAuthenticate` true):
 /// [signIn] trả [signInUser] hoặc throw [signInError]. Web-like
 /// (`supportsAuthenticate: false`): test gọi [emitSignIn] thay nút GIS.
-/// [accessToken]: có [silentToken] → trả luôn; không thì chỉ khi interactive
-/// (đếm [interactiveCalls]) hoặc throw [authorizeError].
+/// [accessToken]: có [silentToken] → trả luôn; đã cấp tương tác trước đó →
+/// trả lại token đó (như cache thật); không thì chỉ khi interactive (đếm
+/// [interactiveCalls]) hoặc throw [authorizeError]. [clearToken] ghi vào
+/// [clearedTokens], bỏ token đó; sau đó im lặng trả [tokenAfterClear] (giả
+/// Android tự làm mới) hoặc null (web: phải hỏi lại).
 class FakeGoogleAuth implements GoogleAuth {
   FakeGoogleAuth({this.supportsAuthenticate = true, this.isConfigured = true});
 
@@ -51,7 +55,10 @@ class FakeGoogleAuth implements GoogleAuth {
   Object? signInError;
   Object? authorizeError;
   String? silentToken;
+  String? tokenAfterClear;
   int interactiveCalls = 0;
+  final clearedTokens = <String>[];
+  String? _granted;
 
   @override
   Stream<AuthUser?> get userChanges => _events.stream;
@@ -79,6 +86,7 @@ class FakeGoogleAuth implements GoogleAuth {
   @override
   Future<void> signOut() async {
     current = null;
+    _granted = null;
     _events.add(null);
   }
 
@@ -86,11 +94,19 @@ class FakeGoogleAuth implements GoogleAuth {
   Future<String?> accessToken({bool interactive = false}) async {
     if (current == null) return null;
     if (silentToken != null) return silentToken;
+    if (_granted != null) return _granted;
     if (!interactive) return null;
     final e = authorizeError;
     if (e != null) throw e;
     interactiveCalls++;
-    return 'tok-$interactiveCalls';
+    return _granted = 'tok-$interactiveCalls';
+  }
+
+  @override
+  Future<void> clearToken(String token) async {
+    clearedTokens.add(token);
+    if (silentToken == token) silentToken = tokenAfterClear;
+    if (_granted == token) _granted = null;
   }
 }
 
@@ -112,10 +128,11 @@ class FakeFileIo implements FileIo {
 }
 
 /// DriveStore giả: [file] là "file trên Drive"; ghi lại [calls] và [tokens];
-/// [error] → ném ở mọi lệnh (giả 401…).
+/// [error] → ném ở mọi lệnh; token trong [badTokens] → 401 (token hết hạn).
 class FakeDriveStore implements DriveStore {
   RemoteFile? file;
   DriveException? error;
+  final badTokens = <String>{};
   final calls = <String>[];
   final tokens = <String>[];
 
@@ -124,6 +141,9 @@ class FakeDriveStore implements DriveStore {
     calls.add(op);
     final e = error;
     if (e != null) throw e;
+    if (badTokens.contains(token)) {
+      throw DriveException(401, 'Invalid Credentials');
+    }
   }
 
   @override
@@ -143,6 +163,12 @@ class FakeDriveStore implements DriveStore {
   Future<void> update(String token, String id, String content) async {
     _check(token, 'update');
     file = RemoteFile(id: id, content: content);
+  }
+
+  @override
+  Future<void> delete(String token, String id) async {
+    _check(token, 'delete');
+    file = null;
   }
 }
 
@@ -209,7 +235,7 @@ Future<Box<dynamic>> memorySettingsBox() async {
 /// repository sự kiện trên [userEventsBox], box settings [settingsBox] (mặc
 /// định box in-memory mới), [fileIo] (mặc định [FakeFileIo] mới), [googleAuth]
 /// (mặc định [FakeGoogleAuth] mới), [driveStore] (mặc định [FakeDriveStore]
-/// mới) và [today] cho "Sắp tới" nếu truyền.
+/// mới), [today] cho "Sắp tới" và [clock] cho trigger sync nếu truyền.
 Future<List<Override>> testOverrides({
   YearOverrides? overrides,
   Box<String>? userEventsBox,
@@ -218,6 +244,7 @@ Future<List<Override>> testOverrides({
   GoogleAuth? googleAuth,
   DriveStore? driveStore,
   DateTime? today,
+  DateTime Function()? clock,
 }) async => [
   remoteConfigProvider.overrideWith(
     () => FakeRemoteConfig(overrides ?? assetOverrides()),
@@ -232,6 +259,7 @@ Future<List<Override>> testOverrides({
   googleAuthProvider.overrideWithValue(googleAuth ?? FakeGoogleAuth()),
   driveStoreProvider.overrideWithValue(driveStore ?? FakeDriveStore()),
   if (today != null) todayProvider.overrideWithValue(today),
+  if (clock != null) clockProvider.overrideWithValue(clock),
 ];
 
 /// App thật (router + locale vi) mở tại [initialLocation].
@@ -244,6 +272,7 @@ Future<Widget> testApp(
   GoogleAuth? googleAuth,
   DriveStore? driveStore,
   DateTime? today,
+  DateTime Function()? clock,
 }) async => ProviderScope(
   overrides: await testOverrides(
     overrides: overrides,
@@ -253,6 +282,16 @@ Future<Widget> testApp(
     googleAuth: googleAuth,
     driveStore: driveStore,
     today: today,
+    clock: clock,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),
 );
+
+/// Giả lập nền tảng báo đổi trạng thái vòng đời (paused/resumed…) qua kênh
+/// `flutter/lifecycle` — như Flutter thật, không gọi API @protected.
+Future<void> sendLifecycle(WidgetTester tester, AppLifecycleState state) =>
+    tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      SystemChannels.lifecycle.name,
+      const StringCodec().encodeMessage('$state'),
+      (_) {},
+    );

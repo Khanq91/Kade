@@ -14,6 +14,7 @@ import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
 import 'data/settings_provider.dart';
 import 'data/sync/google_auth.dart';
+import 'data/sync/sync_trigger.dart';
 import 'data/user_events_provider.dart';
 import 'platform/file_io.dart';
 
@@ -54,13 +55,55 @@ class KadeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: Strings.appName,
-      theme: ThemeData(colorSchemeSeed: Colors.red, useMaterial3: true),
-      routerConfig: router ?? appRouter,
-      locale: const Locale('vi'),
-      supportedLocales: const [Locale('vi')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+    return AppLifecycle(
+      child: MaterialApp.router(
+        title: Strings.appName,
+        theme: ThemeData(colorSchemeSeed: Colors.red, useMaterial3: true),
+        routerConfig: router ?? appRouter,
+        locale: const Locale('vi'),
+        supportedLocales: const [Locale('vi')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      ),
     );
   }
+}
+
+/// Nối vòng đời app với [SyncTrigger] (bước 13): tạo trigger lúc start (từ đó
+/// nó tự nghe đăng nhập + sự kiện), báo pause/resume.
+class AppLifecycle extends ConsumerStatefulWidget {
+  const AppLifecycle({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<AppLifecycle> createState() => _AppLifecycleState();
+}
+
+class _AppLifecycleState extends ConsumerState<AppLifecycle>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    ref.read(syncTriggerProvider);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final trigger = ref.read(syncTriggerProvider);
+    if (state == AppLifecycleState.resumed) {
+      trigger.onResume();
+    } else {
+      trigger.onPause();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

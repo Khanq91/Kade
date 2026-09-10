@@ -43,6 +43,9 @@ abstract class DriveStore {
 
   /// Ghi đè nội dung file [id].
   Future<void> update(String token, String id, String content);
+
+  /// Xóa file [id] ("Xóa dữ liệu trên Drive", plan §3.10).
+  Future<void> delete(String token, String id);
 }
 
 /// Bản thật: Drive REST v3 qua package googleapis, header `Authorization`.
@@ -105,6 +108,10 @@ class DriveApiStore implements DriveStore {
           $fields: 'id',
         );
       });
+
+  @override
+  Future<void> delete(String token, String id) =>
+      _guard(() => _api(token).files.delete(id));
 
   static drive.Media _media(String content) {
     final bytes = utf8.encode(content);

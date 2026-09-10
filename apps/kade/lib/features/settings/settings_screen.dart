@@ -208,6 +208,12 @@ class _SyncSection extends ConsumerWidget {
                   icon: const Icon(Icons.logout),
                   label: const Text(Strings.signOut),
                 ),
+                TextButton.icon(
+                  key: const ValueKey('sync-delete-remote'),
+                  onPressed: busy ? null : () => _deleteRemote(context, ref),
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text(Strings.deleteRemote),
+                ),
               ],
             ),
           ),
@@ -270,6 +276,35 @@ class _SyncSection extends ConsumerWidget {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  /// "Xóa dữ liệu trên Drive" (plan §3.10): xác nhận → xóa file → đăng xuất.
+  Future<void> _deleteRemote(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(Strings.deleteRemoteTitle),
+        content: const Text(Strings.deleteRemoteBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text(Strings.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(Strings.delete),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    final error = await ref.read(syncProvider.notifier).deleteRemote();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(error ?? Strings.deleteRemoteDone)),
+      );
   }
 }
 

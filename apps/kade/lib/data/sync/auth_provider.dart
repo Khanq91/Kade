@@ -123,6 +123,13 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  /// Drive trả 401 với [token] (bước 13): bỏ khỏi cache, `driveGranted` về
+  /// false tới khi [driveToken] lấy được token mới.
+  Future<void> clearToken(String token) async {
+    await _auth.clearToken(token);
+    state = AuthState(user: state.user);
+  }
+
   /// Đăng xuất: giữ dữ liệu local, xóa cờ khôi phục.
   Future<void> signOut() async {
     await _auth.signOut();

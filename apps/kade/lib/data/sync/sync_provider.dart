@@ -1,6 +1,7 @@
 // sync() với Google Drive appDataFolder (plan §3.10, D007): tải file → merge
 // theo updatedAt → ghi Hive → upload nếu đổi → lưu lastSyncAt. Trigger tự động
-// (start, debounce sau sửa, resume) và xử lý 401 trên web làm ở bước 13.
+// ở `sync_trigger.dart` (bước 13). 401 → bỏ token khỏi cache, xin lại một lần
+// (im lặng; có popup chỉ khi [interactive]) rồi thử lại.
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -63,64 +64,117 @@ class SyncNotifier extends Notifier<SyncState> {
     if (state.running) {
       return const SyncResult(SyncOutcome.busy, error: Strings.syncBusy);
     }
-    final token = await ref
-        .read(authProvider.notifier)
-        .driveToken(interactive: interactive);
-    if (token == null) {
-      return const SyncResult(SyncOutcome.noAuth, error: Strings.syncNoAuth);
-    }
-    state = SyncState(running: true, lastSyncAt: state.lastSyncAt);
+    // `running` từ trước khi xin token: trigger nghe authProvider đổi trong
+    // lúc xin quyền sẽ thấy busy thay vì chạy chồng.
+    final before = state;
+    state = SyncState(
+      running: true,
+      lastSyncAt: before.lastSyncAt,
+      lastError: before.lastError,
+    );
+    final auth = ref.read(authProvider.notifier);
     try {
-      final store = ref.read(driveStoreProvider);
-      final remote = await store.find(token);
-      var remoteEvents = const <UserEvent>[];
-      if (remote != null) {
-        switch (SyncEnvelope.parse(remote.content)) {
-          case EnvelopeOk(:final envelope):
-            remoteEvents = envelope.events;
-          case EnvelopeError(:final message):
-            // Không ghi đè file lạ/hỏng — user tự xử lý (xóa dữ liệu app trên Drive).
-            return _fail(Strings.syncRemoteBad(message));
-        }
+      final token = await auth.driveToken(interactive: interactive);
+      if (token == null) {
+        state = SyncState(
+          lastSyncAt: before.lastSyncAt,
+          lastError: before.lastError,
+        );
+        return const SyncResult(SyncOutcome.noAuth, error: Strings.syncNoAuth);
       }
-
-      final local = ref.read(userEventRepositoryProvider).all();
+      state = SyncState(running: true, lastSyncAt: before.lastSyncAt);
       final t = now ?? DateTime.now().toUtc();
-      final merged = purgeTombstones(mergeEvents(local, remoteEvents), t);
-
-      var changed = 0;
-      if (!sameEvents(merged, local)) {
-        final before = {for (final e in local) e.id: e};
-        changed = merged.where((e) => before[e.id] != e).length;
-        await ref.read(userEventsProvider.notifier).replaceAll(merged);
+      try {
+        return await _run(token, t);
+      } on DriveException catch (e) {
+        if (e.status != 401) rethrow;
+        // Token hết hạn / bị thu hồi: bỏ cache, lấy token mới (Android tự làm
+        // mới im lặng; web chỉ có khi từ nút) rồi thử lại đúng một lần.
+        await auth.clearToken(token);
+        final fresh = await auth.driveToken(interactive: interactive);
+        if (fresh == null) return _fail(Strings.syncSessionExpired);
+        return await _run(fresh, t);
       }
-
-      var uploaded = false;
-      if (remote == null || !sameEvents(merged, remoteEvents)) {
-        final content = SyncEnvelope(
-          exportedAt: t,
-          deviceId: ref.read(deviceIdProvider),
-          events: merged,
-        ).encode();
-        if (remote == null) {
-          await store.create(token, content);
-        } else {
-          await store.update(token, remote.id, content);
-        }
-        uploaded = true;
-      }
-
-      await ref.read(settingsBoxProvider).put(lastSyncKey, t.toIso8601String());
-      state = SyncState(lastSyncAt: t);
-      return SyncResult(
-        SyncOutcome.synced,
-        changedLocal: changed,
-        uploaded: uploaded,
-      );
     } on DriveException catch (e) {
       return _fail(Strings.syncDriveError(e.status, e.message));
     } catch (e) {
       return _fail('${Strings.syncFailed} ($e)');
+    }
+  }
+
+  Future<SyncResult> _run(String token, DateTime t) async {
+    final store = ref.read(driveStoreProvider);
+    final remote = await store.find(token);
+    var remoteEvents = const <UserEvent>[];
+    if (remote != null) {
+      switch (SyncEnvelope.parse(remote.content)) {
+        case EnvelopeOk(:final envelope):
+          remoteEvents = envelope.events;
+        case EnvelopeError(:final message):
+          // Không ghi đè file lạ/hỏng — user tự xử lý (xóa dữ liệu app trên Drive).
+          return _fail(Strings.syncRemoteBad(message));
+      }
+    }
+
+    final local = ref.read(userEventRepositoryProvider).all();
+    final merged = purgeTombstones(mergeEvents(local, remoteEvents), t);
+
+    var changed = 0;
+    if (!sameEvents(merged, local)) {
+      final before = {for (final e in local) e.id: e};
+      changed = merged.where((e) => before[e.id] != e).length;
+      await ref.read(userEventsProvider.notifier).replaceAll(merged);
+    }
+
+    var uploaded = false;
+    if (remote == null || !sameEvents(merged, remoteEvents)) {
+      final content = SyncEnvelope(
+        exportedAt: t,
+        deviceId: ref.read(deviceIdProvider),
+        events: merged,
+      ).encode();
+      if (remote == null) {
+        await store.create(token, content);
+      } else {
+        await store.update(token, remote.id, content);
+      }
+      uploaded = true;
+    }
+
+    await ref.read(settingsBoxProvider).put(lastSyncKey, t.toIso8601String());
+    state = SyncState(lastSyncAt: t);
+    return SyncResult(
+      SyncOutcome.synced,
+      changedLocal: changed,
+      uploaded: uploaded,
+    );
+  }
+
+  /// "Xóa dữ liệu trên Drive" (plan §3.10): xóa file sync rồi đăng xuất; dữ
+  /// liệu local giữ nguyên. Từ nút → có thể popup xin quyền. Trả thông báo
+  /// lỗi, `null` = xong.
+  Future<String?> deleteRemote() async {
+    if (state.running) return Strings.syncBusy;
+    final before = state;
+    state = SyncState(running: true, lastSyncAt: before.lastSyncAt);
+    final auth = ref.read(authProvider.notifier);
+    try {
+      final token = await auth.driveToken(interactive: true);
+      if (token == null) {
+        state = SyncState(lastSyncAt: before.lastSyncAt);
+        return Strings.syncNoAuth;
+      }
+      final store = ref.read(driveStoreProvider);
+      final remote = await store.find(token);
+      if (remote != null) await store.delete(token, remote.id);
+      await ref.read(settingsBoxProvider).delete(lastSyncKey);
+      state = const SyncState();
+      await auth.signOut();
+      return null;
+    } on DriveException catch (e) {
+      return _fail(Strings.syncDriveError(e.status, e.message)).error;
+    } catch (e) {
+      return _fail('${Strings.syncFailed} ($e)').error;
     }
   }
 

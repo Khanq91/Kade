@@ -65,6 +65,10 @@ abstract class GoogleAuth {
   /// [interactive] → hỏi quyền (popup web / consent Android). `null` = chưa
   /// đăng nhập hoặc chưa cấp quyền (khi không interactive).
   Future<String?> accessToken({bool interactive = false});
+
+  /// Bỏ [token] khỏi cache sau khi Drive trả 401 (hết hạn / bị thu hồi); gọi
+  /// [accessToken] lại để lấy token mới (bước 13).
+  Future<void> clearToken(String token);
 }
 
 /// Bản thật trên google_sign_in 7.2 (web: google_sign_in_web 1.1 — GIS;
@@ -152,6 +156,15 @@ class GoogleSignInAuth implements GoogleAuth {
     if (!interactive) return null;
     final granted = await client.authorizeScopes(const [driveAppDataScope]);
     return granted.accessToken;
+  }
+
+  @override
+  Future<void> clearToken(String token) async {
+    final account = _current;
+    if (account == null) return;
+    await account.authorizationClient.clearAuthorizationToken(
+      accessToken: token,
+    );
   }
 }
 

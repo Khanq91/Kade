@@ -211,6 +211,12 @@ abstract final class Strings {
       'Chưa có quyền Drive — bấm Đồng bộ ngay và cấp quyền';
   static const syncBusy = 'Đang đồng bộ, chờ xong đã';
   static const syncFailed = 'Đồng bộ không thành công';
+  static const syncSessionExpired = 'Phiên Google hết hạn — bấm Đồng bộ ngay';
+  static const deleteRemote = 'Xóa dữ liệu trên Drive';
+  static const deleteRemoteTitle = 'Xóa dữ liệu trên Drive?';
+  static const deleteRemoteBody =
+      'Xóa file đồng bộ trong thư mục riêng của app trên Google Drive rồi đăng xuất. Sự kiện trên máy này vẫn giữ nguyên.';
+  static const deleteRemoteDone = 'Đã xóa dữ liệu trên Drive và đăng xuất';
 
   /// "Đồng bộ lần cuối: 10/09/2026 16:40".
   static String lastSync(String when) => 'Đồng bộ lần cuối: $when';
