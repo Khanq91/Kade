@@ -34,7 +34,11 @@ class NthWeekday {
   }
 }
 
-/// Sự kiện app (read-only), plan §2.2 + `nthWeekday` (D006).
+/// Sự kiện app (read-only), plan §2.2 + `nthWeekday` (D006) + `offsetDays` (D021).
+///
+/// [day]/[month] là NGÀY NEO. Sự kiện chiếm các ngày
+/// `neo + offsetDays … neo + offsetDays + durationDays − 1`.
+/// Ví dụ Giao thừa: neo 1/1 âm, `offsetDays: -1` → ngày cuối tháng Chạp (29 hoặc 30).
 class Event {
   /// [day] bị bỏ qua khi có [nthWeekday]; [nthWeekday] chỉ hợp lệ với lịch dương.
   const Event({
@@ -45,6 +49,7 @@ class Event {
     required this.month,
     this.day = 0,
     this.durationDays = 1,
+    this.offsetDays = 0,
     this.description,
     this.nthWeekday,
   }) : assert(nthWeekday == null || type == CalendarType.solar),
@@ -71,6 +76,9 @@ class Event {
 
   /// Số ngày kéo dài, mặc định 1 (Tết = 3).
   final int durationDays;
+
+  /// Ngày bắt đầu lệch bao nhiêu ngày so với ngày neo (âm = trước). Mặc định 0.
+  final int offsetDays;
 
   /// Ghi chú ngắn, tùy chọn.
   final String? description;

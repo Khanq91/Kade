@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:calendar_data/calendar_data.dart';
 import 'package:test/test.dart';
 
-/// Asset fallback ở root repo (chuyển vào apps/kade khi làm bước 5/6).
-const assetPath = '../../assets/overrides.json';
+/// Asset fallback của app (Flutter chỉ bundle asset trong thư mục project, D020).
+const assetPath = '../../apps/kade/assets/overrides.json';
 
 void main() {
   test('parse asset overrides.json (fallback)', () {

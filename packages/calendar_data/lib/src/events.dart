@@ -20,6 +20,16 @@ const List<Event> vnHolidays = [
     description: 'Năm mới',
   ),
   Event(
+    id: 'giao-thua',
+    title: 'Giao thừa',
+    kind: EventKind.vnHoliday,
+    type: CalendarType.lunar,
+    month: 1,
+    day: 1,
+    offsetDays: -1,
+    description: 'Ngày cuối năm âm (29 hoặc 30 tháng Chạp), trước mùng 1 Tết',
+  ),
+  Event(
     id: 'tet',
     title: 'Tết Nguyên đán',
     kind: EventKind.vnHoliday,
@@ -27,7 +37,8 @@ const List<Event> vnHolidays = [
     month: 1,
     day: 1,
     durationDays: 3,
-    description: 'Mùng 1–3; ngày 30 Tết và nghỉ thêm theo lịch nghỉ từng năm',
+    description:
+        'Mùng 1–3; nghỉ thêm (mùng 4–5, trước Giao thừa) theo lịch từng năm',
   ),
   Event(
     id: 'gio-to',

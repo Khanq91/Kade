@@ -63,11 +63,25 @@ void main() {
       expect(vnHolidays.first.day, 1);
     });
 
-    test('Tết kéo dài 3 ngày, các sự kiện khác 1 ngày', () {
-      for (final e in allEvents) {
-        expect(e.durationDays, e.id == 'tet' ? 3 : 1, reason: e.id);
-      }
-    });
+    test(
+      'Tết kéo dài 3 ngày, các sự kiện khác 1 ngày; chỉ Giao thừa lệch −1',
+      () {
+        for (final e in allEvents) {
+          expect(e.durationDays, e.id == 'tet' ? 3 : 1, reason: e.id);
+          expect(e.offsetDays, e.id == 'giao-thua' ? -1 : 0, reason: e.id);
+        }
+        expect(vnHolidays.map((e) => e.id), [
+          'tet-duong-lich',
+          'giao-thua',
+          'tet',
+          'gio-to',
+          'giai-phong',
+          'quoc-te-lao-dong',
+          'quoc-khanh',
+        ]);
+        expect(vnMemorials.length, 22);
+      },
+    );
   });
 
   group('NthWeekday', () {

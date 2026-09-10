@@ -6,7 +6,8 @@ import 'package:calendar_data/calendar_data.dart';
 import 'package:lunar_core/lunar_core.dart';
 import 'package:test/test.dart';
 
-const assetPath = '../../assets/overrides.json';
+/// Asset fallback của app (Flutter chỉ bundle asset trong thư mục project, D020).
+const assetPath = '../../apps/kade/assets/overrides.json';
 
 List<String> idsOn(Map<DateTime, DayEvents> m, int y, int mo, int d) =>
     m[DateTime.utc(y, mo, d)]!.appEvents.map((e) => e.id).toList();
@@ -38,6 +39,14 @@ void main() {
       expect(idsOn(m, 2027, 2, 7), contains('tet'));
       expect(idsOn(m, 2027, 2, 8), contains('tet'));
       expect(idsOn(m, 2027, 2, 9), isNot(contains('tet')));
+    });
+
+    test('Giao thừa = 05/02 (ngày trước mùng 1), là ngày nghỉ', () {
+      expect(idsOn(m, 2027, 2, 5), ['giao-thua']);
+      expect(idsOn(m, 2027, 2, 4), isEmpty);
+      expect(idsOn(m, 2027, 2, 6), isNot(contains('giao-thua')));
+      expect(resolveMonth(2027, 2)[DateTime.utc(2027, 2, 5)]!.isOffDay, isTrue);
+      expect(solarToLunar(DateTime.utc(2027, 2, 5)).month, 12);
     });
 
     test('ngày nghỉ: 05–09/02 (override off + Tết), ngoài đó không', () {
@@ -116,6 +125,24 @@ void main() {
       expect(idsOn(feb, 2014, 2, 2), contains('tet'));
       expect(idsOn(feb, 2014, 2, 3), isNot(contains('tet')));
       expect(feb[DateTime.utc(2014, 2, 2)]!.isOffDay, isTrue);
+      final jan = resolveMonth(2014, 1);
+      expect(idsOn(jan, 2014, 1, 30), ['giao-thua']);
+      expect(idsOn(jan, 2014, 1, 31), contains('tet'));
+    });
+
+    test('Giao thừa 2020–2030: luôn là ngày cuối tháng Chạp (29 hoặc 30)', () {
+      final lengths = <int>{};
+      for (var y = 2020; y <= 2030; y++) {
+        final tet = lunarToSolar(LunarDate(day: 1, month: 1, year: y))!;
+        final eve = tet.subtract(const Duration(days: 1));
+        expect(eventsOn(eve).map((e) => e.id), ['giao-thua'], reason: '$y');
+        final l = solarToLunar(eve);
+        expect(l.month, 12, reason: '$y');
+        expect(l.year, y - 1, reason: '$y');
+        expect(l.day, anyOf(29, 30), reason: '$y');
+        lengths.add(l.day);
+      }
+      expect(lengths, {29, 30}, reason: 'cần cả tháng Chạp thiếu và đủ');
     });
   });
 

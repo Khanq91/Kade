@@ -27,27 +27,22 @@ class DayEvents {
 
 /// Sự kiện app rơi vào ngày [date] (chỉ dùng y/m/d), theo thứ tự trong [events].
 ///
-/// Sự kiện âm chỉ tính theo tháng chính, không tính tháng nhuận (D020).
+/// Ngày d thuộc sự kiện nếu có k trong `0..durationDays-1` sao cho
+/// `d − offsetDays − k` là ngày neo của sự kiện. Sự kiện âm chỉ tính theo
+/// tháng chính, không tính tháng nhuận (D020).
 List<Event> eventsOn(DateTime date, {List<Event> events = allEvents}) {
   final d = DateTime.utc(date.year, date.month, date.day);
-  var maxDuration = 1;
-  for (final e in events) {
-    if (e.durationDays > maxDuration) maxDuration = e.durationDays;
-  }
-  // starts[k] = ngày d - k (ngày bắt đầu nếu hôm nay là ngày thứ k+1 của sự kiện).
-  final starts = List.generate(
-    maxDuration,
-    (k) => d.subtract(Duration(days: k)),
-  );
-  final lunars = <LunarDate?>[for (var k = 0; k < maxDuration; k++) null];
+  final lunarCache = <int, LunarDate>{}; // key = shift, ngày neo = d − shift
   final result = <Event>[];
   for (final e in events) {
     for (var k = 0; k < e.durationDays; k++) {
+      final shift = e.offsetDays + k;
+      final anchor = d.subtract(Duration(days: shift));
       final bool match;
       if (e.type == CalendarType.solar) {
-        match = e.startsOnSolar(starts[k]);
+        match = e.startsOnSolar(anchor);
       } else {
-        final l = lunars[k] ??= solarToLunar(starts[k]);
+        final l = lunarCache[shift] ??= solarToLunar(anchor);
         match = l.month == e.month && l.day == e.day && !l.isLeapMonth;
       }
       if (match) {
