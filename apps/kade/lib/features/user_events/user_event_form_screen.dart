@@ -10,7 +10,16 @@ import '../../core/formats.dart';
 import '../../core/lunar_utils.dart';
 import '../../core/strings.dart';
 import '../../data/models/user_event.dart';
+import '../../data/reminder_scheduler.dart';
+import '../../data/settings_provider.dart';
 import '../../data/user_events_provider.dart';
+
+/// Nhãn lựa chọn nhắc: null → "Không nhắc", 0 → "Đúng ngày", n → "n ngày trước".
+String remindLabel(int? days) => switch (days) {
+  null => Strings.remindNone,
+  0 => Strings.remindSameDay,
+  _ => Strings.remindDaysBefore(days),
+};
 
 /// Form tạo / sửa sự kiện cá nhân (plan §3.5). [existing] null = tạo mới;
 /// [initialDate] điền sẵn ngày khi mở từ DayDetail. Nhắc trước N ngày: bước 16.
@@ -37,7 +46,11 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
   bool _yearly = true;
   LeapMonthRule _leapRule = LeapMonthRule.firstMonth;
   int _color = 0;
+  int? _remind;
   String? _dateError;
+
+  /// Lựa chọn "Nhắc trước": null = không nhắc, 0 = đúng ngày, N ngày trước.
+  static const remindOptions = [null, 0, 1, 3, 7, 14];
 
   UserEvent? get _existing => widget.existing;
 
@@ -59,6 +72,7 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
       _duration.text = '${e.durationDays}';
       _note.text = e.note ?? '';
       _color = e.colorIndex;
+      _remind = e.remindBeforeDays;
     } else {
       _fillFromDate(_baseDate);
     }
@@ -142,6 +156,7 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
         year: y,
         durationDays: dur!,
         leapRule: _leapRule,
+        remindBeforeDays: _remind,
         note: note,
         colorIndex: _color,
       );
@@ -155,10 +170,24 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
           year: y,
           durationDays: dur!,
           leapRule: _leapRule,
+          remindBeforeDays: _remind,
           note: note,
           colorIndex: _color,
         ),
       );
+    }
+    if (!mounted) return;
+    // Xin quyền thông báo khi user bật nhắc (plan §5.4), không lúc mở app.
+    if (_remind != null) {
+      final messenger = ScaffoldMessenger.of(context);
+      final ok = await ref.read(reminderSchedulerProvider).requestPermission();
+      if (!ok) {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text(Strings.notificationsDenied)),
+          );
+      }
     }
     if (mounted) context.pop();
   }
@@ -310,6 +339,27 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                   key: const ValueKey('ev-duration'),
                   controller: _duration,
                   label: Strings.durationField,
+                ),
+                const SizedBox(height: 12),
+                // Nhắc trước N ngày lúc 08:00 (bước 16; chỉ Android).
+                DropdownButtonFormField<int>(
+                  key: const ValueKey('ev-remind'),
+                  initialValue: _remind ?? -1,
+                  decoration: InputDecoration(
+                    labelText: Strings.remindField,
+                    helperText: ref.watch(platformIsWebProvider)
+                        ? Strings.remindWebHint
+                        : null,
+                  ),
+                  items: [
+                    for (final o in remindOptions)
+                      DropdownMenuItem(
+                        value: o ?? -1,
+                        child: Text(remindLabel(o)),
+                      ),
+                  ],
+                  onChanged: (v) =>
+                      setState(() => _remind = v == null || v < 0 ? null : v),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(

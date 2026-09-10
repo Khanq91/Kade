@@ -139,7 +139,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
-    expect(find.text(Strings.remoteConfigSection), findsOneWidget);
+    expect(find.text(Strings.myEvents), findsOneWidget); // đầu trang Cài đặt
 
     await tester.tap(find.byIcon(Icons.calendar_month_outlined));
     await tester.pumpAndSettle();

@@ -31,6 +31,24 @@ abstract final class Strings {
 
   /// "Tháng 9 năm 2026" (hero card).
   static String monthYearLong(int month, int year) => 'Tháng $month năm $year';
+
+  // Nhắc nhở (plan §3.8, §5.4, bước 16)
+  static const remindSection = 'Nhắc nhở';
+  static const remindHint =
+      'Thông báo lúc 08:00 trên Android. Sự kiện cá nhân đặt "Nhắc trước" ngay trong form sự kiện.';
+  static const remindHolidayLabel = 'Nhắc lễ trước';
+  static const remindNone = 'Không nhắc';
+  static const remindSameDay = 'Đúng ngày';
+  static const remindField = 'Nhắc trước';
+  static const remindWebHint = 'Chỉ nhắc trên Android (web không có thông báo)';
+  static const notificationsDenied =
+      'Chưa được phép hiện thông báo — bật cho Kade trong Cài đặt hệ thống → Thông báo';
+  static const notificationChannel = 'Nhắc sự kiện';
+  static const notificationChannelHint =
+      'Nhắc trước ngày nghỉ lễ và sự kiện cá nhân';
+
+  /// "3 ngày trước".
+  static String remindDaysBefore(int n) => '$n ngày trước';
   static const lunarTag = 'ÂL';
   static const solarTag = 'DL';
   static const tagLegend = 'ÂL = âm lịch · DL = dương lịch · N = tháng nhuận';

@@ -43,6 +43,7 @@ class UserEventsNotifier extends Notifier<List<UserEvent>> {
     int? year,
     int durationDays = 1,
     LeapMonthRule leapRule = LeapMonthRule.firstMonth,
+    int? remindBeforeDays,
     String? note,
     int colorIndex = 0,
   }) async {
@@ -56,6 +57,7 @@ class UserEventsNotifier extends Notifier<List<UserEvent>> {
       year: year,
       durationDays: durationDays,
       leapRule: leapRule,
+      remindBeforeDays: remindBeforeDays,
       note: note,
       colorIndex: colorIndex,
       createdAt: now,

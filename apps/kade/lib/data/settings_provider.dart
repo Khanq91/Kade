@@ -32,6 +32,30 @@ final webNoticeProvider = NotifierProvider<WebNoticeNotifier, bool>(
   WebNoticeNotifier.new,
 );
 
+/// "Nhắc lễ trước N ngày" (plan §3.8, §5.1): 0 = không nhắc; mặc định 7.
+class HolidayRemindDaysNotifier extends Notifier<int> {
+  static const key = 'holidayRemindDays';
+  static const defaultDays = 7;
+  static const options = [0, 1, 3, 7, 14];
+
+  @override
+  int build() {
+    final raw = ref.watch(settingsBoxProvider).get(key);
+    return raw is int ? raw : defaultDays;
+  }
+
+  Future<void> set(int days) async {
+    state = days;
+    await ref.read(settingsBoxProvider).put(key, days);
+  }
+}
+
+/// Số ngày nhắc trước ngày nghỉ lễ.
+final holidayRemindDaysProvider =
+    NotifierProvider<HolidayRemindDaysNotifier, int>(
+      HolidayRemindDaysNotifier.new,
+    );
+
 /// Box `settings` (đã mở) — override trong `main()`; test dùng box in-memory.
 final settingsBoxProvider = Provider<Box<dynamic>>(
   (ref) => throw UnimplementedError(

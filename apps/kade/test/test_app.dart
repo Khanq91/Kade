@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kade/core/router.dart';
 import 'package:kade/data/local/user_event_repository.dart';
+import 'package:kade/data/reminders.dart';
 import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/data/settings_provider.dart';
@@ -23,6 +24,7 @@ import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/main.dart';
 import 'package:kade/platform/file_io.dart';
+import 'package:kade/platform/notifications.dart';
 
 /// GoogleAuth giả. Android-like mặc định (`supportsAuthenticate` true):
 /// [signIn] trả [signInUser] hoặc throw [signInError]. Web-like
@@ -108,6 +110,38 @@ class FakeGoogleAuth implements GoogleAuth {
     if (silentToken == token) silentToken = tokenAfterClear;
     if (_granted == token) _granted = null;
   }
+}
+
+/// Notifications giả (bước 16): ghi lần đặt gần nhất vào [scheduled], đếm
+/// [scheduleCalls] / [permissionRequests], trả [permissionGranted]; [tap]
+/// giả user chạm thông báo có payload.
+class FakeNotifications implements Notifications {
+  void Function(String payload)? _onSelect;
+  bool initialized = false;
+  List<Reminder> scheduled = const [];
+  int scheduleCalls = 0;
+  int permissionRequests = 0;
+  bool permissionGranted = true;
+
+  @override
+  Future<void> init(void Function(String payload) onSelect) async {
+    initialized = true;
+    _onSelect = onSelect;
+  }
+
+  @override
+  Future<bool> requestPermission() async {
+    permissionRequests++;
+    return permissionGranted;
+  }
+
+  @override
+  Future<void> schedule(List<Reminder> reminders) async {
+    scheduleCalls++;
+    scheduled = reminders;
+  }
+
+  void tap(String payload) => _onSelect?.call(payload);
 }
 
 /// FileIo giả: `saveJson` ghi lại (tên, nội dung) vào [saved] và trả
@@ -251,6 +285,7 @@ Future<List<Override>> testOverrides({
   DateTime? today,
   DateTime Function()? clock,
   bool? isWeb,
+  Notifications? notifications,
 }) async => [
   remoteConfigProvider.overrideWith(
     () => FakeRemoteConfig(overrides ?? assetOverrides()),
@@ -267,6 +302,7 @@ Future<List<Override>> testOverrides({
   if (today != null) todayProvider.overrideWithValue(today),
   if (clock != null) clockProvider.overrideWithValue(clock),
   if (isWeb != null) platformIsWebProvider.overrideWithValue(isWeb),
+  notificationsProvider.overrideWithValue(notifications ?? FakeNotifications()),
 ];
 
 /// App thật (router + locale vi) mở tại [initialLocation].
@@ -281,6 +317,7 @@ Future<Widget> testApp(
   DateTime? today,
   DateTime Function()? clock,
   bool? isWeb,
+  Notifications? notifications,
 }) async => ProviderScope(
   overrides: await testOverrides(
     overrides: overrides,
@@ -292,6 +329,7 @@ Future<Widget> testApp(
     today: today,
     clock: clock,
     isWeb: isWeb,
+    notifications: notifications,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),
 );

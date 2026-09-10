@@ -7,6 +7,7 @@ import '../../core/env.dart';
 import '../../core/formats.dart';
 import '../../core/strings.dart';
 import '../../data/models/sync_envelope.dart';
+import '../../data/reminder_scheduler.dart';
 import '../../data/remote/remote_config.dart';
 import '../../data/remote/remote_config_provider.dart';
 import '../../data/settings_provider.dart';
@@ -55,6 +56,11 @@ class _RemoteConfigSection extends ConsumerWidget {
           onTap: () => context.push('/events'),
         ),
         const Divider(),
+        // Nhắc nhở chỉ có trên Android (plan §4.6: web không nhắc).
+        if (!ref.watch(platformIsWebProvider)) ...[
+          const _RemindSection(),
+          const Divider(),
+        ],
         const _SyncSection(),
         const Divider(),
         const _BackupSection(),
@@ -126,6 +132,56 @@ class _RemoteConfigSection extends ConsumerWidget {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(fetchResultText(result))));
+  }
+}
+
+/// Mục "Nhắc nhở" (plan §5.1, bước 16): "Nhắc lễ trước N ngày" (0 = không).
+/// Chọn > 0 → xin quyền thông báo ngay lúc đó (plan §5.4).
+class _RemindSection extends ConsumerWidget {
+  const _RemindSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final days = ref.watch(holidayRemindDaysProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const ListTile(
+          title: Text(Strings.remindSection),
+          subtitle: Text(Strings.remindHint),
+        ),
+        ListTile(
+          leading: const Icon(Icons.notifications_outlined),
+          title: const Text(Strings.remindHolidayLabel),
+          trailing: DropdownButton<int>(
+            key: const ValueKey('remind-holiday'),
+            value: days,
+            items: [
+              for (final o in HolidayRemindDaysNotifier.options)
+                DropdownMenuItem(
+                  value: o,
+                  child: Text(
+                    o == 0 ? Strings.remindNone : Strings.remindDaysBefore(o),
+                  ),
+                ),
+            ],
+            onChanged: (v) => v == null ? null : _set(context, ref, v),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _set(BuildContext context, WidgetRef ref, int days) async {
+    await ref.read(holidayRemindDaysProvider.notifier).set(days);
+    if (days == 0 || !context.mounted) return;
+    final ok = await ref.read(reminderSchedulerProvider).requestPermission();
+    if (ok || !context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text(Strings.notificationsDenied)),
+      );
   }
 }
 
