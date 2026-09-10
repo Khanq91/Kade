@@ -62,3 +62,17 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: máy có 2 Flutter: `D:\khang\data\flutterDev\flutter` (Dart 3.10.8, cũ) và `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter` (Dart 3.12.2, trên PATH hệ thống, Android Studio dùng, tạo project với `sdk: ^3.12.0`). VS Code user settings `dart.flutterSdkPath` trỏ vào bản cũ → extension Dart chèn bản cũ vào PATH của terminal VS Code.
 - Cách xử lý: user đổi `dart.flutterSdkPath` (settings.json user của VS Code) sang `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter` (hoặc xóa key để dùng PATH), mở terminal mới. Tạm thời: gọi thẳng `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter\bin\dart.bat run ...`. Không hạ `sdk` constraint vì app của user đã yêu cầu ^3.12.0.
 - Trạng thái: open (chờ user đổi setting)
+
+## 2026-09-10 — E009 — testWidgets + Hive ghi file thật → treo 10 phút ở tearDown
+- Bối cảnh: Phase 1 bước 5, widget test `SettingsScreen` dùng `RemoteConfigRepository` với Hive box thật (thư mục temp).
+- Triệu chứng: test fetch → `box.putAll` không bao giờ xong, UI kẹt "Đang kiểm tra…"; `Hive.close()` trong `tearDown` chờ mãi → `TimeoutException after 0:10:00`.
+- Nguyên nhân: body của `testWidgets` chạy trong FakeAsync; IO thật (`dart:io` của Hive) không hoàn tất trong zone đó, callback bị kẹt; `close()` chờ lock ghi.
+- Cách xử lý: bọc toàn bộ body trong `await tester.runAsync(() async { ... })`, thay `pumpAndSettle` bằng vòng `pump` + `Future.delayed` ngắn tới khi hết spinner. Luôn chạy `flutter test --timeout 90s` để không treo 10 phút. Thêm: viewport test 800×600 → ListTile dưới fold là offstage, `find.text` mặc định bỏ qua → `tester.ensureVisible(find.text(x, skipOffstage: false))` trước khi assert.
+- Trạng thái: fixed
+
+## 2026-09-10 — E010 — Apps Script cold start ~3.2s (đo bằng node, có redirect 302)
+- Bối cảnh: kiểm tra URL thật trong `dart_defines.json` trước bước 5.
+- Triệu chứng: GET `/exec` → 302 → `script.googleusercontent.com`, 200 JSON, `access-control-allow-origin: *`, tổng 3166 ms lần đầu.
+- Nguyên nhân: cold start Apps Script (setup-google A.6 nói 1–3s).
+- Cách xử lý: giữ timeout 5s theo plan §3.9; nếu user thấy hay fail "TimeoutException" trên web thì nâng lên 8–10s (đổi `RemoteConfigRepository.timeout` mặc định) và ghi DECISIONS.
+- Trạng thái: open (theo dõi)
