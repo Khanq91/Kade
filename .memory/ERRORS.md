@@ -83,3 +83,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: cùng E008 — terminal dùng Flutter 3.38.9 / Dart 3.10.8 (`D:\khang\data\flutterDev\flutter`), pub bản này chưa hiểu glob trong `workspace:`; bản 3.44.5 / Dart 3.12.2 resolve bình thường. Bản cũ dù có sửa glob cũng không build được vì `sdk: ^3.12.0`.
 - Cách xử lý: dùng Flutter 3.44.5 (đổi `dart.flutterSdkPath` trong VS Code hoặc gọi thẳng `…\flutter_windows_3.44.5-stable\flutter\bin\flutter.bat`, hoặc mở PowerShell/cmd ngoài VS Code — PATH hệ thống đã trỏ bản mới). Không đổi workspace glob.
 - Trạng thái: open (chờ user đổi SDK trong VS Code)
+
+## 2026-09-10 — E011 — Port 5000 trên máy user bị `QLVanBanAPI` (project .NET khác) chiếm
+- Bối cảnh: `flutter run -d chrome --web-port 5000` khi verify bước 5.
+- Triệu chứng: `Failed to bind web development server: SocketException … errno = 10048, port = 5000`.
+- Nguyên nhân: PID của `D:\khang\project\QLVB\QLVanBanAPI\bin\Debug\net8.0\QLVanBanAPI.exe` đang lắng nghe 127.0.0.1:5000 và [::1]:5000.
+- Cách xử lý: tắt API đó khi chạy Kade web, hoặc chạy `--web-port 5001` (bước 5 không phụ thuộc port vì Apps Script trả CORS `*`). Phase 2: origin OAuth web đã ghi `http://localhost:5000` trong setup-google B.3 → nếu user hay chạy 5001 thì thêm cả `http://localhost:5001` vào Authorized JavaScript origins.
+- Trạng thái: workaround
