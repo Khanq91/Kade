@@ -1,0 +1,66 @@
+# Deploy Flutter web lên GitHub Pages (plan §6 bước 15, D033/D034).
+# User cần làm một lần (docs/setup-google.md phần C): Settings → Pages →
+# Source = GitHub Actions; 2 secrets KADE_CONFIG_URL, KADE_WEB_CLIENT_ID;
+# thêm origin https://<user>.github.io vào OAuth client Web.
+name: deploy-web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.5"
+          channel: stable
+          cache: true
+
+      # Workspace root resolve toàn bộ packages/* + apps/* (AGENTS §5).
+      - run: dart pub get
+
+      # Generated *.g.dart / *.freezed.dart bị gitignore (E014).
+      - run: dart run build_runner build
+        working-directory: apps/kade
+
+      - run: flutter test --timeout 90s
+        working-directory: apps/kade
+
+      # base-href = /<tên repo>/ (site https://<user>.github.io/<repo>/).
+      # Dùng custom domain → đổi thành "/". Secrets trống → app vẫn chạy, tắt
+      # tính năng tương ứng (AGENTS §7).
+      - name: Build web
+        working-directory: apps/kade
+        run: >
+          flutter build web --release
+          --base-href "/${{ github.event.repository.name }}/"
+          --dart-define=KADE_CONFIG_URL=${{ secrets.KADE_CONFIG_URL }}
+          --dart-define=KADE_WEB_CLIENT_ID=${{ secrets.KADE_WEB_CLIENT_ID }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/kade/build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

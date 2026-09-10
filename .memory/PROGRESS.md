@@ -4,12 +4,14 @@ Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại ch�
 
 ## Bước hiện tại
 **Chế độ D031 (từ 2026-09-10):** session này làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
-Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar=1` + phím + PWA + cảnh báo web (D033, E018): 117 test pass, analyze sạch, build web (+wasm) + APK OK (commit `c4b0af4`); test tay: manual-test.md 3.1–3.4. Bước 13 🧪 (2.10–2.12), bước 12 🧪 (2.5–2.9). Đang làm tiếp: bước 15 (deploy GitHub Pages: workflow + hướng dẫn, ⏸ phần user) rồi 16, 17, 18.
+Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar=1` + phím + PWA + cảnh báo web (D033, E018): 117 test pass, analyze sạch, build web (+wasm) + APK OK (commit `c4b0af4`); test tay: manual-test.md 3.1–3.4. Bước 13 🧪 (2.10–2.12), bước 12 🧪 (2.5–2.9).
+Phase 3 bước 15 ⏸ — workflow `.github/workflows/deploy-web.yml` + `setup-google.md` phần C xong (D034); chờ user bật Pages + secrets + origin (mục "Cần user làm"). Đang làm tiếp: bước 16 (notification) → 17 (widget) → 18 (release keystore, ⏸ phần user).
 
 ## Đang dở
 (không)
 
 ## Cần user làm
+- [ ] **Bước 15 — Deploy GitHub Pages (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần C):** (1) repo Settings → Pages → Source: **GitHub Actions**; (2) Secrets `KADE_CONFIG_URL`, `KADE_WEB_CLIENT_ID` (giá trị lấy từ `dart_defines.json`); (3) OAuth client Web (B.3) thêm origin `https://khanq91.github.io`; (4) push `main` hoặc Actions → deploy-web → Run workflow → mở `https://khanq91.github.io/Kade/` → test manual-test.md 3.5 (+ 3.1 mục 6 Lighthouse). Báo ok → 15 ⏸ → ✅.
 - [ ] **Test tay toàn bộ (cuối, D031)** → theo `docs/manual-test.md`, chia phase × Web/Android; báo theo format "Ghi lỗi" ở cuối file đó. Các mục verify chi tiết bên dưới (bước 12, 11, 9, 6) đã gom vào file đó, giữ lại để tham khảo.
 - [~] **Verify bước 12 — sync Drive** (→ manual-test.md 2.5–2.9; tiêu chí §4.8 mục 4–5: đăng nhập cùng tài khoản ở 2 nơi thấy nhau; xóa ở A → sync B → mất, không resurrect). Cần 2 "máy": A = Chrome port 5001, B = trình duyệt khác (Edge/Cốc Cốc, hoặc Chrome profile khác — cùng port 5001, cùng origin đã đăng ký) hoặc Android. Lệnh như bước 11.
   1. A: đăng nhập → tạo 2 sự kiện (1 âm, 1 dương) → Cài đặt → "Đồng bộ ngay" → SnackBar "Đã đồng bộ với Google Drive", dòng "Đồng bộ lần cuối: …". (Web: nếu phiên chưa có quyền Drive, popup consent hiện ngay trong click này.)
@@ -96,7 +98,7 @@ Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
 | 14 | Routing + responsive + PWA + phím tắt | 🧪 |
-| 15 | Deploy + thêm origin vào OAuth | ⬜ |
+| 15 | Deploy + thêm origin vào OAuth | ⏸ |
 
 ### Phase 4 — Android release
 | Bước | Nội dung | Trạng thái |
@@ -147,3 +149,5 @@ Phase 3 bước 14 🧪 — responsive 3 breakpoint + DayDetail dialog + `?lunar
 - 2026-09-10 — phase2-step13 — `SyncTrigger` (sau đăng nhập/cấp quyền/khôi phục phiên, debounce 5s sau sửa/nhập, resume ≥ 15 phút + invalidate todayProvider qua ngày) qua `AppLifecycle`; `sync()` đặt running trước khi xin token, 401 → `clearToken` + xin lại 1 lần (im lặng; popup chỉ từ nút) + "Phiên Google hết hạn — bấm Đồng bộ ngay"; `deleteRemote()` + nút "Xóa dữ liệu trên Drive" (D032, E017); 104 test pass, analyze sạch, build web + APK OK → 🧪 — 1735642
 - 2026-09-10 — phase2-step13 — DECISIONS D032, ERRORS E017, manual-test 2.10–2.12 — 8330df7
 - 2026-09-10 — phase3-step14 — `AppShell` rail ≥ 600 / bottom nav < 600; `MonthViewScreen` 3 layout (wide: lịch 65% + `TodayCard` hero + `UpcomingList(compact)`; medium: lịch trên Sắp tới dưới), `?lunar=1` + `shiftLunarMonth`, `/d/:date` `DialogPage` ≥ 1024 khi mở từ app (`openDay`, extra), phím ← → T (MonthView) + Esc (DayDetail), `TodayCardData`/`todayCardProvider`, cảnh báo lưu trữ web một lần (`webNoticeProvider`), manifest/index.html PWA (D033, E018); 117 test pass, analyze sạch, build web + wasm + APK OK → 🧪 — c4b0af4
+- 2026-09-10 — phase3-step14 — DECISIONS D033, ERRORS E018, manual-test 3.1–3.4 — dfc519f
+- 2026-09-10 — phase3-step15 — `.github/workflows/deploy-web.yml` (Flutter 3.44.5, build_runner, test, `flutter build web --release --base-href /<repo>/` + secrets → Pages), `setup-google.md` phần C (Pages, secrets, origin `https://khanq91.github.io`, lỗi hay gặp), manual-test 3.5 (D034); ⏸ chờ user — (hash ở dòng sau)

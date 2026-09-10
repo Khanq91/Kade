@@ -128,3 +128,38 @@ Cần **1 client cho mỗi SHA-1**. Tối thiểu 2 (debug + release), 3 nếu d
 
 ### B.6 Xóa dữ liệu test
 Drive → Settings → Manage apps → Kade → Options → **Delete hidden app data**.
+
+## C. Deploy web — GitHub Pages (Phase 3 bước 15, D033/D034)
+
+Repo `https://github.com/Khanq91/Kade` → site **`https://khanq91.github.io/Kade/`** (URL trong app dạng hash: `https://khanq91.github.io/Kade/#/2027/02`).
+Workflow `.github/workflows/deploy-web.yml` chạy khi push `main` (hoặc tab **Actions → deploy-web → Run workflow**):
+Flutter 3.44.5 → `dart pub get` → build_runner → `flutter test` → `flutter build web --release --base-href /Kade/` với 2 `--dart-define` lấy từ secrets → deploy lên Pages. Agent đã viết xong; 4 việc dưới chỉ user làm được.
+
+### C.1 Bật Pages
+Repo → **Settings → Pages → Build and deployment → Source: GitHub Actions** (không chọn "Deploy from a branch").
+
+### C.2 Secrets
+**Settings → Secrets and variables → Actions → New repository secret**, tạo 2 cái (tên phải đúng):
+- `KADE_CONFIG_URL` = giá trị `KADE_CONFIG_URL` trong `dart_defines.json` (URL Apps Script `/exec`, phần A).
+- `KADE_WEB_CLIENT_ID` = giá trị `KADE_WEB_CLIENT_ID` (Client ID web ở B.3).
+
+Thiếu secret nào thì build vẫn xanh, app chỉ tắt tính năng đó (remote config → chỉ asset; đăng nhập → mục Đồng bộ báo "Chưa cấu hình KADE_WEB_CLIENT_ID").
+
+### C.3 Thêm origin vào OAuth client Web
+B.3 → client `Kade Web` → **Authorized JavaScript origins → Add URI**: `https://khanq91.github.io` (đúng chữ thường, không có `/Kade`, không dấu `/` cuối) → Save. Đợi ~5 phút cho Google cập nhật.
+
+### C.4 Chạy và kiểm tra
+1. Push lên `main` (commit bước 15 đã có workflow) hoặc Actions → deploy-web → Run workflow.
+2. Actions → job `build` + `deploy` xanh → link site nằm ở job `deploy` (environment `github-pages`).
+3. Mở `https://khanq91.github.io/Kade/` → test theo `docs/manual-test.md` mục 3.5 (đăng nhập, sync, Kiểm tra cập nhật) và 3.1 mục 6 (Lighthouse PWA installable — chỉ có ý nghĩa trên HTTPS thật).
+
+### C.5 Lỗi hay gặp
+| Triệu chứng | Xử lý |
+|---|---|
+| Actions đỏ ở "Build web" / "flutter test" | Xem log job; test đỏ = code lỗi → báo agent; lỗi resolve packages → kiểm tra `pubspec.lock` root đã commit |
+| Deploy đỏ "Resource not accessible" / "Pages not enabled" | C.1 chưa chọn Source = GitHub Actions |
+| Trang trắng, console 404 `main.dart.js` | base-href lệch: repo đổi tên (workflow tự lấy tên repo mới, nhưng cache trình duyệt cũ → Ctrl+F5) hoặc dùng custom domain (sửa `--base-href "/"` trong workflow) |
+| Bản cũ vẫn hiện sau deploy | Service worker Flutter cache: Ctrl+F5, hoặc DevTools → Application → Service Workers → Unregister; lần mở sau tự cập nhật |
+| Nút Google không hiện / popup trắng / console `origin_mismatch` | C.3 chưa thêm hoặc gõ sai origin |
+| "access blocked" khi đăng nhập | Consent screen còn Testing → tài khoản phải nằm trong Test users (B.2), hoặc Publish app |
+| Cài đặt báo "Chưa cấu hình KADE_CONFIG_URL" / "KADE_WEB_CLIENT_ID" | C.2 thiếu secret hoặc sai tên → thêm rồi Run workflow lại |
