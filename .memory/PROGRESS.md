@@ -3,13 +3,13 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 bước 6 ⏸ — MonthView + DayDetail + Converter + go_router tối thiểu đã code xong, 29 test app pass, `flutter build web` OK. Chờ user verify §4.8 mục 1–2 trên web thật (xem "Cần user làm"). Sau khi user xác nhận → đổi ✅, giao bước 7 theo template trong `docs/prompts/phase1.md`.
+Phase 1 bước 7 🔄 — UserEvent CRUD + tombstone + Hive. Bước 6 ✅ (user verify web 2026-09-10: mục 1–5 đều chạy tốt).
 
 ## Đang dở
-(không — bước 6 chỉ chờ user verify)
+Bước 7 mới bắt đầu (xem log cuối khi có).
 
 ## Cần user làm
-- [ ] **Verify bước 6 trên web** (§4.8 mục 1–2). Từ `apps/kade` (Flutter 3.44.5 — E008; port 5000 bận — E011):
+- [x] **Verify bước 6 trên web** (§4.8 mục 1–2) → user xác nhận 2026-09-10 "test hết rồi, chạy tốt, từ 1–5". Từ `apps/kade` (Flutter 3.44.5 — E008; port 5000 bận — E011):
   `flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json`
   1. Mở `http://localhost:5001/#/2027/02` (Flutter web mặc định hash URL, D023) → tiêu đề "Tháng 2/2027"; ô 5/2 có nhãn ÂL đỏ (Giao thừa) + nền nghỉ; ô 6/2 nhãn ÂL đỏ (Tết Nguyên đán) + nền nghỉ; 9/2 nền nghỉ (nghỉ bù từ Sheet/asset) không nhãn; 14/2 nhãn DL xanh (Valentine) không nghỉ; 20/2 nhãn ÂL cam (Rằm tháng Giêng). Nếu Sheet đã có dòng `off`/`work` khác asset → vào Cài đặt bấm "Kiểm tra cập nhật" rồi quay lại Lịch, ô phải đổi theo (cache tháng tự tính lại).
   2. Đang ở tháng khác (vd. bấm ▶ vài lần) → F5 → vẫn đúng tháng đó (URL `/#/YYYY/MM`).
@@ -44,8 +44,8 @@ Phase 1 bước 6 ⏸ — MonthView + DayDetail + Converter + go_router tối th
 |---|---|---|
 | 4 | `calendar_data`: 3 danh sách lễ + `YearOverride` + asset fallback | ✅ |
 | 5 | Remote config: fetch Apps Script + cache Hive + verify CORS web | ✅ |
-| 6 | MonthView + DayDetail + Converter | ⏸ |
-| 7 | UserEvent CRUD + tombstone + Hive | ⬜ |
+| 6 | MonthView + DayDetail + Converter | ✅ |
+| 7 | UserEvent CRUD + tombstone + Hive | 🔄 |
 | 8 | Upcoming | ⬜ |
 | 9 | Export/Import JSON | ⬜ |
 
@@ -91,3 +91,4 @@ Phase 1 bước 6 ⏸ — MonthView + DayDetail + Converter + go_router tối th
 - 2026-09-10 — phase1-step5 — env/strings/Hive boxes/`RemoteConfigRepository`/`AsyncNotifier`/`SettingsScreen` (D022); 10 test app pass (E009), `flutter build web` OK; URL thật 200 JSON + CORS `*` (E010); ⏸ chờ user verify trên web — b916f8d
 - 2026-09-10 — phase1-step5 — user chạy web (Flutter 3.44.5, port 5001), bấm "Kiểm tra cập nhật" OK → ✅; thêm `docs/prompts/phase1.md` (prompt bước 6 + template) — (commit kèm .memory)
 - 2026-09-10 — phase1-step6 — `month_provider` (DayCell/MonthData, cache family, invalidate theo overrides), `event_style` (màu kind + nhãn ÂL/DL), MonthView + picker tháng dương/âm, DayDetail, Converter, `StatefulShellRoute` bottom nav, `/` `/YYYY/MM` `/d/YYYY-MM-DD` `/convert` `/settings`, locale vi (D023); AGENTS.md rule commit (D024); 29 test app pass (`flutter test --timeout 90s`), `flutter build web` OK; ⏸ chờ user verify §4.8 mục 1–2 — 4485657
+- 2026-09-10 — phase1-step6 — user chạy web (port 5001), verify mục 1–5 trong "Cần user làm" OK → ✅ — (commit kèm .memory)
