@@ -9,4 +9,4 @@ environment:
 
 workspace:
   - packages/*
-  # - apps/*   # bật khi apps/kade tồn tại: pub lỗi nếu glob không khớp package nào (ERRORS E004)
+  - apps/*
