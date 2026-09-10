@@ -3,7 +3,7 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 2 bước 11 🔄 — Sign-in web + Android (`google_sign_in` ≥ 7, E003). Bước 10 ✅ (user xác nhận 2026-09-10 "gg cloud setup xong rồi"). Verify §6 bước 11: access token có scope `drive.appdata` trên cả web + Android — chạy thật là việc user.
+Phase 2 bước 11 ⏸ — Sign-in web + Android (google_sign_in 7.2.0, D029): code + 72 test pass + build web/APK OK (commit `c0ef79d`); chờ user verify sign-in thật trên web và Android (mục đầu "Cần user làm"). Bước 10 ✅ (user xác nhận 2026-09-10 "gg cloud setup xong rồi"). User báo ok → 11 ✅ → bước 12 `sync()` + merge (ghi chú ở "Ghi chú cho bước sau").
 
 ## Đang dở
 (không)
