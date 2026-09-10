@@ -55,3 +55,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: `dart` trên PATH là bản trong Flutter SDK nên biết `FLUTTER_ROOT`.
 - Cách xử lý: dùng lệnh nào cũng được; nếu máy khác dùng Dart SDK riêng thì dùng `flutter pub get`.
 - Trạng thái: fixed (ghi để biết)
+
+## 2026-09-10 — E008 — Terminal VS Code dùng Flutter cũ (Dart 3.10.8) → "language version 3.12 too high"
+- Bối cảnh: user chạy `dart run example/day_info_example.dart` trong terminal VS Code (phase0-step2).
+- Triệu chứng: `Error: The language version 3.12 specified for the package 'lunar_core' is too high. The highest supported language version is 3.10.` cho mọi file.
+- Nguyên nhân: máy có 2 Flutter: `D:\khang\data\flutterDev\flutter` (Dart 3.10.8, cũ) và `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter` (Dart 3.12.2, trên PATH hệ thống, Android Studio dùng, tạo project với `sdk: ^3.12.0`). VS Code user settings `dart.flutterSdkPath` trỏ vào bản cũ → extension Dart chèn bản cũ vào PATH của terminal VS Code.
+- Cách xử lý: user đổi `dart.flutterSdkPath` (settings.json user của VS Code) sang `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter` (hoặc xóa key để dùng PATH), mở terminal mới. Tạm thời: gọi thẳng `D:\khang\data\flutterDev\flutter_windows_3.44.5-stable\flutter\bin\dart.bat run ...`. Không hạ `sdk` constraint vì app của user đã yêu cầu ^3.12.0.
+- Trạng thái: open (chờ user đổi setting)
