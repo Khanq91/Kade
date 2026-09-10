@@ -62,3 +62,21 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: mọi agent đọc `.memory/PROGRESS.md`, `DECISIONS.md`, `ERRORS.md` đầu session và ghi theo quy tắc `AGENTS.md` §4.
 - Lý do: nhiều agent (Claude Code, Codex) thay phiên làm cùng repo.
 - Hệ quả: `CLAUDE.md` chỉ import `AGENTS.md`.
+
+## 2026-09-10 — D011 — Root pubspec = workspace root; scaffold `flutter create` ở root giữ nguyên chờ user
+- Bởi: agent
+- Quyết định: `pubspec.yaml` root đổi từ app Flutter scaffold (commit "PROJECT UPLOAD") thành workspace root: `workspace: [packages/*]`; `apps/*` để comment, bật khi có `apps/kade`. Các file scaffold còn lại ở root (`lib/main.dart`, `test/widget_test.dart`, `android/`, `web/`, `.metadata`, `README.md`, `analysis_options.yaml`) KHÔNG xóa, KHÔNG move.
+- Lý do: plan §1 đặt app ở `apps/kade`; user dặn bước 1 chưa tạo `apps/kade`; xóa hay move scaffold (kèm `android/` applicationId `com.kade.kade`) là việc user quyết.
+- Hệ quả: `dart analyze` / `dart test` chạy ở root sẽ lỗi vì `lib/main.dart` import flutter mà root không có dep → chỉ chạy trong từng package (`cd packages/lunar_core`). Việc chờ user ghi ở PROGRESS "Cần user làm".
+
+## 2026-09-10 — D012 — API `lunar_core` bước 1
+- Bởi: agent
+- Quyết định: `lib/src/amlich.dart` giữ nguyên tên hàm JS kể cả viết hoa (`NewMoon`, `SunLongitude`, `INT`) với `ignore_for_file: non_constant_identifier_names`; mảng JS → record cùng thứ tự. API public (`lib/lunar_core.dart`): `LunarDate{day, month, year, isLeapMonth}`; `solarToLunar(DateTime, {double timeZone = 7})` chỉ dùng y/m/d của input; `lunarToSolar(LunarDate, {timeZone = 7})` trả `DateTime.utc` 0h, hoặc `null` nếu ngày âm không tồn tại (kiểm bằng round-trip `solarToLunar(kết quả) == input`, thay cho `[0,0,0]` của JS).
+- Lý do: tên 1:1 để đối chiếu từng hàm; `DateTime.utc` tránh lệch DST/local; `null` để UI converter (Phase 1) dùng thẳng, không cần check `[0,0,0]`.
+- Hệ quả: app khi so ngày phải so theo y/m/d hoặc dùng `DateTime.utc`, không so trực tiếp với `DateTime.now()` local. `timeZone` kiểu `double` (theo reference), app luôn dùng mặc định 7.
+
+## 2026-09-10 — D013 — (MỞ) Bug "ngày 0" trong reference: giữ 1:1 hay sửa
+- Bởi: agent (chờ user chốt)
+- Quyết định: TẠM giữ port 1:1 theo D009 → port tái hiện đúng quirk của reference. Test `reference_quirks_test.dart` ghim 2 ngày này và sẽ đỏ khi sửa. Đề xuất SỬA: thêm 1 dòng sau fallback hiện có trong `convertSolar2Lunar` — `if (monthStart > dayNumber) monthStart = getNewMoonDay(k - 1, timeZone);` — ở CẢ `docs/reference/amlich-aa98.js` và port, rồi `node tools/gen_fixture.js` sinh lại fixture, sửa README + xóa quirk test. Cần chốt trước Phase 0 bước 3 (bảng const sẽ đóng băng kết quả).
+- Lý do: reference trả `0/4/2054` cho 2054-05-07 và `0/3/2062` cho 2062-04-09 (JS gốc chạy node cho cùng kết quả — chi tiết ERRORS E005). Theo chính sóc mà thuật toán tính ra, đúng phải là 30/3/2054 và 30/2/2062. Sửa = lệch D009 và đổi reference (README nói "không nên") → không tự quyết.
+- Hệ quả: nếu giữ, app hiện "ngày 0" ở 2 ngày trên. Nếu sửa: fixture 2054 (tháng 3: 29→30 ngày, tháng 4 start 05-07→05-08, 30→29) và 2062 (tháng 2: 29→30, tháng 3 start 04-09→04-10, 30→29) đổi.
