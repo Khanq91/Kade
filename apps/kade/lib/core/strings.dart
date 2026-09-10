@@ -21,6 +21,16 @@ abstract final class Strings {
   // Chung
   static const cancel = 'Hủy';
   static const back = 'Quay lại';
+  static const close = 'Đóng';
+
+  // Web (plan §4.4, bước 14)
+  static const webStorageNotice =
+      'Dữ liệu lưu trên trình duyệt này — bật đồng bộ Google trong Cài đặt để không mất khi xóa dữ liệu trình duyệt.';
+  static const gotIt = 'Đã hiểu';
+  static const enableSync = 'Bật đồng bộ';
+
+  /// "Tháng 9 năm 2026" (hero card).
+  static String monthYearLong(int month, int year) => 'Tháng $month năm $year';
   static const lunarTag = 'ÂL';
   static const solarTag = 'DL';
   static const tagLegend = 'ÂL = âm lịch · DL = dương lịch · N = tháng nhuận';

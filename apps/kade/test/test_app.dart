@@ -176,11 +176,16 @@ class FakeDriveStore implements DriveStore {
 /// offstage (E009).
 void testTall(String description, WidgetTesterCallback callback) {
   testWidgets(description, (tester) async {
-    tester.view.physicalSize = const Size(800, 1600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
+    setViewport(tester, const Size(800, 1600));
     await callback(tester);
   });
+}
+
+/// Đặt kích thước cửa sổ (logical px, DPR 1) cho test responsive; tự reset.
+void setViewport(WidgetTester tester, Size size) {
+  tester.view.physicalSize = size;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
 }
 
 /// Notifier giả: state sẵn sau 1 microtask, không đụng repository.
@@ -245,6 +250,7 @@ Future<List<Override>> testOverrides({
   DriveStore? driveStore,
   DateTime? today,
   DateTime Function()? clock,
+  bool? isWeb,
 }) async => [
   remoteConfigProvider.overrideWith(
     () => FakeRemoteConfig(overrides ?? assetOverrides()),
@@ -260,6 +266,7 @@ Future<List<Override>> testOverrides({
   driveStoreProvider.overrideWithValue(driveStore ?? FakeDriveStore()),
   if (today != null) todayProvider.overrideWithValue(today),
   if (clock != null) clockProvider.overrideWithValue(clock),
+  if (isWeb != null) platformIsWebProvider.overrideWithValue(isWeb),
 ];
 
 /// App thật (router + locale vi) mở tại [initialLocation].
@@ -273,6 +280,7 @@ Future<Widget> testApp(
   DriveStore? driveStore,
   DateTime? today,
   DateTime Function()? clock,
+  bool? isWeb,
 }) async => ProviderScope(
   overrides: await testOverrides(
     overrides: overrides,
@@ -283,6 +291,7 @@ Future<Widget> testApp(
     driveStore: driveStore,
     today: today,
     clock: clock,
+    isWeb: isWeb,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),
 );

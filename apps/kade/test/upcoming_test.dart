@@ -187,7 +187,10 @@ void main() {
     },
   );
 
-  testWidgets('bottom nav có 4 tab, Sắp tới ở vị trí 2', (tester) async {
+  testWidgets('bottom nav (< 600) có 4 tab, Sắp tới ở vị trí 2', (
+    tester,
+  ) async {
+    setViewport(tester, const Size(400, 800));
     await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
     final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));

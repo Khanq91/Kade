@@ -68,11 +68,15 @@ void main() {
     expect(bg(6), scheme.errorContainer);
     expect(bg(14), isNull);
 
-    // Chú giải.
-    expect(find.text(Strings.kindHoliday), findsOneWidget);
-    expect(find.text(Strings.kindMemorial), findsOneWidget);
-    expect(find.text(Strings.kindInternational), findsOneWidget);
-    expect(find.text(Strings.tagLegend), findsOneWidget);
+    // Chú giải (trong phần lịch — panel Sắp tới ở ≥ 600 nằm ngoài).
+    Finder inCalendar(String text) => find.descendant(
+      of: find.byType(MonthCalendar),
+      matching: find.text(text),
+    );
+    expect(inCalendar(Strings.kindHoliday), findsOneWidget);
+    expect(inCalendar(Strings.kindMemorial), findsOneWidget);
+    expect(inCalendar(Strings.kindInternational), findsOneWidget);
+    expect(inCalendar(Strings.tagLegend), findsOneWidget);
   });
 
   testWidgets('◀ ▶ và Hôm nay đổi tháng qua route', (tester) async {
