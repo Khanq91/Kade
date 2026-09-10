@@ -76,3 +76,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: cold start Apps Script (setup-google A.6 nói 1–3s).
 - Cách xử lý: giữ timeout 5s theo plan §3.9; nếu user thấy hay fail "TimeoutException" trên web thì nâng lên 8–10s (đổi `RemoteConfigRepository.timeout` mặc định) và ghi DECISIONS.
 - Trạng thái: open (theo dõi)
+
+## 2026-09-10 — E008 (cập nhật) — thêm triệu chứng: `flutter run` báo `Could not find a file named "pubspec.yaml" in "…\packages\*"`
+- Bối cảnh: user chạy `flutter run -d chrome …` trong terminal VS Code (bước 5 verify).
+- Triệu chứng: `Could not find a file named "pubspec.yaml" in "D:\…\Kade\packages\*". That was included in the workspace of ..\..\pubspec.yaml. Failed to update packages.`
+- Nguyên nhân: cùng E008 — terminal dùng Flutter 3.38.9 / Dart 3.10.8 (`D:\khang\data\flutterDev\flutter`), pub bản này chưa hiểu glob trong `workspace:`; bản 3.44.5 / Dart 3.12.2 resolve bình thường. Bản cũ dù có sửa glob cũng không build được vì `sdk: ^3.12.0`.
+- Cách xử lý: dùng Flutter 3.44.5 (đổi `dart.flutterSdkPath` trong VS Code hoặc gọi thẳng `…\flutter_windows_3.44.5-stable\flutter\bin\flutter.bat`, hoặc mở PowerShell/cmd ngoài VS Code — PATH hệ thống đã trỏ bản mới). Không đổi workspace glob.
+- Trạng thái: open (chờ user đổi SDK trong VS Code)
