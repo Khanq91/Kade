@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget 2x2 "hôm nay" (plan §5.3). Nội dung do KadeWidgetProvider điền. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_bg">
+
+    <TextView
+        android:id="@+id/weekday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_accent"
+        android:textSize="13sp"
+        android:maxLines="1"
+        android:text="Thứ Tư" />
+
+    <TextView
+        android:id="@+id/day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_text"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:includeFontPadding="false"
+        android:text="9" />
+
+    <TextView
+        android:id="@+id/month"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_text"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:text="Tháng 9" />
+
+    <TextView
+        android:id="@+id/lunar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_text_secondary"
+        android:textSize="13sp"
+        android:maxLines="1"
+        android:text="28/7 âm" />
+
+    <TextView
+        android:id="@+id/line5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_text_secondary"
+        android:textSize="13sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Giáp Tý" />
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Màu widget khi hệ thống bật Dark Mode. -->
+<resources>
+    <color name="widget_bg">#F21E1E1E</color>
+    <color name="widget_text">#E6E1E5</color>
+    <color name="widget_text_secondary">#CAC4D0</color>
+    <color name="widget_accent">#EF9A9A</color>
+    <color name="widget_off">#EF9A9A</color>
+</resources>

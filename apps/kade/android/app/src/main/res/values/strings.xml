@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Text native cho widget (bước 17). Text trong app Flutter nằm ở lib/core/strings.dart. -->
+<resources>
+    <string name="widget_small_name">Kade · Hôm nay</string>
+    <string name="widget_small_desc">Ngày dương, âm lịch, can chi và sự kiện hôm nay</string>
+    <string name="widget_wide_name">Kade · Hôm nay + Sắp tới</string>
+    <string name="widget_wide_desc">Hôm nay kèm 3 sự kiện sắp tới</string>
+    <string name="widget_open_to_update">Mở Kade để cập nhật</string>
+    <string name="widget_upcoming">Sắp tới</string>
+    <string name="widget_no_upcoming">Không có sự kiện trong 35 ngày</string>
+    <string name="widget_month">Tháng %1$d</string>
+    <string name="widget_lunar">%1$d/%2$d âm</string>
+    <string name="widget_lunar_leap">%1$d/%2$d nhuận âm</string>
+    <string name="widget_days">%1$d ng</string>
+</resources>

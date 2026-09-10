@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -18,7 +18,9 @@ import 'data/settings_provider.dart';
 import 'data/sync/google_auth.dart';
 import 'data/sync/sync_trigger.dart';
 import 'data/user_events_provider.dart';
+import 'data/widget_updater.dart';
 import 'platform/file_io.dart';
+import 'platform/home_widgets.dart';
 import 'platform/notifications.dart';
 
 Future<void> main() async {
@@ -46,6 +48,12 @@ Future<void> main() async {
         // Web không nhắc (plan §4.6).
         notificationsProvider.overrideWithValue(
           kIsWeb ? const NoopNotifications() : LocalNotifications(),
+        ),
+        // Widget chỉ Android (plan §5.2).
+        homeWidgetsProvider.overrideWithValue(
+          !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+              ? AndroidHomeWidgets()
+              : const NoopHomeWidgets(),
         ),
       ],
       child: const KadeApp(),
@@ -77,9 +85,9 @@ class KadeApp extends StatelessWidget {
   }
 }
 
-/// Nối vòng đời app với [SyncTrigger] (bước 13) và [ReminderScheduler] (bước
-/// 16): tạo lúc start (từ đó tự nghe đăng nhập + sự kiện), báo pause/resume;
-/// chạm thông báo → [router] mở route trong payload.
+/// Nối vòng đời app với [SyncTrigger] (bước 13), [ReminderScheduler] (bước
+/// 16) và [WidgetUpdater] (bước 17): tạo lúc start (từ đó tự nghe đăng nhập +
+/// sự kiện), báo pause/resume; chạm thông báo / widget → [router] mở route.
 class AppLifecycle extends ConsumerStatefulWidget {
   const AppLifecycle({super.key, required this.router, required this.child});
 
@@ -98,6 +106,7 @@ class _AppLifecycleState extends ConsumerState<AppLifecycle>
     WidgetsBinding.instance.addObserver(this);
     ref.read(syncTriggerProvider);
     ref.read(reminderSchedulerProvider).start(widget.router.go);
+    ref.read(widgetUpdaterProvider).start(widget.router.go);
   }
 
   @override
@@ -112,6 +121,7 @@ class _AppLifecycleState extends ConsumerState<AppLifecycle>
     if (state == AppLifecycleState.resumed) {
       trigger.onResume();
       ref.read(reminderSchedulerProvider).reschedule();
+      ref.read(widgetUpdaterProvider).push();
     } else {
       trigger.onPause();
     }

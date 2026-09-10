@@ -24,6 +24,7 @@ import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/main.dart';
 import 'package:kade/platform/file_io.dart';
+import 'package:kade/platform/home_widgets.dart';
 import 'package:kade/platform/notifications.dart';
 
 /// GoogleAuth giả. Android-like mặc định (`supportsAuthenticate` true):
@@ -142,6 +143,29 @@ class FakeNotifications implements Notifications {
   }
 
   void tap(String payload) => _onSelect?.call(payload);
+}
+
+/// HomeWidgets giả (bước 17): ghi các lần [push] (JSON + mốc vẽ lại), trả
+/// [initial] cho `initialLaunch`, [emitClick] giả chạm widget khi app đang chạy.
+class FakeHomeWidgets implements HomeWidgets {
+  final pushed = <String>[];
+  List<DateTime> refreshAt = const [];
+  Uri? initial;
+  final _clicks = StreamController<Uri?>.broadcast();
+
+  @override
+  Future<void> push(String daysJson, List<DateTime> refreshAt) async {
+    pushed.add(daysJson);
+    this.refreshAt = refreshAt;
+  }
+
+  @override
+  Future<Uri?> initialLaunch() async => initial;
+
+  @override
+  Stream<Uri?> get clicks => _clicks.stream;
+
+  void emitClick(Uri uri) => _clicks.add(uri);
 }
 
 /// FileIo giả: `saveJson` ghi lại (tên, nội dung) vào [saved] và trả
@@ -286,6 +310,7 @@ Future<List<Override>> testOverrides({
   DateTime Function()? clock,
   bool? isWeb,
   Notifications? notifications,
+  HomeWidgets? homeWidgets,
 }) async => [
   remoteConfigProvider.overrideWith(
     () => FakeRemoteConfig(overrides ?? assetOverrides()),
@@ -302,6 +327,7 @@ Future<List<Override>> testOverrides({
   if (today != null) todayProvider.overrideWithValue(today),
   if (clock != null) clockProvider.overrideWithValue(clock),
   if (isWeb != null) platformIsWebProvider.overrideWithValue(isWeb),
+  homeWidgetsProvider.overrideWithValue(homeWidgets ?? FakeHomeWidgets()),
   notificationsProvider.overrideWithValue(notifications ?? FakeNotifications()),
 ];
 
@@ -318,6 +344,7 @@ Future<Widget> testApp(
   DateTime Function()? clock,
   bool? isWeb,
   Notifications? notifications,
+  HomeWidgets? homeWidgets,
 }) async => ProviderScope(
   overrides: await testOverrides(
     overrides: overrides,
@@ -330,6 +357,7 @@ Future<Widget> testApp(
     clock: clock,
     isWeb: isWeb,
     notifications: notifications,
+    homeWidgets: homeWidgets,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),
 );

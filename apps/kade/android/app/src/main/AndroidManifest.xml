@@ -33,6 +33,39 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Widget 2x2 / 4x2 (bước 17, plan §5.2): 2 AppWidgetProvider đọc days_json do Dart ghi qua home_widget. -->
+        <receiver
+            android:name=".KadeWidgetSmallProvider"
+            android:exported="true"
+            android:label="@string/widget_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_2x2_info" />
+        </receiver>
+        <receiver
+            android:name=".KadeWidgetWideProvider"
+            android:exported="true"
+            android:label="@string/widget_wide_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_4x2_info" />
+        </receiver>
+        <!-- home_widget: báo thức vẽ lại widget sau 0h (scheduleWidgetUpdates) + đặt lại sau reboot / cập nhật app. -->
+        <receiver
+            android:name="es.antonborri.home_widget.HomeWidgetScheduledUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
         <!-- flutter_local_notifications: nhận báo thức hẹn giờ + đặt lại sau reboot / cập nhật app. -->
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
