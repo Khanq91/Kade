@@ -8,7 +8,7 @@ void main() {
   testWidgets('06/02/2027: Tết Nguyên đán, năm Đinh Mùi, can chi, hoàng đạo', (
     tester,
   ) async {
-    await tester.pumpWidget(testApp('/d/2027-02-06'));
+    await tester.pumpWidget(await testApp('/d/2027-02-06'));
     await tester.pumpAndSettle();
 
     expect(find.text('06/02/2027'), findsOneWidget); // AppBar
@@ -33,12 +33,12 @@ void main() {
   testWidgets(
     '09/02/2027: không sự kiện nhưng nghỉ bù (asset); 14/02 Valentine DL',
     (tester) async {
-      await tester.pumpWidget(testApp('/d/2027-02-09'));
+      await tester.pumpWidget(await testApp('/d/2027-02-09'));
       await tester.pumpAndSettle();
       expect(find.text(Strings.noEvents), findsOneWidget);
       expect(find.text(Strings.offDay), findsOneWidget);
 
-      await tester.pumpWidget(testApp('/d/2027-02-14'));
+      await tester.pumpWidget(await testApp('/d/2027-02-14'));
       await tester.pumpAndSettle();
       expect(find.text(Strings.kindInternational), findsOneWidget);
       expect(find.text(Strings.solarTag), findsOneWidget);
@@ -49,7 +49,7 @@ void main() {
   testWidgets(
     '▶ → 07/02; vuốt trái → 08/02; Quay lại (mở thẳng URL) → 2/2027',
     (tester) async {
-      await tester.pumpWidget(testApp('/d/2027-02-06'));
+      await tester.pumpWidget(await testApp('/d/2027-02-06'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byTooltip(Strings.nextDay));
@@ -67,7 +67,7 @@ void main() {
   );
 
   testWidgets('/d/xxx sai định dạng → tháng hiện tại', (tester) async {
-    await tester.pumpWidget(testApp('/d/2027-2-6'));
+    await tester.pumpWidget(await testApp('/d/2027-2-6'));
     await tester.pumpAndSettle();
     final now = DateTime.now();
     expect(find.text(Strings.monthTitle(now.month, now.year)), findsOneWidget);

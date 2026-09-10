@@ -9,8 +9,10 @@ import 'core/env.dart';
 import 'core/router.dart';
 import 'core/strings.dart';
 import 'data/local/hive_boxes.dart';
+import 'data/local/user_event_repository.dart';
 import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
+import 'data/user_events_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,10 +23,14 @@ Future<void> main() async {
     loadAsset: rootBundle.loadString,
     url: Env.configUrl,
   );
+  final userEvents = UserEventRepository(
+    Hive.box<String>(HiveBoxes.userEvents),
+  );
   runApp(
     ProviderScope(
       overrides: [
         remoteConfigRepositoryProvider.overrideWithValue(remoteConfig),
+        userEventRepositoryProvider.overrideWithValue(userEvents),
       ],
       child: const KadeApp(),
     ),

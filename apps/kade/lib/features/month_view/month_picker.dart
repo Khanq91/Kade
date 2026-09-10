@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:lunar_core/lunar_core.dart';
 
+import '../../core/lunar_utils.dart';
 import '../../core/strings.dart';
 
 /// Dialog chọn tháng/năm dương → `(year, month)`, hoặc `null` nếu hủy.
@@ -23,15 +24,6 @@ Future<({int year, int month, bool isLeap})?> showLunarMonthPicker(
   context: context,
   builder: (_) => _LunarMonthPicker(year: year, month: month),
 );
-
-/// Tháng nhuận của năm âm [lunarYear], hoặc `null` nếu năm không nhuận.
-int? leapMonthOf(int lunarYear) {
-  for (var m = 1; m <= 12; m++) {
-    final d = LunarDate(day: 1, month: m, year: lunarYear, isLeapMonth: true);
-    if (lunarToSolar(d) != null) return m;
-  }
-  return null;
-}
 
 class _SolarMonthPicker extends StatefulWidget {
   const _SolarMonthPicker({required this.year, required this.month});

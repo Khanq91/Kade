@@ -1,7 +1,16 @@
 // Định dạng ngày giờ đơn giản, không cần package intl.
 import 'package:lunar_core/lunar_core.dart';
 
+import '../data/models/user_event.dart';
+import 'event_style.dart';
 import 'strings.dart';
+
+/// "15/8 ÂL · hàng năm" / "6/2 DL · 2027 · 3 ngày" (khi nào diễn ra).
+String formatUserEventWhen(UserEvent e) => [
+  '${e.day}/${e.month} ${typeTag(e.type)}',
+  e.year == null ? Strings.everyYear : '${e.year}',
+  if (e.durationDays > 1) Strings.daysCount(e.durationDays),
+].join(' · ');
 
 String _two(int n) => n.toString().padLeft(2, '0');
 

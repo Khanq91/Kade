@@ -101,6 +101,41 @@ abstract final class Strings {
   static String lunarDateMissing(int day, int month, int year, bool isLeap) =>
       'Ngày $day/$month${isLeap ? ' $leap' : ''}/$year âm lịch không tồn tại';
 
+  // Sự kiện cá nhân
+  static const personalEvents = 'Sự kiện cá nhân';
+  static const myEvents = 'Sự kiện của tôi';
+  static const myEventsHint =
+      'Ngày giỗ, sinh nhật, kỷ niệm… theo âm hoặc dương lịch';
+  static const addEvent = 'Thêm sự kiện';
+  static const newEvent = 'Sự kiện mới';
+  static const editEvent = 'Sửa sự kiện';
+  static const noUserEvents = 'Chưa có sự kiện nào';
+  static const titleField = 'Tên sự kiện';
+  static const titleRequired = 'Nhập tên sự kiện';
+  static const solarType = 'Dương lịch';
+  static const lunarType = 'Âm lịch';
+  static const yearly = 'Lặp hàng năm';
+  static const everyYear = 'hàng năm';
+  static const durationField = 'Số ngày';
+  static const leapRuleLabel = 'Năm có tháng nhuận trùng tháng';
+  static const leapFirst = 'Tháng chính';
+  static const leapSecond = 'Tháng nhuận';
+  static const leapBoth = 'Cả hai';
+  static const noteField = 'Ghi chú';
+  static const colorLabel = 'Màu';
+  static const save = 'Lưu';
+  static const delete = 'Xóa';
+  static const deleteEventTitle = 'Xóa sự kiện?';
+  static const invalidEventDate = 'Ngày/tháng không hợp lệ';
+  static const eventDateMissing = 'Ngày này không tồn tại trong năm đã chọn';
+
+  /// '"Giỗ ông" sẽ bị xóa khỏi lịch.'
+  static String deleteEventBody(String title) =>
+      '"$title" sẽ bị xóa khỏi lịch.';
+
+  /// "3 ngày".
+  static String daysCount(int n) => '$n ngày';
+
   // Settings
   static const settingsTitle = 'Cài đặt';
   static const remoteConfigSection = 'Lịch nghỉ bù theo năm';

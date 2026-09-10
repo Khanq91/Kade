@@ -1,6 +1,7 @@
 import 'package:calendar_data/calendar_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/env.dart';
 import '../../core/formats.dart';
@@ -37,6 +38,14 @@ class _RemoteConfigSection extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
+        ListTile(
+          leading: const Icon(Icons.event_note_outlined),
+          title: const Text(Strings.myEvents),
+          subtitle: const Text(Strings.myEventsHint),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.push('/events'),
+        ),
+        const Divider(),
         const ListTile(
           title: Text(Strings.remoteConfigSection),
           subtitle: Text(Strings.remoteConfigHint),

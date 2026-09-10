@@ -89,7 +89,7 @@ Log format: `- YYYY-MM-DD — phase{N}-step{M} — <kết quả 1 dòng> — <co
 ```
 # root
 dart pub get                                  # resolve toàn workspace
-dart run build_runner build -d               # chạy trong apps/kade khi đổi model
+dart run build_runner build                   # chạy trong apps/kade khi đổi model VÀ sau khi clone/pull (generated *.g.dart, *.freezed.dart bị gitignore; -d không còn tác dụng, E014)
 cd packages/lunar_core && dart test           # engine
 cd apps/kade && flutter test                  # app
 flutter run -d chrome --web-port 5000 --dart-define-from-file=../../dart_defines.json   # web dev, chạy trong apps/kade; port cố định khớp OAuth origin

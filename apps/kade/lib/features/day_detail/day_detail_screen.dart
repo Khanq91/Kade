@@ -153,7 +153,38 @@ class DayDetailScreen extends ConsumerWidget {
                               : Text(e.description!),
                         ),
                     ],
-                // Sự kiện cá nhân + nút "+ Thêm sự kiện": Phase 1 bước 7.
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        Strings.personalEvents,
+                        style: text.titleMedium,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () =>
+                          context.push('/events/new?date=${isoDate(date)}'),
+                      icon: const Icon(Icons.add),
+                      label: const Text(Strings.addEvent),
+                    ),
+                  ],
+                ),
+                if (cell.userEvents.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(Strings.noUserEvents),
+                  )
+                else
+                  for (final e in cell.userEvents)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: UserEventTag(event: e),
+                      title: Text(e.title),
+                      subtitle: Text(e.note ?? formatUserEventWhen(e)),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/events/${e.id}'),
+                    ),
               ],
             ),
           ),

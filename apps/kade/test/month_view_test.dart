@@ -15,7 +15,7 @@ void main() {
   testWidgets('2/2027: sự kiện, ngày nghỉ, nhãn ÂL/DL, mùng 1 "1/1"', (
     tester,
   ) async {
-    await tester.pumpWidget(testApp('/2027/02'));
+    await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
     expect(find.text(Strings.monthTitle(2, 2027)), findsOneWidget);
     expect(find.byType(DayTile), findsNWidgets(28));
@@ -76,7 +76,7 @@ void main() {
   });
 
   testWidgets('◀ ▶ và Hôm nay đổi tháng qua route', (tester) async {
-    await tester.pumpWidget(testApp('/2027/02'));
+    await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip(Strings.nextMonth));
@@ -100,7 +100,7 @@ void main() {
   });
 
   testWidgets('vuốt trái → tháng sau', (tester) async {
-    await tester.pumpWidget(testApp('/2027/02'));
+    await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
     await tester.fling(find.byType(DayTile).first, const Offset(-300, 0), 1000);
     await tester.pumpAndSettle();
@@ -110,7 +110,7 @@ void main() {
   testWidgets('tap ô 6/2 → DayDetail Tết; Quay lại → giữ tháng', (
     tester,
   ) async {
-    await tester.pumpWidget(testApp('/2027/02'));
+    await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(key(6)));
@@ -126,7 +126,7 @@ void main() {
   testWidgets('bottom nav: Đổi ngày, Cài đặt, về Lịch vẫn giữ 2/2027', (
     tester,
   ) async {
-    await tester.pumpWidget(testApp('/2027/02'));
+    await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.swap_horiz));
@@ -145,7 +145,7 @@ void main() {
   testWidgets(
     'picker tháng dương → /2027/05; picker tháng âm → tháng chứa mùng 1',
     (tester) async {
-      await tester.pumpWidget(testApp('/2027/02'));
+      await tester.pumpWidget(await testApp('/2027/02'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(Strings.monthTitle(2, 2027)));
@@ -169,11 +169,11 @@ void main() {
 
   testWidgets('/ → tháng hiện tại; /2027/13 → tháng hiện tại', (tester) async {
     final now = DateTime.now();
-    await tester.pumpWidget(testApp('/'));
+    await tester.pumpWidget(await testApp('/'));
     await tester.pumpAndSettle();
     expect(find.text(Strings.monthTitle(now.month, now.year)), findsOneWidget);
 
-    await tester.pumpWidget(testApp('/2027/13'));
+    await tester.pumpWidget(await testApp('/2027/13'));
     await tester.pumpAndSettle();
     expect(find.text(Strings.monthTitle(now.month, now.year)), findsOneWidget);
   });

@@ -1,17 +1,22 @@
 // resolveMonth cấp app (plan §3.2): calendar_data.resolveMonth (sự kiện app +
-// ngày nghỉ theo overrides của remote config) + lunar_core.dayInfo cho từng ô.
-// Cache theo (year, month) nhờ Provider.family; tính lại khi overrides đổi.
+// ngày nghỉ theo overrides của remote config) + lunar_core.dayInfo + sự kiện
+// cá nhân (userEventsOn) cho từng ô. Cache theo (year, month) nhờ
+// Provider.family; tính lại khi overrides hoặc sự kiện cá nhân đổi.
 import 'package:calendar_data/calendar_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lunar_core/lunar_core.dart';
 
+import 'models/user_event.dart';
 import 'remote/remote_config_provider.dart';
+import 'user_event_match.dart';
+import 'user_events_provider.dart';
 
-/// Một ô lịch (plan §2.6): [DayInfo] của engine + sự kiện app + ngày nghỉ.
+/// Một ô lịch (plan §2.6): [DayInfo] của engine + sự kiện app + sự kiện cá nhân + ngày nghỉ.
 class DayCell {
   const DayCell({
     required this.info,
     required this.appEvents,
+    required this.userEvents,
     required this.isOffDay,
   });
 
@@ -24,8 +29,8 @@ class DayCell {
   /// Sự kiện app rơi vào ngày này (D020).
   final List<Event> appEvents;
 
-  // `List<UserEvent> userEvents` (đã lọc deletedAt == null) thêm ở bước 7 (D020);
-  // khi đó [monthProvider] watch thêm provider sự kiện cá nhân để invalidate cache.
+  /// Sự kiện cá nhân rơi vào ngày này (đã lọc tombstone).
+  final List<UserEvent> userEvents;
 
   /// Ngày nghỉ (override `off` / lễ `vnHoliday`, trừ override `work`).
   final bool isOffDay;
@@ -48,8 +53,13 @@ class MonthData {
       days[DateTime.utc(d.year, d.month, d.day)];
 }
 
-/// Gộp `resolveMonth` + `dayInfo` cho mọi ngày của tháng [year]/[month].
-MonthData buildMonth(int year, int month, YearOverrides overrides) {
+/// Gộp `resolveMonth` + `dayInfo` + `userEventsOn` cho mọi ngày của tháng.
+MonthData buildMonth(
+  int year,
+  int month,
+  YearOverrides overrides, {
+  List<UserEvent> userEvents = const [],
+}) {
   final resolved = resolveMonth(year, month, overrides: overrides);
   return MonthData(
     year: year,
@@ -59,6 +69,7 @@ MonthData buildMonth(int year, int month, YearOverrides overrides) {
         e.key: DayCell(
           info: dayInfo(e.key),
           appEvents: e.value.appEvents,
+          userEvents: userEventsOn(e.key, userEvents),
           isOffDay: e.value.isOffDay,
         ),
     },
@@ -74,13 +85,15 @@ final overridesProvider = Provider<YearOverrides>((ref) {
   return overrides ?? YearOverrides.empty;
 });
 
-/// Tháng đã resolve, cache theo `(year, month)`; tính lại khi [overridesProvider] đổi.
+/// Tháng đã resolve, cache theo `(year, month)`; tính lại khi
+/// [overridesProvider] hoặc [activeUserEventsProvider] đổi.
 final monthProvider = Provider.family<MonthData, (int year, int month)>((
   ref,
   ym,
 ) {
   final overrides = ref.watch(overridesProvider);
-  return buildMonth(ym.$1, ym.$2, overrides);
+  final userEvents = ref.watch(activeUserEventsProvider);
+  return buildMonth(ym.$1, ym.$2, overrides, userEvents: userEvents);
 });
 
 /// Ô lịch của một ngày, lấy qua cache tháng.

@@ -223,6 +223,17 @@ class DayTile extends StatelessWidget {
         ? scheme.error
         : scheme.onSurface;
     final events = cell.appEvents;
+    final userEvents = cell.userEvents;
+    // Tên hiện trong ô: sự kiện app trước, không có thì sự kiện cá nhân.
+    final (String? firstTitle, Color? firstColor) = events.isNotEmpty
+        ? (events.first.title, kindColor(events.first.kind))
+        : userEvents.isNotEmpty
+        ? (userEvents.first.title, userEventColor(userEvents.first))
+        : (null, null);
+    final tags = <Widget>[
+      for (final e in events) EventTag(event: e),
+      for (final e in userEvents) UserEventTag(event: e),
+    ];
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -264,28 +275,23 @@ class DayTile extends StatelessWidget {
                   ),
                 ],
               ),
-              if (events.isNotEmpty)
+              if (tags.isNotEmpty)
                 Flexible(
                   child: ClipRect(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (constraints.maxWidth >= 96)
+                        if (constraints.maxWidth >= 96 && firstTitle != null)
                           Text(
-                            events.first.title,
+                            firstTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: kindColor(events.first.kind),
-                            ),
+                            style: TextStyle(fontSize: 10, color: firstColor),
                           ),
                         Wrap(
                           spacing: 2,
                           runSpacing: 2,
-                          children: [
-                            for (final e in events.take(3)) EventTag(event: e),
-                          ],
+                          children: tags.take(3).toList(),
                         ),
                       ],
                     ),

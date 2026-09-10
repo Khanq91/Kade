@@ -10,6 +10,8 @@ import '../features/day_detail/day_detail_screen.dart';
 import '../features/month_view/month_view_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/shell/app_shell.dart';
+import '../features/user_events/user_event_form_screen.dart';
+import '../features/user_events/user_events_screen.dart';
 import 'formats.dart';
 
 /// `/2027/02`.
@@ -51,6 +53,30 @@ GoRouter createRouter({String? initialLocation}) {
             : null,
         builder: (_, state) =>
             DayDetailScreen(date: parseIsoDate(state.pathParameters['date']!)!),
+      ),
+      // Sự kiện cá nhân (bước 7): danh sách, tạo mới (`?date=YYYY-MM-DD` điền
+      // sẵn), sửa theo id. Đều là trang gốc đè lên shell.
+      GoRoute(
+        path: '/events',
+        parentNavigatorKey: rootKey,
+        builder: (_, _) => const UserEventsScreen(),
+        routes: [
+          GoRoute(
+            path: 'new',
+            parentNavigatorKey: rootKey,
+            builder: (_, state) => UserEventFormScreen(
+              initialDate: parseIsoDate(
+                state.uri.queryParameters['date'] ?? '',
+              ),
+            ),
+          ),
+          GoRoute(
+            path: ':id',
+            parentNavigatorKey: rootKey,
+            builder: (_, state) =>
+                UserEventEditScreen(id: state.pathParameters['id']!),
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => AppShell(shell: shell),

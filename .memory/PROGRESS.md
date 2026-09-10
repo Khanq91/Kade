@@ -3,10 +3,10 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 bước 7 🔄 — UserEvent CRUD + tombstone + Hive. Bước 6 ✅ (user verify web 2026-09-10: mục 1–5 đều chạy tốt).
+Phase 1 bước 8 (chưa bắt đầu) — Upcoming. Bước 7 ✅ (tạo/sửa/xóa, reload, tháng nhuận firstMonth: 48 test pass, build web OK). User có thể thử thêm trên web: Lịch → tap ngày → "+ Thêm sự kiện", hoặc Cài đặt → "Sự kiện của tôi"; F5 vẫn còn (IndexedDB).
 
 ## Đang dở
-Bước 7 mới bắt đầu (xem log cuối khi có).
+(không)
 
 ## Cần user làm
 - [x] **Verify bước 6 trên web** (§4.8 mục 1–2) → user xác nhận 2026-09-10 "test hết rồi, chạy tốt, từ 1–5". Từ `apps/kade` (Flutter 3.44.5 — E008; port 5000 bận — E011):
@@ -45,7 +45,7 @@ Bước 7 mới bắt đầu (xem log cuối khi có).
 | 4 | `calendar_data`: 3 danh sách lễ + `YearOverride` + asset fallback | ✅ |
 | 5 | Remote config: fetch Apps Script + cache Hive + verify CORS web | ✅ |
 | 6 | MonthView + DayDetail + Converter | ✅ |
-| 7 | UserEvent CRUD + tombstone + Hive | 🔄 |
+| 7 | UserEvent CRUD + tombstone + Hive | ✅ |
 | 8 | Upcoming | ⬜ |
 | 9 | Export/Import JSON | ⬜ |
 
@@ -72,8 +72,11 @@ Bước 7 mới bắt đầu (xem log cuối khi có).
 
 ## Ghi chú cho bước sau
 - Bước 6: home hiện là `SettingsScreen` (tạm) → thay bằng MonthView, Settings vào route `/settings`. MonthView `ref.watch(remoteConfigProvider)` lấy `overrides` cho `resolveMonth`; cache tháng invalidate khi state đổi. UI phải phân biệt `kind` (nghỉ/kỷ niệm/quốc tế) bằng màu/badge và `type` (âm/dương) bằng ký hiệu ÂL/DL (D021). go_router tối thiểu ngay ở bước 6 vì §4.8 mục 2 (reload giữ tháng) là tiêu chí verify của bước này; responsive/PWA/phím tắt để bước 14.
-- Bước 7: `DayEvents` của `calendar_data` không có `userEvents`; app gộp thêm (D020). Chỗ gộp: `lib/data/month_provider.dart` — thêm field `userEvents` vào `DayCell` (đã chừa comment), `monthProvider` watch thêm provider user events; `DayDetailScreen` thêm mục "Sự kiện cá nhân" + nút "+ Thêm sự kiện" (comment đánh dấu cuối ListView); route `/events` là branch mới trong `AppShell`/`router.dart` (D023). Test widget dùng `test/test_app.dart` (`testApp('/2027/02')`, `FakeRemoteConfig`) — không cần Hive/runAsync trừ khi test chính Hive.
-- Bước 8: Upcoming = branch thứ 4 trong `StatefulShellRoute` (`/upcoming`), thêm `NavigationDestination` trong `app_shell.dart`; quét tháng qua `monthProvider` (đã cache).
+- Sau khi clone/pull: chạy `dart run build_runner build` trong `apps/kade` trước khi analyze/test (generated `*.freezed.dart`, `*.g.dart` bị gitignore — D025, E014).
+- Test widget dùng `test/test_app.dart`: `await testApp('/2027/02')` (async vì mở box in-memory), `FakeRemoteConfig`, `memoryUserEventsBox()`; màn dài dùng `testTall` (E009). Không cần Hive file/runAsync trừ khi test chính Hive.
+- Bước 8: Upcoming = branch thứ 4 trong `StatefulShellRoute` (`/upcoming`), thêm `NavigationDestination` trong `app_shell.dart` (plan §5.1: [Lịch] [Sắp tới] [Đổi ngày] [Cài đặt]); quét 60 ngày qua `monthProvider` (đã cache, có `userEvents`); toggle 4 lớp lưu box `settings`.
+- Bước 9: `SyncEnvelope` (plan §2.5) = freezed + json; `events = UserEventRepository.all()` kể cả tombstone; import → `putAll` rồi `ref.invalidate(userEventsProvider)`. Web: download blob / file picker (plan §4.4).
+- Bước 12: merge theo `updatedAt` (tombstone cũng là 1 bản) → `putAll`; purge tombstone > 90 ngày sau khi sync (chưa làm ở bước 7, D025).
 - Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
 - Test app: luôn `flutter test --timeout 90s`; widget test dùng Hive phải bọc `tester.runAsync` (E009); tile dưới viewport 600px là offstage → `ensureVisible`.
 - Chạy app: từ `apps/kade`, luôn kèm `--dart-define-from-file=../../dart_defines.json` (thiếu → remote config tắt, chỉ asset). Máy user: dùng Flutter 3.44.5 (E008), web port 5001 (E011).
@@ -91,4 +94,5 @@ Bước 7 mới bắt đầu (xem log cuối khi có).
 - 2026-09-10 — phase1-step5 — env/strings/Hive boxes/`RemoteConfigRepository`/`AsyncNotifier`/`SettingsScreen` (D022); 10 test app pass (E009), `flutter build web` OK; URL thật 200 JSON + CORS `*` (E010); ⏸ chờ user verify trên web — b916f8d
 - 2026-09-10 — phase1-step5 — user chạy web (Flutter 3.44.5, port 5001), bấm "Kiểm tra cập nhật" OK → ✅; thêm `docs/prompts/phase1.md` (prompt bước 6 + template) — (commit kèm .memory)
 - 2026-09-10 — phase1-step6 — `month_provider` (DayCell/MonthData, cache family, invalidate theo overrides), `event_style` (màu kind + nhãn ÂL/DL), MonthView + picker tháng dương/âm, DayDetail, Converter, `StatefulShellRoute` bottom nav, `/` `/YYYY/MM` `/d/YYYY-MM-DD` `/convert` `/settings`, locale vi (D023); AGENTS.md rule commit (D024); 29 test app pass (`flutter test --timeout 90s`), `flutter build web` OK; ⏸ chờ user verify §4.8 mục 1–2 — 4485657
-- 2026-09-10 — phase1-step6 — user chạy web (port 5001), verify mục 1–5 trong "Cần user làm" OK → ✅ — (commit kèm .memory)
+- 2026-09-10 — phase1-step6 — user chạy web (port 5001), verify mục 1–5 trong "Cần user làm" OK → ✅ — c19ff02
+- 2026-09-10 — phase1-step7 — `UserEvent` freezed/json + `LeapMonthRule`, box `user_events` JSON, `UserEventRepository`, `UserEventsNotifier` (create/update/remove tombstone), `userEventsOn` (leap rule D005), `DayCell.userEvents`, form `/events/new` `/events/:id`, danh sách `/events` (Cài đặt → Sự kiện của tôi), DayDetail "+ Thêm sự kiện", MonthView nhãn màu (D025, E014); 48 test pass (match 2025 nhuận tháng 6, Hive reload, CRUD qua UI), build web OK → ✅ — (commit này)

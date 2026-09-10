@@ -104,3 +104,16 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: riverpod 3 đánh dấu `Override` là `@publicInMisc` → chỉ export qua `package:flutter_riverpod/misc.dart` (cũng có `ProviderContainer.test`, `AsyncNotifierProvider.overrideWith(() => Notifier)` thì ở export chính).
 - Cách xử lý: `import 'package:flutter_riverpod/misc.dart' show Override;`. Lưu ý thêm: `Notifier.state` là `@protected` → test muốn đổi state phải gọi method của subclass (xem `FakeRemoteConfig.replace`).
 - Trạng thái: fixed
+
+## 2026-09-10 — E014 — build_runner 2.15: `-d` / `--delete-conflicting-outputs` bị bỏ (chỉ cảnh báo); freezed resolve bản 3.2.6-dev.1
+- Bối cảnh: bước 7, `flutter pub add dev:freezed` rồi `dart run build_runner build -d`.
+- Triệu chứng: `W These options have been removed and were ignored: --delete-conflicting-outputs` (vẫn build OK). Pub chọn `freezed 3.2.6-dev.1` (bản stable 3.x xung đột analyzer 12.1.0 mà build_runner 2.15 kéo; freezed 4 cần analyzer mới hơn).
+- Nguyên nhân: build_runner ≥ 2.15 luôn ghi đè output; freezed stable chưa hỗ trợ analyzer 12 tại thời điểm này.
+- Cách xử lý: dùng `dart run build_runner build` (không `-d`), đã sửa AGENTS.md §5. Giữ `freezed: ^3.2.6-dev.1` — sinh code đúng, 48 test pass. Khi freezed 3.3/4.x stable resolve được thì nâng.
+- Trạng thái: workaround
+
+## 2026-09-10 — E009 (cập nhật) — widget test màn dài: dùng `testTall` (viewport 800×1600)
+- Bối cảnh: bước 7, `find.text` / `tap` nút "Lưu" ở cuối form và mục "Sự kiện cá nhân" cuối DayDetail báo không tìm thấy.
+- Nguyên nhân: cùng E009 — dưới fold 600px là offstage.
+- Cách xử lý: `test/user_events_test.dart` có helper `testTall()` đặt `tester.view.physicalSize = 800×1600`, `devicePixelRatio = 1`, `addTearDown(tester.view.reset)`. Test màn dài (form, DayDetail, Settings) dùng helper này thay vì `ensureVisible` từng widget.
+- Trạng thái: fixed
