@@ -3,7 +3,7 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 bước 9 (chưa bắt đầu) — Export/Import JSON. Bước 8 ✅ (sự kiện âm hiện đúng ngày dương năm nay/năm sau: 55 test pass, build web OK). User có thể thử trên web: tab "Sắp tới", bật/tắt 4 chip lớp, F5 vẫn giữ.
+Phase 1 bước 9 (chưa bắt đầu) — Export/Import JSON. Prompt sẵn ở `docs/prompts/phase1.md` (khối "Bước 9"; kèm template Phase 2). Bước 8 ✅ (user xác nhận 2026-09-10 "ok tốt"; 55 test pass, build web OK).
 
 ## Đang dở
 (không)
