@@ -115,3 +115,4 @@ Phase 1 xong (bước 9 ✅, user xác nhận web 2026-09-10 "ok tốt"). Đang 
 - 2026-09-10 — phase1-step9 — commit code + .memory (D027, D028, E015) — 4047362
 - 2026-09-10 — phase1-step9 — user verify web "ok tốt" → ✅; Phase 1 xong — (hash ở dòng sau)
 - 2026-09-10 — phase2-step10 — đổi applicationId/namespace/MainActivity → vn.kade.kade (APK debug build OK, aapt: package vn.kade.kade); setup-google.md phần B: origin 5001, package name, SHA-1 debug, lệnh chạy từ apps/kade; kotlin.incremental=false cho android_file_picker 1.1.1 (E016); ⏸ chờ user: Android OAuth client + origin 5001 + test users — (hash ở dòng sau)
+- 2026-09-10 — phase2-step10 — commit (bước 9 ✅ + bước 10 ⏸) — b8569c6
