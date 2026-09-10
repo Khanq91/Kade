@@ -43,3 +43,15 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: chú thích từ phiên bản công thức cũ, không cập nhật.
 - Cách xử lý: `amlich_test.dart` dùng giá trị chạy thực từ JS, ghi rõ nguồn.
 - Trạng thái: fixed
+
+## 2026-09-10 — E005 (cập nhật) — đã fixed theo D014
+- Bối cảnh: user chốt sửa reference.
+- Cách xử lý: patch JS + port, sinh lại fixture, test regression `reference_patch_test.dart`.
+- Trạng thái: fixed
+
+## 2026-09-10 — E007 — pub workspace có app Flutter: `dart pub get` ở root vẫn chạy được
+- Bối cảnh: chuyển scaffold vào `apps/kade`, sợ `dart pub get` không resolve được `sdk: flutter`.
+- Triệu chứng: không có lỗi — `dart pub get` (Dart 3.12.2 đi kèm Flutter 3.44.5) và `flutter pub get` đều resolve được; `flutter_test` ép `test_core` 0.6.20 → 0.6.17, `test` vẫn 1.32.0.
+- Nguyên nhân: `dart` trên PATH là bản trong Flutter SDK nên biết `FLUTTER_ROOT`.
+- Cách xử lý: dùng lệnh nào cũng được; nếu máy khác dùng Dart SDK riêng thì dùng `flutter pub get`.
+- Trạng thái: fixed (ghi để biết)
