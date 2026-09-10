@@ -158,3 +158,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: Riverpod 3 tính lại provider dẫn xuất lười (khi có người đọc / khi scheduler flush từng tầng), khác Riverpod 2.
 - Cách xử lý: side-effect (đẩy widget, đặt thông báo, sync) → `ref.listen` trên **Notifier nguồn** (`userEventsProvider`, `layersProvider`, `remoteConfigProvider.select(...)`, `authProvider`) và tính dữ liệu cần thiết **trực tiếp từ state nguồn** bằng hàm pure (`computeWidgetData` dùng `buildMonth`; `buildReminders` dùng `userEventsProvider`), không đọc provider dẫn xuất trong callback. Widget UI (`ref.watch`) không bị ảnh hưởng. Lưu ý khi debug: assert nội dung phải tính cả sự kiện app có sẵn của ngày đó (03/02 có "Ngày thành lập Đảng") — lỗi assert ban đầu bị tưởng nhầm là stale.
 - Trạng thái: fixed (quy tắc cho bước sau)
+
+## 2026-09-10 — E020 — GitHub Actions deploy-pages: "Failed to get ID Token … Request timeout" dù đã có `id-token: write`
+- Bối cảnh: bước 15, lần chạy workflow deploy-web đầu tiên của user; job `build` xanh, job `deploy` đỏ ở `actions/deploy-pages@v4`.
+- Triệu chứng: `Error: Failed to get ID Token. Error Message: Request timeout: /…/idtoken/…` rồi gợi ý "Ensure GITHUB_TOKEN has permission id-token: write" (gợi ý gây hiểu nhầm — quyền đã đúng ở `permissions:` cấp workflow). Kèm cảnh báo Node 20 deprecated trên runner (chỉ warning).
+- Nguyên nhân: endpoint OIDC của GitHub timeout (quá tải/incident), không phải cấu hình.
+- Cách xử lý: Re-run failed jobs là đủ. Workflow thêm `continue-on-error` cho bước deploy + bước `retry` chạy lại `deploy-pages@v4` khi bước đầu fail, `timeout-minutes: 15`. Nếu lỗi lặp lại nhiều lần với message khác ("Get Pages site failed", "Resource not accessible") → xem setup-google C.1/C.5.
+- Trạng thái: workaround
