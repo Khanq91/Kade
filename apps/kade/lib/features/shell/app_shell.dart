@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/strings.dart';
 
-/// Khung bottom nav [Lịch] [Đổi ngày] [Cài đặt]; "Sắp tới" thêm ở bước 8.
+/// Khung bottom nav [Lịch] [Sắp tới] [Đổi ngày] [Cài đặt] (plan §5.1).
 /// `StatefulShellRoute` giữ tháng đang xem khi chuyển tab.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.shell});
@@ -23,6 +23,11 @@ class AppShell extends StatelessWidget {
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
             label: Strings.navCalendar,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.upcoming_outlined),
+            selectedIcon: Icon(Icons.upcoming),
+            label: Strings.navUpcoming,
           ),
           NavigationDestination(
             icon: Icon(Icons.swap_horiz),

@@ -3,8 +3,25 @@
 import 'package:calendar_data/calendar_data.dart';
 import 'package:flutter/material.dart';
 
+import '../data/models/event_layer.dart';
 import '../data/models/user_event.dart';
 import 'strings.dart';
+
+/// Tên lớp (chip "Sắp tới").
+String layerLabel(EventLayer layer) => switch (layer) {
+  EventLayer.vnHoliday => Strings.kindHoliday,
+  EventLayer.vnMemorial => Strings.kindMemorial,
+  EventLayer.international => Strings.kindInternational,
+  EventLayer.personal => Strings.layerPersonal,
+};
+
+/// Màu đại diện lớp: 3 lớp app theo kind, cá nhân lấy màu đầu bảng.
+Color layerColor(EventLayer layer) => switch (layer) {
+  EventLayer.vnHoliday => kindColor(EventKind.vnHoliday),
+  EventLayer.vnMemorial => kindColor(EventKind.vnMemorial),
+  EventLayer.international => kindColor(EventKind.international),
+  EventLayer.personal => userEventColors.first,
+};
 
 /// Màu theo [EventKind]: nghỉ lễ đỏ, kỷ niệm cam, quốc tế xanh.
 Color kindColor(EventKind kind) => switch (kind) {

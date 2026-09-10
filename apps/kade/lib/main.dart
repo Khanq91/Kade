@@ -12,6 +12,7 @@ import 'data/local/hive_boxes.dart';
 import 'data/local/user_event_repository.dart';
 import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
+import 'data/settings_provider.dart';
 import 'data/user_events_provider.dart';
 
 Future<void> main() async {
@@ -31,6 +32,9 @@ Future<void> main() async {
       overrides: [
         remoteConfigRepositoryProvider.overrideWithValue(remoteConfig),
         userEventRepositoryProvider.overrideWithValue(userEvents),
+        settingsBoxProvider.overrideWithValue(
+          Hive.box<dynamic>(HiveBoxes.settings),
+        ),
       ],
       child: const KadeApp(),
     ),

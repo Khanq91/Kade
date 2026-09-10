@@ -4,8 +4,19 @@ abstract final class Strings {
 
   // Bottom nav
   static const navCalendar = 'Lịch';
+  static const navUpcoming = 'Sắp tới';
   static const navConvert = 'Đổi ngày';
   static const navSettings = 'Cài đặt';
+
+  // Sắp tới
+  static const upcomingTitle = 'Sắp tới';
+  static const tomorrow = 'Ngày mai';
+  static const noUpcoming = 'Không có sự kiện trong 60 ngày tới';
+  static const layerPersonal = 'Cá nhân';
+  static const layersLabel = 'Lớp hiển thị';
+
+  /// "Còn 5 ngày".
+  static String inDays(int n) => 'Còn $n ngày';
 
   // Chung
   static const cancel = 'Hủy';

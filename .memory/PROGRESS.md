@@ -3,7 +3,7 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 1 bước 8 (chưa bắt đầu) — Upcoming. Bước 7 ✅ (tạo/sửa/xóa, reload, tháng nhuận firstMonth: 48 test pass, build web OK). User có thể thử thêm trên web: Lịch → tap ngày → "+ Thêm sự kiện", hoặc Cài đặt → "Sự kiện của tôi"; F5 vẫn còn (IndexedDB).
+Phase 1 bước 9 (chưa bắt đầu) — Export/Import JSON. Bước 8 ✅ (sự kiện âm hiện đúng ngày dương năm nay/năm sau: 55 test pass, build web OK). User có thể thử trên web: tab "Sắp tới", bật/tắt 4 chip lớp, F5 vẫn giữ.
 
 ## Đang dở
 (không)
@@ -46,7 +46,7 @@ Phase 1 bước 8 (chưa bắt đầu) — Upcoming. Bước 7 ✅ (tạo/sửa/
 | 5 | Remote config: fetch Apps Script + cache Hive + verify CORS web | ✅ |
 | 6 | MonthView + DayDetail + Converter | ✅ |
 | 7 | UserEvent CRUD + tombstone + Hive | ✅ |
-| 8 | Upcoming | ⬜ |
+| 8 | Upcoming | ✅ |
 | 9 | Export/Import JSON | ⬜ |
 
 ### Phase 2 — Sync
@@ -74,7 +74,7 @@ Phase 1 bước 8 (chưa bắt đầu) — Upcoming. Bước 7 ✅ (tạo/sửa/
 - Bước 6: home hiện là `SettingsScreen` (tạm) → thay bằng MonthView, Settings vào route `/settings`. MonthView `ref.watch(remoteConfigProvider)` lấy `overrides` cho `resolveMonth`; cache tháng invalidate khi state đổi. UI phải phân biệt `kind` (nghỉ/kỷ niệm/quốc tế) bằng màu/badge và `type` (âm/dương) bằng ký hiệu ÂL/DL (D021). go_router tối thiểu ngay ở bước 6 vì §4.8 mục 2 (reload giữ tháng) là tiêu chí verify của bước này; responsive/PWA/phím tắt để bước 14.
 - Sau khi clone/pull: chạy `dart run build_runner build` trong `apps/kade` trước khi analyze/test (generated `*.freezed.dart`, `*.g.dart` bị gitignore — D025, E014).
 - Test widget dùng `test/test_app.dart`: `await testApp('/2027/02')` (async vì mở box in-memory), `FakeRemoteConfig`, `memoryUserEventsBox()`; màn dài dùng `testTall` (E009). Không cần Hive file/runAsync trừ khi test chính Hive.
-- Bước 8: Upcoming = branch thứ 4 trong `StatefulShellRoute` (`/upcoming`), thêm `NavigationDestination` trong `app_shell.dart` (plan §5.1: [Lịch] [Sắp tới] [Đổi ngày] [Cài đặt]); quét 60 ngày qua `monthProvider` (đã cache, có `userEvents`); toggle 4 lớp lưu box `settings`.
+- Lớp hiển thị (D026) hiện chỉ lọc "Sắp tới"; muốn áp cho lịch tháng → hỏi user, ghi DECISIONS. `todayProvider` chưa tự đổi qua nửa đêm (invalidate khi resume: bước 13/16).
 - Bước 9: `SyncEnvelope` (plan §2.5) = freezed + json; `events = UserEventRepository.all()` kể cả tombstone; import → `putAll` rồi `ref.invalidate(userEventsProvider)`. Web: download blob / file picker (plan §4.4).
 - Bước 12: merge theo `updatedAt` (tombstone cũng là 1 bản) → `putAll`; purge tombstone > 90 ngày sau khi sync (chưa làm ở bước 7, D025).
 - Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
@@ -96,3 +96,4 @@ Phase 1 bước 8 (chưa bắt đầu) — Upcoming. Bước 7 ✅ (tạo/sửa/
 - 2026-09-10 — phase1-step6 — `month_provider` (DayCell/MonthData, cache family, invalidate theo overrides), `event_style` (màu kind + nhãn ÂL/DL), MonthView + picker tháng dương/âm, DayDetail, Converter, `StatefulShellRoute` bottom nav, `/` `/YYYY/MM` `/d/YYYY-MM-DD` `/convert` `/settings`, locale vi (D023); AGENTS.md rule commit (D024); 29 test app pass (`flutter test --timeout 90s`), `flutter build web` OK; ⏸ chờ user verify §4.8 mục 1–2 — 4485657
 - 2026-09-10 — phase1-step6 — user chạy web (port 5001), verify mục 1–5 trong "Cần user làm" OK → ✅ — c19ff02
 - 2026-09-10 — phase1-step7 — `UserEvent` freezed/json + `LeapMonthRule`, box `user_events` JSON, `UserEventRepository`, `UserEventsNotifier` (create/update/remove tombstone), `userEventsOn` (leap rule D005), `DayCell.userEvents`, form `/events/new` `/events/:id`, danh sách `/events` (Cài đặt → Sự kiện của tôi), DayDetail "+ Thêm sự kiện", MonthView nhãn màu (D025, E014); 48 test pass (match 2025 nhuận tháng 6, Hive reload, CRUD qua UI), build web OK → ✅ — 54d3132
+- 2026-09-10 — phase1-step8 — `EventLayer` + `settingsBoxProvider`/`layersProvider` (box settings), `todayProvider`, `upcomingProvider` (60 ngày qua cache tháng, nhiều ngày 1 dòng, đang diễn ra ở Hôm nay), `UpcomingScreen` 4 chip + gom theo ngày, tab "Sắp tới" vị trí 2 (D026); 55 test pass (Tết 06/02/2027 còn 36 ngày, Tết 2028 từ 01/12/2027, cá nhân âm 1/1 năm nay/năm sau, lớp lưu/đọc lại), build web OK → ✅ — (commit này)

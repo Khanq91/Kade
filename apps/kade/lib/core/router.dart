@@ -1,6 +1,6 @@
-// go_router tối thiểu bước 6 (plan §4.1): `/` → tháng hiện tại, `/YYYY/MM`,
-// `/d/YYYY-MM-DD`, `/convert`, `/settings`. `/upcoming`, `/events` thêm ở bước
-// 8–9; path URL strategy, responsive, phím tắt ở bước 14.
+// go_router (plan §4.1): `/` → tháng hiện tại, `/YYYY/MM`, `/d/YYYY-MM-DD`,
+// `/upcoming`, `/convert`, `/settings`, `/events`. Path URL strategy,
+// responsive, phím tắt ở bước 14.
 import 'package:calendar_data/calendar_data.dart' show parseIsoDate;
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +10,7 @@ import '../features/day_detail/day_detail_screen.dart';
 import '../features/month_view/month_view_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/shell/app_shell.dart';
+import '../features/upcoming/upcoming_screen.dart';
 import '../features/user_events/user_event_form_screen.dart';
 import '../features/user_events/user_events_screen.dart';
 import 'formats.dart';
@@ -92,6 +93,14 @@ GoRouter createRouter({String? initialLocation}) {
                   final (y, m) = _parseMonth(state)!;
                   return MonthViewScreen(year: y, month: m);
                 },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/upcoming',
+                builder: (_, _) => const UpcomingScreen(),
               ),
             ],
           ),
