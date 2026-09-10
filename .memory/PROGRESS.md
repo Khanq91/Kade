@@ -3,21 +3,22 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 0 — bước 2 ⏸ chờ user đối chiếu. Code + test cấu trúc đã commit `716104a` (wip). Chờ user xác nhận output `dart run example/day_info_example.dart` (10 ngày + 24 tiết khí 2025) với lịch vạn niên → viết test giá trị cố định → commit "phase0-step2: can chi, tiết khí, hoàng đạo".
+Phase 0 ✅ hoàn tất (bước 1–3). Bước kế: Phase 1 bước 4 (`calendar_data`) — cần user trả lời D006 (Ngày của Mẹ/Cha) trước hoặc đồng ý bỏ.
 
 ## Đang dở
-- phase0-step2: đã làm can chi / tiết khí / giờ+ngày hoàng đạo / `DayInfo` (D016), 238 test pass (cấu trúc). Còn: test giá trị cố định sau khi user xác nhận; nếu user báo lệch → sửa bảng/công thức + ghi DECISIONS.
+(không)
 
 ## Cần user làm
 - [ ] Chốt Android `applicationId` (T đã chốt (Project chưa giống thì sửa cho thống nhất) `vn.kade.kade`) — cần trước Phase 2 bước 10 (project hiện `com.kade.kade`, đổi khi làm bước 10)
 - [ ] `docs/setup-google.md` phần A: tạo Sheet + deploy Apps Script → đưa URL — cần trước Phase 1 bước 5
 - [ ] `docs/setup-google.md` phần B: Google Cloud project + OAuth clients — cần trước Phase 2 bước 10
-- [ ] Trả lời D006 (Ngày của Mẹ/Cha) — cần trước Phase 1 bước 4
+- [ ] Trả lời D006 (Ngày của Mẹ/Cha: giữ với rule "CN thứ N của tháng" hay bỏ) — cần trước Phase 1 bước 4
 - [ ] Trả lời D009 (license reference, commercial?) — cần trước Phase 3
 - [ ] `docs/setup-google.md` phần A: tạo Sheet + deploy Apps Script → URL vào `dart_defines.json` — cần trước Phase 1 bước 5 (Sheet + script đã xong, còn deploy)
 - [x] Trả lời D013 → user chốt sửa (D014), đã patch + sinh lại fixture — `92b7a6d`
 - [x] Scaffold Flutter ở root → user xác nhận là project của mình, đã chuyển vào `apps/kade` (D015) — `4994038`
-- [ ] **Đối chiếu bước 2**: chạy `cd packages/lunar_core && dart run example/day_info_example.dart`, so 10 ngày (âm lịch, can chi năm/tháng/ngày/giờ Tý, tiết khí, giờ hoàng đạo, ngày hoàng đạo/hắc đạo) + 24 ngày tiết khí 2025 với lịch vạn niên; báo "đúng" hoặc chỉ ra chỗ lệch — cần để chốt Phase 0 bước 2
+- [x] Đối chiếu bước 2 → user xác nhận (D017), test cố định — `d33e070`
+- [ ] VS Code: `dart.flutterSdkPath` đang trỏ Flutter cũ (Dart 3.10.8) → đổi sang `flutter_windows_3.44.5-stable\flutter` hoặc xóa key (ERRORS E008) — không chặn bước nào, chỉ ảnh hưởng terminal VS Code
 
 ## Trạng thái
 
@@ -25,8 +26,8 @@ Phase 0 — bước 2 ⏸ chờ user đối chiếu. Code + test cấu trúc đ�
 | Bước | Nội dung | Trạng thái |
 |---|---|---|
 | 1 | Init workspace + port reference → `lunar_core` (jd, sóc, kinh độ MT, solar↔lunar) + test fixture | ✅ |
-| 2 | Can chi, tiết khí, giờ hoàng đạo, ngày hoàng đạo/hắc đạo | ⏸ |
-| 3 | `tools/gen_lunar_table.dart` sinh bảng + test bảng == runtime | ⬜ |
+| 2 | Can chi, tiết khí, giờ hoàng đạo, ngày hoàng đạo/hắc đạo | ✅ |
+| 3 | `tools/gen_lunar_table.dart` sinh bảng + test bảng == runtime | ✅ |
 
 ### Phase 1 — Data + Core UI
 | Bước | Nội dung | Trạng thái |
@@ -65,3 +66,5 @@ Phase 0 — bước 2 ⏸ chờ user đối chiếu. Code + test cấu trúc đ�
 - 2026-09-10 — phase0-step1 — chuyển scaffold Flutter của user vào `apps/kade`, bật `apps/*`; `flutter analyze` + `flutter test` pass (D015) — 4994038
 - 2026-09-10 — phase0-step1 — patch bug ngày 0 ở reference + port, sinh lại fixture (chỉ đổi 2054, 2062), `reference_patch_test.dart`; 227 test pass (D014) — 92b7a6d
 - 2026-09-10 — phase0-step2 (wip) — can chi, tiết khí, giờ/ngày hoàng đạo, `DayInfo`, test cấu trúc (238 pass), example in 10 ngày; ⏸ chờ user đối chiếu (D016) — 716104a
+- 2026-09-10 — phase0-step2 — user xác nhận 10 ngày + 24 tiết khí 2025 → `day_info_fixed_test.dart`, 249 test pass (D017) — d33e070
+- 2026-09-10 — phase0-step3 — `tools/gen_lunar_table.dart` → `table_1900_2100.dart` (201 năm), runtime tra bảng + fallback tính (D018), test bảng == runtime mọi ngày và mọi tổ hợp ngày âm; 256 test pass; sinh lại cho file y hệt — 156e879
