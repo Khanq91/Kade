@@ -1,0 +1,4 @@
+{
+  "KADE_CONFIG_URL": "https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec",
+  "KADE_WEB_CLIENT_ID": "<PROJECT_NUMBER>-<HASH>.apps.googleusercontent.com"
+}
