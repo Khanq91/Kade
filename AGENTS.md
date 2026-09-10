@@ -14,7 +14,7 @@ nếu code và plan mâu thuẫn → hỏi user, không tự chọn.
 1. Đọc `.memory/PROGRESS.md` → biết đang ở phase/bước nào, có gì đang chờ user.
 2. Đọc `.memory/DECISIONS.md` → các quyết định đã chốt, KHÔNG đặt lại câu hỏi đã có đáp án ở đây.
 3. Đọc `.memory/ERRORS.md` → lỗi/quirk đã gặp, đừng dẫm lại.
-4. Đọc phần của `docs/plan.md` liên quan tới bước sắp làm (không cần đọc cả file mỗi lần).
+4. Đọc phần của `docs/plan.md` liên quan tới bước sắp làm (không cần đọc cả file mỗi lần). Từ bước 13: đọc thêm `docs/manual-test.md` (checklist test tay, D031) và `docs/prompts/handover.md` nếu là session mới.
 5. Nói ngắn gọn với user: "Đang ở bước X, sẽ làm Y" rồi mới bắt đầu.
 
 ## 3. Cách làm việc
@@ -26,7 +26,8 @@ nếu code và plan mâu thuẫn → hỏi user, không tự chọn.
 - **Commit mỗi bước**, message: `phase{N}-step{M}: <mô tả ngắn>`. Không commit khi test đỏ. Message chỉ gồm nội dung thay đổi: KHÔNG tự thêm `Co-Authored-By:`, "Generated with …" hay bất kỳ dòng đánh dấu agent/tool nào (user chốt 2026-09-10, D024).
 - **Đụng schema Hive** (field mới/đổi tên trong `UserEvent`, `SyncEnvelope`) → bắt buộc ghi DECISIONS + viết migration + test migration.
 - **Không đụng `packages/lunar_core`** khi đang làm bước UI/sync. Engine đã verify ở Phase 0; muốn sửa → ghi DECISIONS trước, chạy lại full fixture test sau.
-- Việc chỉ user làm được (Google Cloud, Apps Script deploy, keystore, test thiết bị thật, kiểm tra CORS trên domain thật): viết code + hướng dẫn, ghi vào `PROGRESS.md` mục "Cần user làm", đánh dấu bước ⏸, rồi dừng.
+- Việc chỉ user làm được (Google Cloud, Apps Script deploy, keystore, hosting/domain): viết code + hướng dẫn, ghi vào `PROGRESS.md` mục "Cần user làm", đánh dấu bước ⏸, rồi làm tiếp bước không phụ thuộc.
+- **Test tay trên web/thiết bị thật (từ bước 13, D031):** KHÔNG dừng chờ user. Bước xong khi verify tự động pass (analyze, `flutter test --timeout 90s`, build web + apk debug) → commit → đánh 🧪 → ghi mục test tay của bước vào `docs/manual-test.md` (đúng phase, cột Web / Android, lỗi hay gặp) → sang bước kế. User test một lượt cuối và báo theo mục "Ghi lỗi" của file đó; 🧪 → ✅ khi user báo ok.
 
 ## 4. Ghi memory — BẮT BUỘC
 
@@ -68,7 +69,7 @@ Format:
 - dừng giữa bước (hết session, chờ user) → ghi "Đang dở" nói rõ đã làm gì, còn gì
 - phát sinh việc user phải làm → thêm vào "Cần user làm"
 
-Trạng thái: `⬜` chưa làm · `🔄` đang làm · `⏸` chờ user · `✅` xong.
+Trạng thái: `⬜` chưa làm · `🔄` đang làm · `⏸` chờ user (thiếu thứ user phải cung cấp) · `🧪` agent xong + test tự động pass, chờ test tay cuối (D031) · `✅` xong.
 Log format: `- YYYY-MM-DD — phase{N}-step{M} — <kết quả 1 dòng> — <commit hash nếu có>`
 
 ## 5. Stack & lệnh
@@ -92,7 +93,8 @@ dart pub get                                  # resolve toàn workspace
 dart run build_runner build                   # chạy trong apps/kade khi đổi model VÀ sau khi clone/pull (generated *.g.dart, *.freezed.dart bị gitignore; -d không còn tác dụng, E014)
 cd packages/lunar_core && dart test           # engine
 cd apps/kade && flutter test                  # app
-flutter run -d chrome --web-port 5000 --dart-define-from-file=../../dart_defines.json   # web dev, chạy trong apps/kade; port cố định khớp OAuth origin
+flutter run -d chrome --web-port 5001 --dart-define-from-file=../../dart_defines.json   # web dev, chạy trong apps/kade; port cố định khớp OAuth origin (5000 và 5001 đều đã đăng ký; máy user port 5000 bận, E011)
+flutter build apk --debug --dart-define-from-file=../../dart_defines.json                # verify Android compile mỗi bước (kotlin.incremental=false, E016)
 flutter run -d <android-device> --dart-define-from-file=../../dart_defines.json
 ```
 

@@ -3,13 +3,15 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-Phase 2 bước 12 ⏸ — `sync()` + merge (D030): code + 92 test pass (merge 4 case + sync 8 kịch bản + DriveApiStore MockClient) + analyze sạch; chờ user verify §4.8 mục 4–5 bằng 2 trình duyệt/máy (mục đầu "Cần user làm"). Bước 11 ✅ (ảnh web 2026-09-10; Android chưa báo — verify chung với bước 12). User báo ok → 12 ✅ → bước 13 trigger + debounce + 401 web (ghi chú ở "Ghi chú cho bước sau").
+**Chế độ D031 (từ 2026-09-10):** session tiếp theo dán `docs/prompts/handover.md` và làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
+Phase 2 bước 12 🧪 — `sync()` + merge (D030): 92 test pass, analyze sạch, build web + APK OK (commit `d4eb444`); test tay: manual-test.md Phase 2 mục 2.5–2.9. Bước 11 ✅ web (ảnh 2026-09-10); Android của Phase 1–2 chưa test tay (manual-test.md cột Android). Tiếp: bước 13 (trigger + debounce + 401) theo handover.md.
 
 ## Đang dở
 (không)
 
 ## Cần user làm
-- [ ] **Verify bước 12 — sync Drive** (tiêu chí §4.8 mục 4–5: đăng nhập cùng tài khoản ở 2 nơi thấy nhau; xóa ở A → sync B → mất, không resurrect). Cần 2 "máy": A = Chrome port 5001, B = trình duyệt khác (Edge/Cốc Cốc, hoặc Chrome profile khác — cùng port 5001, cùng origin đã đăng ký) hoặc Android. Lệnh như bước 11.
+- [ ] **Test tay toàn bộ (cuối, D031)** → theo `docs/manual-test.md`, chia phase × Web/Android; báo theo format "Ghi lỗi" ở cuối file đó. Các mục verify chi tiết bên dưới (bước 12, 11, 9, 6) đã gom vào file đó, giữ lại để tham khảo.
+- [~] **Verify bước 12 — sync Drive** (→ manual-test.md 2.5–2.9; tiêu chí §4.8 mục 4–5: đăng nhập cùng tài khoản ở 2 nơi thấy nhau; xóa ở A → sync B → mất, không resurrect). Cần 2 "máy": A = Chrome port 5001, B = trình duyệt khác (Edge/Cốc Cốc, hoặc Chrome profile khác — cùng port 5001, cùng origin đã đăng ký) hoặc Android. Lệnh như bước 11.
   1. A: đăng nhập → tạo 2 sự kiện (1 âm, 1 dương) → Cài đặt → "Đồng bộ ngay" → SnackBar "Đã đồng bộ với Google Drive", dòng "Đồng bộ lần cuối: …". (Web: nếu phiên chưa có quyền Drive, popup consent hiện ngay trong click này.)
   2. B: đăng nhập cùng tài khoản → "Đồng bộ ngay" → SnackBar "Đã đồng bộ, nhận 2 thay đổi từ Drive" → Sự kiện của tôi có 2 sự kiện, ô lịch tháng/Sắp tới có nhãn.
   3. A: xóa 1 sự kiện → "Đồng bộ ngay". B: "Đồng bộ ngay" → sự kiện đó biến mất. B: sửa tên sự kiện còn lại → "Đồng bộ ngay". A: "Đồng bộ ngay" → thấy tên mới. Bấm "Đồng bộ ngay" lần nữa khi không đổi gì → vẫn "Đã đồng bộ…" (không nhận thay đổi).
@@ -87,7 +89,7 @@ Phase 2 bước 12 ⏸ — `sync()` + merge (D030): code + 92 test pass (merge 4
 |---|---|---|
 | 10 | Google Cloud + OAuth clients (user) | ✅ |
 | 11 | Sign-in web + Android | ✅ |
-| 12 | `sync()` + merge + test 4 case | ⏸ |
+| 12 | `sync()` + merge + test 4 case | 🧪 |
 | 13 | Trigger + debounce + xử lý 401 web | ⬜ |
 
 ### Phase 3 — Web release
@@ -139,3 +141,4 @@ Phase 2 bước 12 ⏸ — `sync()` + merge (D030): code + 92 test pass (merge 4
 - 2026-09-10 — phase2-step11 — commit — c0ef79d
 - 2026-09-10 — phase2-step12 — `DriveStore`/`DriveApiStore` (googleapis 17, Bearer client, list/get alt=media/create/update multipart), `merge.dart` (mergeEvents/purgeTombstones/sameEvents), `SyncNotifier.sync` (find → parse → merge+purge → replaceAll → create/update → lastSyncAt), `UserEventRepository/UserEventsNotifier.replaceAll` (xóa cứng tombstone purge), Cài đặt: "Đồng bộ ngay" + "Đồng bộ lần cuối" thay "Cấp quyền Drive" (D030); 92 test pass (merge 4 case, sync 8 kịch bản, MockClient), analyze sạch, build web + APK OK; ⏸ chờ user verify §4.8 mục 4–5 — (hash ở dòng sau)
 - 2026-09-10 — phase2-step12 — commit — d4eb444
+- 2026-09-10 — handover — user chốt D031 (chạy hết 13–18 không dừng chờ test tay; test tay gom cuối theo phase × Web/Android): docs/manual-test.md (checklist), docs/prompts/handover.md (prompt session sau), AGENTS.md §2/§3/§4/§5 sửa, trạng thái 🧪; bước 12 ⏸ → 🧪 — (hash ở dòng sau)
