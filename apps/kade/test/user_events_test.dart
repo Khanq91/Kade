@@ -204,13 +204,3 @@ void main() {
     expect(find.text(Strings.remoteConfigSection), findsOneWidget);
   });
 }
-
-/// testWidgets voi viewport 800x1600 de form/DayDetail khong bi offstage (E009).
-void testTall(String description, WidgetTesterCallback callback) {
-  testWidgets(description, (tester) async {
-    tester.view.physicalSize = const Size(800, 1600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    await callback(tester);
-  });
-}

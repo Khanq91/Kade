@@ -2,6 +2,7 @@
 // của "Sắp tới" (plan §3.6). Các cài đặt sau (nhắc trước N ngày, sync) thêm ở đây.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:uuid/uuid.dart';
 
 import 'models/event_layer.dart';
 
@@ -42,3 +43,14 @@ class LayersNotifier extends Notifier<Set<EventLayer>> {
 final layersProvider = NotifierProvider<LayersNotifier, Set<EventLayer>>(
   LayersNotifier.new,
 );
+
+/// Mã thiết bị cho `SyncEnvelope.deviceId` (bước 9/12): uuid v4 sinh một lần,
+/// lưu key `deviceId` trong box settings.
+final deviceIdProvider = Provider<String>((ref) {
+  final box = ref.watch(settingsBoxProvider);
+  final saved = box.get('deviceId');
+  if (saved is String && saved.isNotEmpty) return saved;
+  final id = const Uuid().v4();
+  box.put('deviceId', id);
+  return id;
+});

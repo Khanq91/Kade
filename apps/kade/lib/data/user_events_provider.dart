@@ -75,6 +75,15 @@ class UserEventsNotifier extends Notifier<List<UserEvent>> {
     final now = DateTime.now().toUtc();
     await _write(e.copyWith(deletedAt: now, updatedAt: now));
   }
+
+  /// Nhập từ file (bước 9): ghi đè theo id, KHÔNG so `updatedAt`, mọi bản
+  /// nhận `updatedAt = now` (D027); rồi đọc lại box → cache tháng và "Sắp tới"
+  /// tự tính lại.
+  Future<void> importAll(Iterable<UserEvent> events, {DateTime? now}) async {
+    final t = now ?? DateTime.now().toUtc();
+    await _repo.putAll([for (final e in events) e.copyWith(updatedAt: t)]);
+    state = _repo.all();
+  }
 }
 
 /// Provider chính (kể cả tombstone — Export/Sync dùng).

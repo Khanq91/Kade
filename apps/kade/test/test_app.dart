@@ -1,6 +1,6 @@
 // Helper chung cho widget test: remote config giả (không HTTP), box sự kiện
-// in-memory (không IO → không cần `tester.runAsync`, tránh E009) + app thật
-// với router.
+// in-memory (không IO → không cần `tester.runAsync`, tránh E009), FileIo giả
+// + app thật với router; `testTall` cho màn dài (E009).
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -8,6 +8,7 @@ import 'package:calendar_data/calendar_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kade/core/router.dart';
 import 'package:kade/data/local/user_event_repository.dart';
@@ -17,6 +18,35 @@ import 'package:kade/data/settings_provider.dart';
 import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/main.dart';
+import 'package:kade/platform/file_io.dart';
+
+/// FileIo giả: `saveJson` ghi lại (tên, nội dung) vào [saved] và trả
+/// [saveResult]; `pickJson` trả [pickResult] (null = user hủy).
+class FakeFileIo implements FileIo {
+  String? pickResult;
+  bool saveResult = true;
+  final saved = <(String, String)>[];
+
+  @override
+  Future<String?> pickJson() async => pickResult;
+
+  @override
+  Future<bool> saveJson(String name, String content) async {
+    saved.add((name, content));
+    return saveResult;
+  }
+}
+
+/// testWidgets với viewport 800×1600 để form/DayDetail/Settings không bị
+/// offstage (E009).
+void testTall(String description, WidgetTesterCallback callback) {
+  testWidgets(description, (tester) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await callback(tester);
+  });
+}
 
 /// Notifier giả: state sẵn sau 1 microtask, không đụng repository.
 class FakeRemoteConfig extends RemoteConfigNotifier {
@@ -68,11 +98,13 @@ Future<Box<dynamic>> memorySettingsBox() async {
 
 /// Override Riverpod: [FakeRemoteConfig] với [overrides] (mặc định asset),
 /// repository sự kiện trên [userEventsBox], box settings [settingsBox] (mặc
-/// định box in-memory mới), và [today] cho "Sắp tới" nếu truyền.
+/// định box in-memory mới), [fileIo] (mặc định [FakeFileIo] mới) và [today]
+/// cho "Sắp tới" nếu truyền.
 Future<List<Override>> testOverrides({
   YearOverrides? overrides,
   Box<String>? userEventsBox,
   Box<dynamic>? settingsBox,
+  FileIo? fileIo,
   DateTime? today,
 }) async => [
   remoteConfigProvider.overrideWith(
@@ -84,6 +116,7 @@ Future<List<Override>> testOverrides({
   settingsBoxProvider.overrideWithValue(
     settingsBox ?? await memorySettingsBox(),
   ),
+  fileIoProvider.overrideWithValue(fileIo ?? FakeFileIo()),
   if (today != null) todayProvider.overrideWithValue(today),
 ];
 
@@ -93,12 +126,14 @@ Future<Widget> testApp(
   YearOverrides? overrides,
   Box<String>? userEventsBox,
   Box<dynamic>? settingsBox,
+  FileIo? fileIo,
   DateTime? today,
 }) async => ProviderScope(
   overrides: await testOverrides(
     overrides: overrides,
     userEventsBox: userEventsBox,
     settingsBox: settingsBox,
+    fileIo: fileIo,
     today: today,
   ),
   child: KadeApp(router: createRouter(initialLocation: initialLocation)),

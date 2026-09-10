@@ -177,4 +177,31 @@ abstract final class Strings {
 
   /// "Năm 2027".
   static String yearTitle(int year) => 'Năm $year';
+
+  // Sao lưu (Export/Import JSON, plan §5.1)
+  static const backupSection = 'Sao lưu';
+  static const backupHint =
+      'Xuất sự kiện cá nhân ra file JSON để giữ hoặc chuyển máy; nhập lại từ file đã xuất.';
+  static const exportJson = 'Xuất file JSON';
+  static const importJson = 'Nhập file JSON';
+  static const importButton = 'Nhập';
+  static const importConfirmBody = 'Sự kiện trùng id sẽ bị ghi đè.';
+  static const backupInvalidJson = 'File không phải JSON hợp lệ';
+  static const backupBadFile =
+      'File không đúng định dạng Kade (thiếu danh sách sự kiện)';
+  static const exportFailed = 'Không xuất được file';
+  static const importFailed = 'Không đọc được file';
+
+  /// "Đã xuất 3 sự kiện".
+  static String exported(int n) => 'Đã xuất $n sự kiện';
+
+  /// "Đã nhập 3 sự kiện".
+  static String imported(int n) => 'Đã nhập $n sự kiện';
+
+  /// "Nhập 3 sự kiện từ file?".
+  static String importConfirmTitle(int n) => 'Nhập $n sự kiện từ file?';
+
+  /// "File có phiên bản 2, app chỉ đọc được phiên bản 1".
+  static String backupUnsupportedSchema(int found, int supported) =>
+      'File có phiên bản $found, app chỉ đọc được phiên bản $supported';
 }

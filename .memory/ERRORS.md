@@ -117,3 +117,16 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: cùng E009 — dưới fold 600px là offstage.
 - Cách xử lý: `test/user_events_test.dart` có helper `testTall()` đặt `tester.view.physicalSize = 800×1600`, `devicePixelRatio = 1`, `addTearDown(tester.view.reset)`. Test màn dài (form, DayDetail, Settings) dùng helper này thay vì `ensureVisible` từng widget.
 - Trạng thái: fixed
+
+## 2026-09-10 — E015 — file_picker 12 (federated): API khác prompt bước 9; `saveFile` trên web luôn trả null
+- Bối cảnh: bước 9, `flutter pub add file_picker` resolve 12.2.0 (federated: android_file_picker 1.1.1, file_picker_web 3.1.0, …).
+- Triệu chứng: `pickFiles()` trả `List<PlatformFile>` (rỗng = hủy), `withData:` deprecated (README v12: dùng `file.readAsBytes()`); có `pickFile()` trả `PlatformFile?`. `saveFile(bytes:)` trả `Uri?`: Android ghi qua SAF, trả `content://…` hoặc null khi hủy; web tạo Blob + `<a download>` click rồi **luôn trả null** (không phân biệt hủy).
+- Nguyên nhân: v12 đổi API (README "Migrating to v12"); bản web không có hộp thoại lưu nên không biết user hủy.
+- Cách xử lý: `FilePickerFileIo.saveJson` trả `kIsWeb || uri != null`; `pickJson` dùng `pickFile` + `readAsBytes` + `utf8.decode(allowMalformed: true)` (byte hỏng → JSON hỏng → thông báo tiếng Việt). Không thêm `package:web`/conditional import. Web thật chưa verify (chờ user).
+- Trạng thái: workaround (ghi để bước 12 không dùng `withData`)
+
+## 2026-09-10 — E009 (cập nhật) — `ListView(children:)` không build con ngoài viewport + cacheExtent → `find(skipOffstage: false)` cũng không thấy
+- Bối cảnh: bước 9 thêm mục "Sao lưu" vào Cài đặt → 2 test cũ `settings_screen_test.dart` đỏ "Bad state: No element" ở `ensureVisible(find.text(yearTitle, skipOffstage: false))`.
+- Nguyên nhân: tile năm bị đẩy xuống quá 600px + cacheExtent 250px → widget chưa được build (không phải chỉ offstage).
+- Cách xử lý: đổi 2 test sang `testTall` (viewport 1600, giờ nằm ở `test/test_app.dart`). Quy tắc: widget test màn có ListView dài → luôn `testTall`, đừng trông vào `skipOffstage: false`.
+- Trạng thái: fixed

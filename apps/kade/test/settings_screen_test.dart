@@ -11,8 +11,12 @@ import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/features/settings/settings_screen.dart';
 
+import 'test_app.dart';
+
 // Hive ghi file thật → phải chạy trong `tester.runAsync`, nếu không IO bị kẹt
 // trong FakeAsync của testWidgets và `Hive.close()` ở tearDown treo (ERRORS E009).
+// Màn dài (từ bước 9 có mục "Sao lưu") → `testTall`, vì ListView không build
+// tile ngoài viewport + cacheExtent (E009).
 void main() {
   late Directory tmp;
   late Box<String> box;
@@ -48,7 +52,7 @@ void main() {
     fail('UI không settle');
   }
 
-  testWidgets('không có URL: hiện dữ liệu asset + cảnh báo, nút bị tắt', (
+  testTall('không có URL: hiện dữ liệu asset + cảnh báo, nút bị tắt', (
     tester,
   ) async {
     await tester.runAsync(() async {
@@ -76,45 +80,44 @@ void main() {
     });
   });
 
-  testWidgets(
-    'có URL: tự fetch lúc start (quá 24h) → nguồn = remote, version mới',
-    (tester) async {
-      await tester.runAsync(() async {
-        var calls = 0;
-        final repo = RemoteConfigRepository(
-          box: box,
-          loadAsset: (_) async => assetJson,
-          url: 'https://script.example.test/exec',
-          client: MockClient((_) async {
-            calls++;
-            return http.Response(
-              '{"version": 42, "updatedAt": "2026-11-20T03:00:00.000Z",'
-              ' "years": {"2028": {"off": ["2028-01-25"], "work": ["2028-02-05"]}}}',
-              200,
-            );
-          }),
-        );
-        await tester.pumpWidget(app(repo));
-        await settle(tester);
+  testTall('có URL: tự fetch lúc start (quá 24h) → nguồn = remote, version mới', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      var calls = 0;
+      final repo = RemoteConfigRepository(
+        box: box,
+        loadAsset: (_) async => assetJson,
+        url: 'https://script.example.test/exec',
+        client: MockClient((_) async {
+          calls++;
+          return http.Response(
+            '{"version": 42, "updatedAt": "2026-11-20T03:00:00.000Z",'
+            ' "years": {"2028": {"off": ["2028-01-25"], "work": ["2028-02-05"]}}}',
+            200,
+          );
+        }),
+      );
+      await tester.pumpWidget(app(repo));
+      await settle(tester);
 
-        expect(calls, 1);
-        expect(find.text(Strings.sourceRemote), findsOneWidget);
-        expect(find.text('42'), findsOneWidget);
-        await tester.ensureVisible(
-          find.text(Strings.yearTitle(2028), skipOffstage: false),
-        );
-        await tester.pump();
-        expect(find.text(Strings.yearTitle(2028)), findsOneWidget);
-        expect(find.textContaining('25/01/2028'), findsOneWidget);
-        expect(find.textContaining('05/02/2028'), findsOneWidget);
-        expect(
-          find.text(Strings.yearTitle(2027), skipOffstage: false),
-          findsNothing,
-        );
-        expect(repo.cachedVersion, 42);
-      });
-    },
-  );
+      expect(calls, 1);
+      expect(find.text(Strings.sourceRemote), findsOneWidget);
+      expect(find.text('42'), findsOneWidget);
+      await tester.ensureVisible(
+        find.text(Strings.yearTitle(2028), skipOffstage: false),
+      );
+      await tester.pump();
+      expect(find.text(Strings.yearTitle(2028)), findsOneWidget);
+      expect(find.textContaining('25/01/2028'), findsOneWidget);
+      expect(find.textContaining('05/02/2028'), findsOneWidget);
+      expect(
+        find.text(Strings.yearTitle(2027), skipOffstage: false),
+        findsNothing,
+      );
+      expect(repo.cachedVersion, 42);
+    });
+  });
 
   test('fetchResultText đủ 5 outcome', () {
     expect(

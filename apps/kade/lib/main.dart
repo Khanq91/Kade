@@ -14,6 +14,7 @@ import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
 import 'data/settings_provider.dart';
 import 'data/user_events_provider.dart';
+import 'platform/file_io.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,7 @@ Future<void> main() async {
         settingsBoxProvider.overrideWithValue(
           Hive.box<dynamic>(HiveBoxes.settings),
         ),
+        fileIoProvider.overrideWithValue(FilePickerFileIo()),
       ],
       child: const KadeApp(),
     ),
