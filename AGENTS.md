@@ -23,7 +23,7 @@ nếu code và plan mâu thuẫn → hỏi user, không tự chọn.
 - **Verify trước khi báo xong.** Mỗi bước có tiêu chí verify trong plan. Chạy nó. Chỉ báo "xong" khi pass. Fail → sửa → chạy lại; không hỏi user giữa chừng trừ khi bế tắc hoặc cần quyết định.
 - **Không bịa dữ liệu lịch.** Thuật toán gốc: `docs/reference/amlich-aa98.js`. Fixture test: `docs/reference/tet_1900_2100.json`. Không tự nhớ ngày Tết, hằng số Meeus, hay danh sách ngày lễ — lấy từ reference và plan.
 - **Đơn giản trước.** Không abstraction cho code dùng 1 chỗ, không config/flag không ai yêu cầu, không try/catch cho case không xảy ra.
-- **Commit mỗi bước**, message: `phase{N}-step{M}: <mô tả ngắn>`. Không commit khi test đỏ.
+- **Commit mỗi bước**, message: `phase{N}-step{M}: <mô tả ngắn>`. Không commit khi test đỏ. Message chỉ gồm nội dung thay đổi: KHÔNG tự thêm `Co-Authored-By:`, "Generated with …" hay bất kỳ dòng đánh dấu agent/tool nào (user chốt 2026-09-10, D024).
 - **Đụng schema Hive** (field mới/đổi tên trong `UserEvent`, `SyncEnvelope`) → bắt buộc ghi DECISIONS + viết migration + test migration.
 - **Không đụng `packages/lunar_core`** khi đang làm bước UI/sync. Engine đã verify ở Phase 0; muốn sửa → ghi DECISIONS trước, chạy lại full fixture test sau.
 - Việc chỉ user làm được (Google Cloud, Apps Script deploy, keystore, test thiết bị thật, kiểm tra CORS trên domain thật): viết code + hướng dẫn, ghi vào `PROGRESS.md` mục "Cần user làm", đánh dấu bước ⏸, rồi dừng.

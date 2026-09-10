@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_ce/hive.dart';
 
 import 'core/env.dart';
+import 'core/router.dart';
 import 'core/strings.dart';
 import 'data/local/hive_boxes.dart';
 import 'data/remote/remote_config.dart';
 import 'data/remote/remote_config_provider.dart';
-import 'features/settings/settings_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,16 +31,22 @@ Future<void> main() async {
   );
 }
 
-/// Gốc app. Bước 5: home tạm là Settings; MonthView thay ở bước 6.
+/// Gốc app: MaterialApp.router với go_router (core/router.dart), locale vi.
 class KadeApp extends StatelessWidget {
-  const KadeApp({super.key});
+  const KadeApp({super.key, this.router});
+
+  /// Router thay thế (test mở thẳng một route); mặc định [appRouter].
+  final GoRouter? router;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: Strings.appName,
       theme: ThemeData(colorSchemeSeed: Colors.red, useMaterial3: true),
-      home: const SettingsScreen(),
+      routerConfig: router ?? appRouter,
+      locale: const Locale('vi'),
+      supportedLocales: const [Locale('vi')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
     );
   }
 }

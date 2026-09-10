@@ -2,6 +2,105 @@
 abstract final class Strings {
   static const appName = 'Kade';
 
+  // Bottom nav
+  static const navCalendar = 'Lịch';
+  static const navConvert = 'Đổi ngày';
+  static const navSettings = 'Cài đặt';
+
+  // Chung
+  static const cancel = 'Hủy';
+  static const back = 'Quay lại';
+  static const lunarTag = 'ÂL';
+  static const solarTag = 'DL';
+  static const tagLegend = 'ÂL = âm lịch · DL = dương lịch · N = tháng nhuận';
+  static const leap = 'nhuận';
+  static const kindHoliday = 'Nghỉ lễ';
+  static const kindMemorial = 'Kỷ niệm';
+  static const kindInternational = 'Quốc tế';
+  static const offDay = 'Ngày nghỉ';
+  static const weekdaysShort = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  static const weekdays = [
+    'Thứ Hai',
+    'Thứ Ba',
+    'Thứ Tư',
+    'Thứ Năm',
+    'Thứ Sáu',
+    'Thứ Bảy',
+    'Chủ nhật',
+  ];
+  static const lunarMonthNames = [
+    'Giêng',
+    'Hai',
+    'Ba',
+    'Tư',
+    'Năm',
+    'Sáu',
+    'Bảy',
+    'Tám',
+    'Chín',
+    'Mười',
+    'Mười một',
+    'Chạp',
+  ];
+
+  // MonthView
+  static const today = 'Hôm nay';
+  static const lunarMonthButton = 'Tháng âm';
+  static const prevMonth = 'Tháng trước';
+  static const nextMonth = 'Tháng sau';
+  static const prevYear = 'Năm trước';
+  static const nextYear = 'Năm sau';
+  static const pickMonth = 'Chọn tháng dương';
+  static const pickLunarMonth = 'Chọn tháng âm';
+  static const noLeapMonthThisYear = 'Năm này không có tháng nhuận';
+
+  /// "Tháng 2/2027".
+  static String monthTitle(int month, int year) => 'Tháng $month/$year';
+
+  /// "Tháng Giêng Đinh Mùi" / "Tháng Sáu nhuận Ất Tỵ".
+  static String lunarMonthTitle(int month, bool isLeap, String canChiYear) =>
+      'Tháng ${lunarMonthNames[month - 1]}${isLeap ? ' $leap' : ''} $canChiYear';
+
+  /// Nút tháng trong picker âm: "Giêng" / "Sáu nhuận".
+  static String lunarMonthLabel(int month, bool isLeap) =>
+      '${lunarMonthNames[month - 1]}${isLeap ? ' $leap' : ''}';
+
+  // DayDetail
+  static const lunarLabel = 'Âm lịch';
+  static const yearLabel = 'Năm';
+  static const canChiMonthLabel = 'Tháng';
+  static const canChiDayLabel = 'Ngày';
+  static const tietKhiLabel = 'Tiết khí';
+  static const hoangDaoDay = 'Ngày hoàng đạo';
+  static const hacDaoDay = 'Ngày hắc đạo';
+  static const gioHoangDaoLabel = 'Giờ hoàng đạo';
+  static const eventsTitle = 'Sự kiện';
+  static const noEvents = 'Không có sự kiện';
+  static const prevDay = 'Hôm trước';
+  static const nextDay = 'Hôm sau';
+
+  // Converter
+  static const convertTitle = 'Đổi ngày';
+  static const solarToLunarTitle = 'Dương → Âm';
+  static const lunarToSolarTitle = 'Âm → Dương';
+  static const pickSolarDate = 'Chọn ngày dương';
+  static const dayField = 'Ngày';
+  static const monthField = 'Tháng';
+  static const yearField = 'Năm';
+  static const leapCheckbox = 'Tháng nhuận';
+  static const convertButton = 'Đổi';
+  static const solarResult = 'Dương lịch';
+  static const lunarResult = 'Âm lịch';
+  static const invalidInput = 'Nhập ngày (1–30), tháng (1–12) và năm là số';
+
+  /// "Năm 2027 không có tháng 5 nhuận".
+  static String noLeapMonth(int month, int year) =>
+      'Năm $year không có tháng $month nhuận';
+
+  /// "Ngày 30/2/2027 âm lịch không tồn tại".
+  static String lunarDateMissing(int day, int month, int year, bool isLeap) =>
+      'Ngày $day/$month${isLeap ? ' $leap' : ''}/$year âm lịch không tồn tại';
+
   // Settings
   static const settingsTitle = 'Cài đặt';
   static const remoteConfigSection = 'Lịch nghỉ bù theo năm';

@@ -90,3 +90,17 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: PID của `D:\khang\project\QLVB\QLVanBanAPI\bin\Debug\net8.0\QLVanBanAPI.exe` đang lắng nghe 127.0.0.1:5000 và [::1]:5000.
 - Cách xử lý: tắt API đó khi chạy Kade web, hoặc chạy `--web-port 5001` (bước 5 không phụ thuộc port vì Apps Script trả CORS `*`). Phase 2: origin OAuth web đã ghi `http://localhost:5000` trong setup-google B.3 → nếu user hay chạy 5001 thì thêm cả `http://localhost:5001` vào Authorized JavaScript origins.
 - Trạng thái: workaround
+
+## 2026-09-10 — E012 — Bash tool (Git Bash) không parse được lệnh nhiều heredoc dài chứa Dart/tiếng Việt
+- Bối cảnh: bước 6, ghi 4 file Dart bằng một lệnh `cat > f <<'EOF' … EOF` nối nhau.
+- Triệu chứng: `unexpected EOF while looking for matching `''` ở một dòng giữa lệnh; không file nào được ghi.
+- Nguyên nhân: chưa rõ (nghi tool tiền xử lý quote/ký tự đa byte trước khi giao cho bash); lệnh heredoc ngắn 1 file (script probe) vẫn chạy.
+- Cách xử lý: ghi file nguồn bằng Write/Edit tool; Bash chỉ dùng cho lệnh chạy (format, analyze, test, git).
+- Trạng thái: workaround
+
+## 2026-09-10 — E013 — Riverpod 3: kiểu `Override` không nằm trong `package:flutter_riverpod/flutter_riverpod.dart`
+- Bối cảnh: bước 6, helper test trả `List<Override>`.
+- Triệu chứng: `The name 'Override' isn't a type` dù `ProviderScope(overrides:)` nhận `List<Override>`.
+- Nguyên nhân: riverpod 3 đánh dấu `Override` là `@publicInMisc` → chỉ export qua `package:flutter_riverpod/misc.dart` (cũng có `ProviderContainer.test`, `AsyncNotifierProvider.overrideWith(() => Notifier)` thì ở export chính).
+- Cách xử lý: `import 'package:flutter_riverpod/misc.dart' show Override;`. Lưu ý thêm: `Notifier.state` là `@protected` → test muốn đổi state phải gọi method của subclass (xem `FakeRemoteConfig.replace`).
+- Trạng thái: fixed
