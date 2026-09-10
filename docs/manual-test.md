@@ -45,7 +45,9 @@ Sanity ngoài: `docs/reference/README.md`.
 | 2.7 | Sửa tên ở B → sync B → sync A → A thấy tên mới | ⬜ | ⬜ |
 | 2.8 | Bấm "Đồng bộ ngay" khi không đổi gì → vẫn "Đã đồng bộ…", không lỗi | ⬜ | ⬜ |
 | 2.9 | Drive → Manage apps → Kade có "hidden app data" (file không thấy trong My Drive — đúng, appDataFolder ẩn) | ⬜ | — |
-| 2.10 | (Bước 13 — session sau điền) Tự sync: mở app khi đã đăng nhập; sau khi sửa sự kiện ~5s; quay lại app sau > 15 phút; web token hết hạn (>1h) → tự xin lại hoặc báo "bấm Đồng bộ ngay" | ⬜ | ⬜ |
+| 2.10 | Tự sync (bước 13, D032): (a) Android: ngay sau đăng nhập, dòng "Đồng bộ lần cuối" có giờ mà không bấm gì; web: sau "Đồng bộ ngay" lần đầu của phiên. (b) Tạo/sửa/xóa 1 sự kiện (hoặc Nhập file JSON) → ~5 s sau mở Cài đặt: "Đồng bộ lần cuối" đổi; máy B "Đồng bộ ngay" → thấy thay đổi. Sửa liên tiếp 3 lần trong 5 s → chỉ 1 lần sync (giờ "lần cuối" đổi 1 lần). (c) Kill app rồi mở lại (Android, đã đăng nhập) → email hiện + "Đồng bộ lần cuối" cập nhật, không hỏi gì; web F5 → KHÔNG có popup Drive tự bật (One Tap nếu có là của Google), quyền Drive "Chưa cấp" tới khi bấm "Đồng bộ ngay". (d) Rời app (Home / tab khác) > 15 phút rồi quay lại → "Đồng bộ lần cuối" đổi; rời < 15 phút → không đổi. (e) Để app mở qua 0h, khóa/mở máy → "Hôm nay" ở Sắp tới và viền hôm nay ở lịch đúng ngày mới | ⬜ | ⬜ |
+| 2.11 | Token hết hạn / bị thu hồi (web: > 1 h sau khi cấp quyền, hoặc gỡ quyền app tại myaccount.google.com → Bảo mật → Kết nối bên thứ ba → Kade): sửa 1 sự kiện → sau 5 s mục Đồng bộ hiện "Phiên Google hết hạn — bấm Đồng bộ ngay", KHÔNG có popup tự bật; bấm "Đồng bộ ngay" → popup consent → "Đã đồng bộ…", dòng lỗi biến mất. Android sau khi gỡ quyền: bấm "Đồng bộ ngay" → consent lại → OK (token hết hạn thường Android tự làm mới, không thấy gì) | ⬜ | ⬜ |
+| 2.12 | "Xóa dữ liệu trên Drive" → dialog → Hủy (không đổi) → lại → Xóa → SnackBar "Đã xóa dữ liệu trên Drive và đăng xuất", mục về nút đăng nhập, Sự kiện của tôi vẫn còn đủ; Drive → Manage apps → Kade: hidden app data trống / 0 B (hoặc "Delete hidden app data" không còn gì); đăng nhập lại → tự sync → file tạo lại từ local, máy B "Đồng bộ ngay" vẫn thấy sự kiện | ⬜ | ⬜ |
 
 ## Phase 3 — Web release (session sau điền chi tiết theo plan §4.8)
 | # | Kiểm tra | Web | Android |
@@ -72,7 +74,9 @@ Sanity ngoài: `docs/reference/README.md`.
 | "access blocked" / app chưa verify | Tài khoản không có trong Test users (B.2) |
 | Android: `clientConfigurationError` hoặc `canceled` ngay sau chọn tài khoản | SHA-1 / package sai (E002): client Android phải là `vn.kade.kade` + SHA-1 của keystore đang ký |
 | `serverClientId must be provided` | Thiếu `KADE_WEB_CLIENT_ID` trong dart_defines.json / quên `--dart-define-from-file` |
-| "Đồng bộ không thành công (Drive 401: …)" | Token web hết hạn (1h) → bấm "Đồng bộ ngay" (bước 13 tự xin lại) |
+| "Phiên Google hết hạn — bấm Đồng bộ ngay" | Bình thường trên web sau > 1 h (token GIS hết hạn) hoặc sau khi gỡ quyền app: sync nền không được phép popup → bấm "Đồng bộ ngay" (có popup) là xong (D032) |
+| "Đồng bộ không thành công (Drive 401: …)" | Token mới xin vẫn bị từ chối → thường do gỡ quyền app + cache; Đăng xuất rồi đăng nhập lại; còn lỗi → báo agent kèm log |
+| Sửa sự kiện mà "Đồng bộ lần cuối" không đổi sau 5 s | Chưa đăng nhập / web chưa bấm "Đồng bộ ngay" trong phiên này (chưa có token) → mục Đồng bộ hiện "Chưa cấp quyền Google Drive" |
 | "Drive 403 … Drive API has not been used" | Chưa Enable Drive API (B.1) |
 | "File trên Drive không đọc được" | Drive → Manage apps → Kade → Delete hidden app data → sync lại |
 | Nút Google (GIS) không hiện trên web | Client ID sai / console báo lỗi GIS → báo agent kèm log |

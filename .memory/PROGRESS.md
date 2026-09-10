@@ -3,8 +3,8 @@
 Cập nhật theo `AGENTS.md` §4. Bảng trạng thái được sửa tại chỗ; Log là append-only.
 
 ## Bước hiện tại
-**Chế độ D031 (từ 2026-09-10):** session tiếp theo dán `docs/prompts/handover.md` và làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
-Phase 2 bước 12 🧪 — `sync()` + merge (D030): 92 test pass, analyze sạch, build web + APK OK (commit `d4eb444`); test tay: manual-test.md Phase 2 mục 2.5–2.9. Bước 11 ✅ web (ảnh 2026-09-10); Android của Phase 1–2 chưa test tay (manual-test.md cột Android). Tiếp: bước 13 (trigger + debounce + 401) theo handover.md.
+**Chế độ D031 (từ 2026-09-10):** session này làm HẾT bước 13 → 18 không dừng chờ verify tay; mục test tay ghi vào `docs/manual-test.md`; trạng thái `🧪` = xong, chờ test tay cuối.
+Phase 2 bước 13 🧪 — `SyncTrigger` + 401 + "Xóa dữ liệu trên Drive" (D032): 104 test pass, analyze sạch, build web + APK OK (commit `1735642`); test tay: manual-test.md 2.10–2.12. Bước 12 🧪 (2.5–2.9). Đang làm tiếp: bước 14 (routing + responsive + PWA + phím) theo handover.md.
 
 ## Đang dở
 (không)
@@ -90,7 +90,7 @@ Phase 2 bước 12 🧪 — `sync()` + merge (D030): 92 test pass, analyze sạc
 | 10 | Google Cloud + OAuth clients (user) | ✅ |
 | 11 | Sign-in web + Android | ✅ |
 | 12 | `sync()` + merge + test 4 case | 🧪 |
-| 13 | Trigger + debounce + xử lý 401 web | ⬜ |
+| 13 | Trigger + debounce + xử lý 401 web | 🧪 |
 
 ### Phase 3 — Web release
 | Bước | Nội dung | Trạng thái |
@@ -115,6 +115,7 @@ Phase 2 bước 12 🧪 — `sync()` + merge (D030): 92 test pass, analyze sạc
 - Bước 14: `usePathUrlStrategy()` (hiện hash URL `/#/2027/02`, D023), responsive 2 cột, phím tắt ← → T Esc.
 - Test app: luôn `flutter test --timeout 90s`; widget test dùng Hive phải bọc `tester.runAsync` (E009); tile dưới viewport 600px là offstage → `ensureVisible`.
 - Chạy app: từ `apps/kade`, luôn kèm `--dart-define-from-file=../../dart_defines.json` (thiếu → remote config tắt, chỉ asset). Máy user: dùng Flutter 3.44.5 (E008), web port 5001 (E011).
+- Bước 13 xong (D032): `SyncTrigger` (`lib/data/sync/sync_trigger.dart`) tạo ở `AppLifecycle` (main.dart); bước 16/17 nối "sau sync / sau sửa / resume" → reschedule notification + widget bằng listener tương tự (`userEventsProvider`, `syncProvider` lastSyncAt, `onResume`). Test vòng đời: `sendLifecycle()` (E017); test giả giờ: `clock:` trong `testApp`/`testOverrides`.
 
 ## Log
 - 2026-09-09 — bootstrap — tạo plan, AGENTS.md, .memory, reference, fixture, hướng dẫn Google — (chưa có commit)
@@ -143,3 +144,4 @@ Phase 2 bước 12 🧪 — `sync()` + merge (D030): 92 test pass, analyze sạc
 - 2026-09-10 — phase2-step12 — commit — d4eb444
 - 2026-09-10 — handover — user chốt D031 (chạy hết 13–18 không dừng chờ test tay; test tay gom cuối theo phase × Web/Android): docs/manual-test.md (checklist), docs/prompts/handover.md (prompt session sau), AGENTS.md §2/§3/§4/§5 sửa, trạng thái 🧪; bước 12 ⏸ → 🧪 — (hash ở dòng sau)
 - 2026-09-10 — handover — commit — b2941a2
+- 2026-09-10 — phase2-step13 — `SyncTrigger` (sau đăng nhập/cấp quyền/khôi phục phiên, debounce 5s sau sửa/nhập, resume ≥ 15 phút + invalidate todayProvider qua ngày) qua `AppLifecycle`; `sync()` đặt running trước khi xin token, 401 → `clearToken` + xin lại 1 lần (im lặng; popup chỉ từ nút) + "Phiên Google hết hạn — bấm Đồng bộ ngay"; `deleteRemote()` + nút "Xóa dữ liệu trên Drive" (D032, E017); 104 test pass, analyze sạch, build web + APK OK → 🧪 — 1735642
