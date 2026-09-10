@@ -10,3 +10,7 @@ environment:
 workspace:
   - packages/*
   - apps/*
+
+# Cho script trong tools/ (vd. tools/gen_lunar_table.dart) import được lunar_core.
+dev_dependencies:
+  lunar_core: any
