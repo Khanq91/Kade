@@ -132,8 +132,8 @@ Drive → Settings → Manage apps → Kade → Options → **Delete hidden app 
 ## C. Deploy web — GitHub Pages (Phase 3 bước 15, D033/D034)
 
 Repo `https://github.com/Khanq91/Kade` → site **`https://khanq91.github.io/Kade/`** (URL trong app dạng hash: `https://khanq91.github.io/Kade/#/2027/02`).
-Workflow `.github/workflows/deploy-web.yml` chạy khi push `main` (hoặc tab **Actions → deploy-web → Run workflow**):
-Flutter 3.44.5 → `dart pub get` → build_runner → `flutter test` → `flutter build web --release --base-href /Kade/` với 2 `--dart-define` lấy từ secrets → deploy lên Pages. Agent đã viết xong; 4 việc dưới chỉ user làm được.
+Workflow `.github/workflows/deploy-web.yml` (tên **build-and-deploy**) chạy khi push mọi branch (hoặc tab **Actions → build-and-deploy → Run workflow**):
+Flutter 3.44.5 → `dart pub get` → build_runner → `flutter test` → `flutter build web --release` + `flutter build apk --debug` với 2 `--dart-define` lấy từ secrets. APK debug được lưu ở artifact của run; chỉ push `main` mới deploy web lên Pages. Agent đã viết xong; 4 việc dưới chỉ user làm được.
 
 ### C.1 Bật Pages
 Repo → **Settings → Pages → Build and deployment → Source: GitHub Actions** (không chọn "Deploy from a branch").

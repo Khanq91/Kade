@@ -1,12 +1,13 @@
-# Deploy Flutter web lên GitHub Pages (plan §6 bước 15, D033/D034).
+# Build Flutter web + Android trên mọi branch push; deploy web lên GitHub Pages
+# chỉ khi push vào main (plan §6 bước 15, D033/D034).
 # User cần làm một lần (docs/setup-google.md phần C): Settings → Pages →
 # Source = GitHub Actions; 2 secrets KADE_CONFIG_URL, KADE_WEB_CLIENT_ID;
 # thêm origin https://<user>.github.io vào OAuth client Web.
-name: deploy-web
+name: build-and-deploy
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
@@ -15,7 +16,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: build-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,6 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - uses: subosito/flutter-action@v2
         with:
@@ -55,12 +61,29 @@ jobs:
       # file lạ trong web/ nên chép thủ công → https://<user>.github.io/<repo>/privacy.html
       - run: cp docs/privacy.html apps/kade/build/web/privacy.html
 
+      # Build Android on every push too. This is a debug APK for CI validation;
+      # signed release APK/AAB remains in release-android.yml on tags v*.
+      - name: Build Android debug APK
+        working-directory: apps/kade
+        run: >
+          flutter build apk --debug
+          --dart-define=KADE_CONFIG_URL=${{ secrets.KADE_CONFIG_URL }}
+          --dart-define=KADE_WEB_CLIENT_ID=${{ secrets.KADE_WEB_CLIENT_ID }}
+
+      - name: Upload Android debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kade-debug-apk-${{ github.sha }}
+          path: apps/kade/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/kade/build/web
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
