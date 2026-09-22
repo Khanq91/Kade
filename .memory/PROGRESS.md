@@ -13,10 +13,13 @@ Phase 4 bước 16 🧪 — notification (D035): `buildReminders` + `LocalNotifi
 Phase 4 bước 17 🧪 — widget 2x2 + 4x2 (D036, E019): `computeWidgetData` 35 ngày + `WidgetUpdater` + `KadeWidgetSmall/WideProvider` Kotlin; 135 test pass, analyze sạch, build web + APK OK (commit `771ccff`); test tay: manual-test.md 4.1, 4.5.
 Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties` (fallback debug), `setup-google.md` phần D (keystore, SHA-1 release/Play, appbundle, listing), `docs/privacy.html` (workflow chép lên site); chờ user tạo keystore + OAuth client release + Play Console (mục "Cần user làm").
 
+**Redesign UI (từ 2026-09-22, theo `REDESIGN_PLAN.md`):** làm song song, không đụng gì ở trên. Thứ tự: Phase 0 (nền theme) → Phase 2 (AppShell) → Phase 1 (Lịch tháng) → Phase 3 → 4 → 5 → 6 → 7 (widget Android, chốt biến thể thiết kế lúc bắt đầu). Redesign Phase 0 agent đã viết code (D039) nhưng CHƯA tự chạy `flutter analyze`/`flutter test`/`flutter build` (không có Flutter SDK ở môi trường viết file) — xem "Cần user làm".
+
 ## Đang dở
-(không)
+Redesign Phase 0 (nền theme pastel) — code xong (D039), chờ user chạy `flutter analyze` + `flutter test --timeout 90s` + `flutter build web`/`apk --debug` rồi báo lại; sau đó mới sang Phase 2.
 
 ## Cần user làm
+- [ ] **Redesign Phase 0 — verify nền theme (mới, D039):** sau khi paste các file đã đổi (`pubspec.yaml`, `lib/main.dart`, `lib/data/settings_provider.dart`, `lib/core/theme/kade_palette.dart`, `lib/core/theme/kade_theme_extension.dart`, `lib/core/theme/kade_theme.dart`, `assets/fonts/*.ttf`) vào `apps/kade/`: (1) `dart pub get` (root); (2) `flutter analyze` — sạch; (3) `flutter test --timeout 90s` — không test nào đỏ (theme không nên phá test màu cụ thể); (4) `flutter build web` + `flutter build apk --debug` OK; (5) chạy app, xem theme nền hồng phấn thay cho đỏ Material 3 mặc định, chữ dùng Baloo 2 (số/tiêu đề to)/Be Vietnam Pro (còn lại) — bố cục từng màn hình vẫn y nguyên (đúng ý Phase 0, chưa restyle Card/ô lịch cụ thể). Báo "ok" hoặc dán lỗi/ảnh chụp sai khác → agent sửa rồi mới sang Phase 2 (AppShell).
 - [ ] **Bước 15 — Deploy GitHub Pages (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần C):** (1) repo Settings → Pages → Source: **GitHub Actions**; (2) Secrets `KADE_CONFIG_URL`, `KADE_WEB_CLIENT_ID` (giá trị lấy từ `dart_defines.json`); (3) OAuth client Web (B.3) thêm origin `https://khanq91.github.io`; (4) push `main` hoặc Actions → deploy-web → Run workflow → mở `https://khanq91.github.io/Kade/` → test manual-test.md 3.5 (+ 3.1 mục 6 Lighthouse). Báo ok → 15 ⏸ → ✅.
 - [ ] **Bước 18 — Release Android (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần D):** (1) tạo keystore `kade-release.jks` NGOÀI repo (`keytool -genkey …`, D.1); (2) `apps/kade/android/key.properties` từ `key.properties.example` (gitignored); (3) SHA-1 release → OAuth client Android "Kade Android release" (B.4 / D.3); (4) `flutter build appbundle --release --dart-define-from-file=../../dart_defines.json` → upload Internal testing trên Play Console; (5) Play App Signing → SHA-1 của app signing key → OAuth client "Kade Android play"; (6) listing + Data safety + privacy policy `https://khanq91.github.io/Kade/privacy.html` (sau khi bước 15 deploy); (7) muốn phát hành APK qua GitHub Releases: 4 secret keystore (D.8) rồi `git tag v1.0.0 && git push origin main --tags`. Test manual-test.md 4.4. Báo ok → 18 ⏸ → ✅.
 - [ ] **Test tay toàn bộ (cuối, D031)** → theo `docs/manual-test.md`, chia phase × Web/Android; báo theo format "Ghi lỗi" ở cuối file đó. Các mục verify chi tiết bên dưới (bước 12, 11, 9, 6) đã gom vào file đó, giữ lại để tham khảo.
@@ -114,6 +117,18 @@ Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties
 | 17 | Widget 2x2 + 4x2 | 🧪 |
 | 18 | Release keystore + SHA-1 + Play listing | ⏸ |
 
+### Redesign UI — theo REDESIGN_PLAN.md (song song với Phase 5+ sau MVP)
+| Phase | Nội dung | Trạng thái |
+|---|---|---|
+| 0 | Nền theme: `kade_palette`/`kade_theme_extension`/`kade_theme`, font bundle, `ThemeIdNotifier`/`DarkModeNotifier`, `main.dart` | 🔄 (code xong D039, chờ user chạy analyze/test/build) |
+| 2 | AppShell (bottom nav / rail) — NavigationBar/RailThemeData | ⬜ |
+| 1 | Lịch tháng (MonthView, DayTile, picker) | ⬜ |
+| 3 | Chi tiết ngày | ⬜ |
+| 4 | Sắp tới | ⬜ |
+| 5 | Đổi ngày | ⬜ |
+| 6 | Cài đặt + Giao diện (theme picker) + Sự kiện của tôi + Form | ⬜ |
+| 7 | Widget Android (native) — chốt biến thể thiết kế lúc bắt đầu | ⬜ |
+
 ## Ghi chú cho bước sau
 - Bước 6: home hiện là `SettingsScreen` (tạm) → thay bằng MonthView, Settings vào route `/settings`. MonthView `ref.watch(remoteConfigProvider)` lấy `overrides` cho `resolveMonth`; cache tháng invalidate khi state đổi. UI phải phân biệt `kind` (nghỉ/kỷ niệm/quốc tế) bằng màu/badge và `type` (âm/dương) bằng ký hiệu ÂL/DL (D021). go_router tối thiểu ngay ở bước 6 vì §4.8 mục 2 (reload giữ tháng) là tiêu chí verify của bước này; responsive/PWA/phím tắt để bước 14.
 - Sau khi clone/pull: chạy `dart run build_runner build` trong `apps/kade` trước khi analyze/test (generated `*.freezed.dart`, `*.g.dart` bị gitignore — D025, E014).
@@ -165,3 +180,4 @@ Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties
 - 2026-09-10 — phase4-step18 — PROGRESS bước hiện tại 13–18 — c17e09f
 - 2026-09-10 — phase3-step15 — user chạy workflow lần đầu: job build xanh (CI test + build web OK), job deploy đỏ vì OIDC timeout (E020) → workflow thêm retry deploy-pages + timeout; user Re-run — 74e57b7
 - 2026-09-10 — phase4-step18 — user yêu cầu: `.github/workflows/release-android.yml` (tag `v*` → test → APK + AAB ký từ secret keystore base64 → GitHub Release; Run workflow → artifact), setup-google D.8 (D038) — 19cf091
+- 2026-09-22 — redesign-phase0 — nền theme pastel: `kade_palette.dart` (6 palette port 1-1 từ themes.js), `kade_theme_extension.dart` (KadeColors), `kade_theme.dart` (buildKadeTheme: ColorScheme từ set.ac, TextTheme Baloo 2 + Be Vietnam Pro, card/button pill), font bundle tĩnh (`assets/fonts/`, Baloo 2 variable font), `ThemeIdNotifier`/`DarkModeNotifier` trong settings_provider.dart, `KadeApp` sang ConsumerWidget (D039); agent chưa tự chạy flutter analyze/test/build (không có Flutter SDK ở môi trường viết file) — chờ user chạy rồi báo lại; chưa có commit hash (chưa áp vào repo)

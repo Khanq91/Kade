@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>body{margin:0;font-family:'Be Vietnam Pro',system-ui,sans-serif}input,select,button,textarea{font:inherit;color:inherit;min-width:0;box-sizing:border-box;max-width:100%}label>input,label>select,label>textarea{width:100%}input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}.kbtn{cursor:pointer;border:0;background:transparent;padding:0}.kbtn:hover{filter:brightness(.96)}.kbtn:active{filter:brightness(.9)}.krow:hover{background:var(--ac1)}.kscroll{scrollbar-width:none}.kscroll::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="{{ varsFill }}">
+<div data-screen-label="Kade app" style="flex:1;min-height:0;display:flex;flex-direction:column;background:var(--bg);color:var(--tx);font-family:'Be Vietnam Pro',system-ui,sans-serif">
+
+  <sc-if value="{{ isMonth }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="Lịch tháng" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="display:flex;align-items:center;padding:10px 14px 0 14px;gap:8px">
+      <button class="kbtn" onClick="{{ prevMonth }}" title="Tháng trước" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div style="flex:1;text-align:center;display:flex;flex-direction:column">
+        <span style="font:700 26px/1.1 'Baloo 2',sans-serif">{{ monthTitle }}</span>
+        <span style="font:500 11.5px/1.4 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ lunarMonths }}</span>
+      </div>
+      <button class="kbtn" onClick="{{ nextMonth }}" title="Tháng sau" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:8px;padding:8px 14px 2px">
+      <button class="kbtn" onClick="{{ toggleLunarNav }}" style="{{ lunarBtnStyle }}">Tháng âm</button>
+      <button class="kbtn" onClick="{{ goToday }}" style="height:32px;padding:0 14px;border-radius:999px;background:var(--ac);color:var(--on);font:600 12.5px/1 'Be Vietnam Pro',sans-serif">Hôm nay</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px 10px 4px">
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T2</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T3</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T4</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T5</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T6</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T7</div>
+      <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--sun)">CN</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:4px;padding:0 10px;min-height:0">
+      <sc-for list="{{ weeks }}" as="week" hint-placeholder-count="5">
+        <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;min-height:0">
+          <sc-for list="{{ week }}" as="c" hint-placeholder-count="7">
+            <button class="kbtn" onClick="{{ c.open }}" style="{{ c.style }}">
+              <span style="{{ c.dayStyle }}">{{ c.day }}</span>
+              <span style="{{ c.lunarStyle }}">{{ c.lunar }}</span>
+              <span style="display:flex;gap:3px;margin-top:auto">
+                <sc-for list="{{ c.dots }}" as="d" hint-placeholder-count="0"><i style="{{ d }}"></i></sc-for>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:center;gap:6px;padding:10px 12px 6px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:5px;font:500 10.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:5px 9px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#D65B5B"></i>Nghỉ lễ</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font:500 10.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:5px 9px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#E0913F"></i>Kỷ niệm</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font:500 10.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:5px 9px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#5B8DD6"></i>Quốc tế</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font:500 10.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:5px 9px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#9B6BC9"></i>Cá nhân</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font:500 10.5px/1 'Be Vietnam Pro',sans-serif;color:var(--offT);padding:5px 9px;border-radius:999px;background:var(--off)">Ngày nghỉ</span>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isDay }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Chi tiết ngày" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="display:flex;align-items:center;padding:10px 14px 0;gap:6px">
+      <button class="kbtn" onClick="{{ back }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--tx);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg></button>
+      <span style="flex:1;font:700 20px/1.1 'Baloo 2',sans-serif;padding-left:6px">{{ day.dateStr }}</span>
+      <button class="kbtn" onClick="{{ prevDay }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="kbtn" onClick="{{ nextDay }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:12px 14px 20px;display:flex;flex-direction:column;gap:12px">
+      <div style="{{ day.heroStyle }}">
+        <div style="flex:1;display:flex;flex-direction:column">
+          <span style="font:600 13px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ day.weekday }}</span>
+          <span style="font:800 56px/1 'Baloo 2',sans-serif;margin-top:2px">{{ day.dayNum }}</span>
+          <span style="font:500 13px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ day.monthYear }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;text-align:right">
+          <span style="font:600 11px/1.3 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--acT)">ÂM LỊCH</span>
+          <span style="font:700 34px/1.1 'Baloo 2',sans-serif;color:var(--acT)">{{ day.lunarShort }}</span>
+          <span style="font:500 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ day.lunarMonthName }}</span>
+          <span style="font:500 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">Năm {{ day.canChiYear }}</span>
+        </div>
+      </div>
+      <sc-if value="{{ day.isOff }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;padding:6px 12px;border-radius:999px;background:var(--off);color:var(--offT);font:600 12px/1 'Be Vietnam Pro',sans-serif">Ngày nghỉ</span></sc-if>
+      <div style="background:var(--sf);border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px var(--sh)">
+        <div style="display:flex;gap:10px"><span style="width:110px;flex:none;font:500 13px/20px 'Be Vietnam Pro',sans-serif;color:var(--mu)">Tháng</span><span style="font:500 14px/20px 'Be Vietnam Pro',sans-serif">{{ day.canChiMonth }}</span></div>
+        <div style="display:flex;gap:10px"><span style="width:110px;flex:none;font:500 13px/20px 'Be Vietnam Pro',sans-serif;color:var(--mu)">Ngày</span><span style="font:500 14px/20px 'Be Vietnam Pro',sans-serif">{{ day.canChiDay }}</span></div>
+        <sc-if value="{{ day.hasTietKhi }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px"><span style="width:110px;flex:none;font:500 13px/20px 'Be Vietnam Pro',sans-serif;color:var(--mu)">Tiết khí</span><span style="font:500 14px/20px 'Be Vietnam Pro',sans-serif">{{ day.tietKhi }}</span></div></sc-if>
+        <div style="display:flex;gap:10px;align-items:center"><span style="width:110px;flex:none;font:500 13px/20px 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ day.hdLabel }}</span><span style="{{ day.hdStyle }}">{{ day.than }}</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:110px;flex:none;font:500 13px/20px 'Be Vietnam Pro',sans-serif;color:var(--mu)">Giờ hoàng đạo</span><span style="display:flex;flex-wrap:wrap;gap:4px"><sc-for list="{{ day.gio }}" as="g" hint-placeholder-count="6"><span style="padding:3px 8px;border-radius:999px;background:var(--b1);color:var(--bT);font:500 11.5px/1.3 'Be Vietnam Pro',sans-serif">{{ g }}</span></sc-for></span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font:700 17px/1.2 'Baloo 2',sans-serif;padding:4px 4px 0">Sự kiện</span>
+        <sc-if value="{{ day.noEvents }}" hint-placeholder-val="{{ false }}"><span style="padding:4px;font:400 13px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">Không có sự kiện</span></sc-if>
+        <sc-for list="{{ day.events }}" as="e" hint-placeholder-count="1">
+          <div style="background:var(--sf);border-radius:18px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 2px var(--sh)">
+            <span style="{{ e.tagStyle }}">{{ e.tag }}</span>
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0"><span style="font:600 14px/1.3 'Be Vietnam Pro',sans-serif">{{ e.title }}</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ e.sub }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;padding:4px 4px 0"><span style="flex:1;font:700 17px/1.2 'Baloo 2',sans-serif">Sự kiện cá nhân</span><button class="kbtn" onClick="{{ newEventHere }}" style="height:32px;padding:0 12px 0 8px;border-radius:999px;background:var(--ac);color:var(--on);display:inline-flex;align-items:center;gap:4px;font:600 12px/1 'Be Vietnam Pro',sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Thêm sự kiện</button></div>
+        <sc-if value="{{ day.noUser }}" hint-placeholder-val="{{ false }}"><span style="padding:4px;font:400 13px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">Chưa có sự kiện nào</span></sc-if>
+        <sc-for list="{{ day.userItems }}" as="u" hint-placeholder-count="0">
+          <button class="kbtn krow" onClick="{{ u.edit }}" style="background:var(--sf);border-radius:18px;padding:10px 12px;display:flex;align-items:center;gap:10px;text-align:left;box-shadow:0 1px 2px var(--sh)">
+            <span style="{{ u.tagStyle }}">{{ u.tag }}</span>
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0"><span style="font:600 14px/1.3 'Be Vietnam Pro',sans-serif">{{ u.title }}</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ u.sub }}</span></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isUpcoming }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Sắp tới" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="padding:14px 18px 4px;font:700 26px/1.1 'Baloo 2',sans-serif">Sắp tới</div>
+    <div style="display:flex;gap:6px;padding:6px 14px 8px;flex-wrap:wrap">
+      <sc-for list="{{ layerChips }}" as="l" hint-placeholder-count="4"><button class="kbtn" onClick="{{ l.toggle }}" style="{{ l.style }}"><i style="{{ l.dot }}"></i>{{ l.label }}</button></sc-for>
+    </div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:4px 14px 20px;display:flex;flex-direction:column;gap:10px">
+      <sc-if value="{{ noUpcoming }}" hint-placeholder-val="{{ false }}"><span style="text-align:center;padding:40px 0;font:400 13px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">Không có sự kiện trong 60 ngày tới</span></sc-if>
+      <sc-for list="{{ upcomingDays }}" as="d" hint-placeholder-count="3">
+        <div style="{{ d.cardStyle }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 6px">
+            <div style="{{ d.badgeStyle }}"><span style="font:800 20px/1 'Baloo 2',sans-serif">{{ d.dayNum }}</span><span style="font:600 9px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.04em">{{ d.monthShort }}</span></div>
+            <div style="flex:1;display:flex;flex-direction:column"><span style="{{ d.relStyle }}">{{ d.rel }}</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ d.sub }}</span></div>
+          </div>
+          <sc-for list="{{ d.items }}" as="it" hint-placeholder-count="1">
+            <button class="kbtn krow" onClick="{{ it.open }}" style="display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:14px;text-align:left;width:100%">
+              <span style="{{ it.tagStyle }}">{{ it.tag }}</span>
+              <div style="flex:1;display:flex;flex-direction:column;min-width:0"><span style="font:600 14px/1.3 'Be Vietnam Pro',sans-serif">{{ it.title }}</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ it.sub }}</span></div>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isConvert }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Đổi ngày" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="padding:14px 18px 4px;font:700 26px/1.1 'Baloo 2',sans-serif">Đổi ngày</div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:8px 14px 20px;display:flex;flex-direction:column;gap:12px">
+      <div style="background:var(--sf);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 17px/1.2 'Baloo 2',sans-serif">Dương → Âm</span>
+        <label style="display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--tx);font:500 13px/1 'Be Vietnam Pro',sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--acT)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="3"/><path d="M3 10h18"/></svg><input type="date" value="{{ conv.solarIso }}" onChange="{{ setConvSolar }}" style="flex:1;min-width:0;border:0;background:transparent;font:500 13px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 34px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ conv.lunarFull }}</span><span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">âm lịch</span></div>
+        <span style="font:400 12.5px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ conv.canChiLine }}</span>
+      </div>
+      <div style="background:var(--sf);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 17px/1.2 'Baloo 2',sans-serif">Âm → Dương</span>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr);gap:8px">
+          <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Ngày</span><input inputMode="numeric" value="{{ conv.d }}" onChange="{{ setConvD }}" style="height:40px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+          <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Tháng</span><input inputMode="numeric" value="{{ conv.m }}" onChange="{{ setConvM }}" style="height:40px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+          <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Năm</span><input inputMode="numeric" value="{{ conv.y }}" onChange="{{ setConvY }}" style="height:40px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+        </div>
+        <button class="kbtn" onClick="{{ toggleConvLeap }}" style="display:flex;align-items:center;gap:10px;padding:4px 2px;text-align:left"><span style="{{ conv.leapBoxStyle }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span style="font:500 13.5px/1 'Be Vietnam Pro',sans-serif">Tháng nhuận</span></button>
+        <button class="kbtn" onClick="{{ doConvert }}" style="height:44px;border-radius:999px;background:var(--ac);color:var(--on);font:600 14px/1 'Be Vietnam Pro',sans-serif">Đổi</button>
+        <sc-if value="{{ conv.hasResult }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:2px;padding-top:4px"><span style="font:500 11px/1.3 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--acT)">DƯƠNG LỊCH</span><span style="font:800 26px/1.1 'Baloo 2',sans-serif">{{ conv.result }}</span></div></sc-if>
+        <sc-if value="{{ conv.hasError }}" hint-placeholder-val="{{ false }}"><span style="font:500 12.5px/1.4 'Be Vietnam Pro',sans-serif;color:var(--offT)">{{ conv.error }}</span></sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Cài đặt" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="padding:14px 18px 4px;font:700 26px/1.1 'Baloo 2',sans-serif">Cài đặt</div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:8px 14px 20px;display:flex;flex-direction:column;gap:12px">
+      <div style="background:var(--sf);border-radius:24px;padding:6px;display:flex;flex-direction:column;box-shadow:0 1px 2px var(--sh)">
+        <button class="kbtn krow" onClick="{{ goTheme }}" style="display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:18px;text-align:left"><span style="{{ themeIconStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.7 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-4.9-4.5-8.4-10-8.4"/></svg></span><div style="flex:1;display:flex;flex-direction:column"><span style="font:600 14.5px/1.3 'Be Vietnam Pro',sans-serif">Giao diện</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ themeSummary }}</span></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="kbtn krow" onClick="{{ goEvents }}" style="display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:18px;text-align:left"><span style="width:36px;height:36px;border-radius:12px;background:var(--b1);color:var(--bT);display:grid;place-items:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="3"/><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span><div style="flex:1;display:flex;flex-direction:column"><span style="font:600 14.5px/1.3 'Be Vietnam Pro',sans-serif">Sự kiện của tôi</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">Ngày giỗ, sinh nhật, kỷ niệm… theo âm hoặc dương lịch</span></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <div style="background:var(--sf);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 16px/1.2 'Baloo 2',sans-serif">Nhắc nhở</span>
+        <span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Thông báo lúc 08:00 trên Android. Sự kiện cá nhân đặt "Nhắc trước" ngay trong form sự kiện.</span>
+        <div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font:500 13.5px/1.3 'Be Vietnam Pro',sans-serif">Nhắc lễ trước</span><select value="{{ remindDays }}" onChange="{{ setRemind }}" style="height:34px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--tx);padding:0 12px;font:500 12.5px/1 'Be Vietnam Pro',sans-serif"><option value="0">Không nhắc</option><option value="1">1 ngày trước</option><option value="3">3 ngày trước</option><option value="7">7 ngày trước</option><option value="14">14 ngày trước</option></select></div>
+      </div>
+      <div style="background:var(--sf);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 16px/1.2 'Baloo 2',sans-serif">Đồng bộ Google</span>
+        <span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Lưu sự kiện cá nhân vào thư mục riêng của app trên Google Drive và đồng bộ giữa các máy.</span>
+        <button class="kbtn" style="align-self:flex-start;height:40px;padding:0 16px 0 12px;border-radius:999px;background:var(--ac);color:var(--on);display:inline-flex;align-items:center;gap:8px;font:600 13px/1 'Be Vietnam Pro',sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Đồng bộ với Google</button>
+      </div>
+      <div style="background:var(--sf);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 16px/1.2 'Baloo 2',sans-serif">Sao lưu</span>
+        <span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Xuất sự kiện cá nhân ra file JSON để giữ hoặc chuyển máy; nhập lại từ file đã xuất.</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="kbtn" style="height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);color:var(--acT);display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 'Be Vietnam Pro',sans-serif"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Xuất file JSON</button>
+          <button class="kbtn" style="height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);color:var(--acT);display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 'Be Vietnam Pro',sans-serif"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Nhập file JSON</button>
+        </div>
+      </div>
+      <div style="background:var(--sf);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px var(--sh)">
+        <span style="font:700 16px/1.2 'Baloo 2',sans-serif">Lịch nghỉ bù theo năm</span>
+        <span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Ngày nghỉ thêm / làm bù do Nhà nước công bố từng năm, tải từ Google Sheet.</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font:400 12px/1.5 'Be Vietnam Pro',sans-serif">
+          <span style="color:var(--mu)">Nguồn dữ liệu</span><span style="font-weight:500">Mặc định kèm app</span>
+          <span style="color:var(--mu)">Phiên bản</span><span style="font-weight:500">3</span>
+          <span style="color:var(--mu)">Sheet sửa lúc</span><span style="font-weight:500">02/01/2026 09:15</span>
+          <span style="color:var(--mu)">Kiểm tra lần cuối</span><span style="font-weight:500">10/09/2026 16:40</span>
+        </div>
+        <button class="kbtn" style="align-self:flex-start;height:38px;padding:0 14px 0 12px;border-radius:999px;background:var(--ac1);color:var(--acT);display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 'Be Vietnam Pro',sans-serif"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>Kiểm tra cập nhật</button>
+        <div style="border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:2px"><span style="font:600 13px/1.3 'Be Vietnam Pro',sans-serif">Năm 2026</span><span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Nghỉ: 02/01, 16/02, 20/02, 21/02, 01/09</span><span style="font:400 12px/1.5 'Be Vietnam Pro',sans-serif;color:var(--mu)">Làm bù: —</span></div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isTheme }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Giao diện" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
+      <button class="kbtn" onClick="{{ back }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--tx);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg></button>
+      <span style="font:700 22px/1.1 'Baloo 2',sans-serif">Giao diện</span>
+    </div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:12px 14px 20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font:600 11.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--mu);padding:0 4px">BỘ MÀU</span>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="6">
+          <button class="kbtn" onClick="{{ s.pick }}" style="{{ s.style }}">
+            <span style="{{ s.previewStyle }}"><i style="{{ s.dotStyle }}"></i><i style="{{ s.dot2Style }}"></i></span>
+            <span style="font:600 12px/1.2 'Be Vietnam Pro',sans-serif;text-align:center">{{ s.name }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <span style="font:600 11.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--mu);padding:6px 4px 0">CHẾ ĐỘ</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:999px;background:var(--sf);box-shadow:0 1px 2px var(--sh)">
+        <button class="kbtn" onClick="{{ setLight }}" style="{{ lightSegStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>Sáng</button>
+        <button class="kbtn" onClick="{{ setDark }}" style="{{ darkSegStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg>Tối</button>
+      </div>
+      <span style="font:600 11.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--mu);padding:6px 4px 0">XEM TRƯỚC</span>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+        <div style="background:var(--sf);border-radius:12px;padding:6px 6px 8px;display:flex;flex-direction:column;box-shadow:0 1px 2px var(--sh);min-height:64px"><span style="font:700 17px/1 'Baloo 2',sans-serif">10</span><span style="font:500 10px/14px 'Be Vietnam Pro',sans-serif;color:var(--mu)">29</span></div>
+        <div style="background:var(--ac);border-radius:12px;padding:6px 6px 8px;display:flex;flex-direction:column;box-shadow:0 4px 12px var(--sh);min-height:64px;color:var(--on)"><span style="font:700 17px/1 'Baloo 2',sans-serif">11</span><span style="font:700 10px/14px 'Be Vietnam Pro',sans-serif;opacity:.9">1/8</span></div>
+        <div style="background:var(--off);border-radius:12px;padding:6px 6px 8px;display:flex;flex-direction:column;box-shadow:0 1px 2px var(--sh);min-height:64px"><span style="font:700 17px/1 'Baloo 2',sans-serif;color:var(--offT)">12</span><span style="font:500 10px/14px 'Be Vietnam Pro',sans-serif;color:var(--mu)">2</span><span style="display:flex;gap:3px;margin-top:auto"><i style="width:6px;height:6px;border-radius:50%;background:#D65B5B"></i></span></div>
+        <div style="background:var(--sf);border-radius:12px;padding:6px 6px 8px;display:flex;flex-direction:column;box-shadow:0 1px 2px var(--sh);min-height:64px"><span style="font:700 17px/1 'Baloo 2',sans-serif;color:var(--sun)">13</span><span style="font:500 10px/14px 'Be Vietnam Pro',sans-serif;color:var(--mu)">3</span><span style="display:flex;gap:3px;margin-top:auto"><i style="width:6px;height:6px;border-radius:50%;background:#9B6BC9"></i><i style="width:6px;height:6px;border-radius:50%;background:#E0913F"></i></span></div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isEvents }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Sự kiện của tôi" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative">
+    <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
+      <button class="kbtn" onClick="{{ back }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--tx);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg></button>
+      <span style="font:700 22px/1.1 'Baloo 2',sans-serif">Sự kiện của tôi</span>
+    </div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:12px 14px 90px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ myEvents }}" as="u" hint-placeholder-count="4">
+        <button class="kbtn krow" onClick="{{ u.edit }}" style="background:var(--sf);border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-align:left;box-shadow:0 1px 2px var(--sh)">
+          <span style="{{ u.tagStyle }}">{{ u.tag }}</span>
+          <div style="flex:1;display:flex;flex-direction:column;min-width:0"><span style="font:600 14.5px/1.3 'Be Vietnam Pro',sans-serif">{{ u.title }}</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ u.sub }}</span></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </sc-for>
+    </div>
+    <button class="kbtn" onClick="{{ newEvent }}" style="position:absolute;right:18px;bottom:18px;height:52px;padding:0 20px 0 16px;border-radius:999px;background:var(--ac);color:var(--on);display:inline-flex;align-items:center;gap:8px;font:600 14px/1 'Be Vietnam Pro',sans-serif;box-shadow:0 8px 20px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Thêm sự kiện</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Form sự kiện" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
+      <button class="kbtn" onClick="{{ back }}" style="width:40px;height:40px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--tx);box-shadow:0 1px 2px var(--sh)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg></button>
+      <span style="flex:1;font:700 22px/1.1 'Baloo 2',sans-serif">{{ form.title }}</span>
+      <sc-if value="{{ form.isEdit }}" hint-placeholder-val="{{ false }}"><button class="kbtn" onClick="{{ deleteEvent }}" title="Xóa" style="width:40px;height:40px;border-radius:999px;background:var(--off);display:grid;place-items:center;color:var(--offT)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></sc-if>
+    </div>
+    <div class="kscroll" style="flex:1;overflow:auto;padding:12px 14px 20px;display:flex;flex-direction:column;gap:12px">
+      <label style="display:flex;flex-direction:column;gap:4px"><span style="font:500 11.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:14px">Tên sự kiện</span><input value="{{ form.name }}" onChange="{{ setName }}" placeholder="Giỗ, sinh nhật, kỷ niệm…" style="height:46px;border-radius:999px;border:1.5px solid var(--line);background:var(--sf);padding:0 16px;font:500 15px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+      <sc-if value="{{ form.nameError }}" hint-placeholder-val="{{ false }}"><span style="font:500 12px/1 'Be Vietnam Pro',sans-serif;color:var(--offT);padding-left:14px;margin-top:-6px">Nhập tên sự kiện</span></sc-if>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--sf);box-shadow:0 1px 2px var(--sh)">
+        <button class="kbtn" onClick="{{ setSolar }}" style="{{ form.solarSeg }}">Dương lịch</button>
+        <button class="kbtn" onClick="{{ setLunar }}" style="{{ form.lunarSeg }}">Âm lịch</button>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr);gap:8px">
+        <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Ngày</span><input inputMode="numeric" value="{{ form.d }}" onChange="{{ setD }}" style="height:42px;border-radius:999px;border:1.5px solid var(--line);background:var(--sf);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+        <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Tháng</span><input inputMode="numeric" value="{{ form.m }}" onChange="{{ setM }}" style="height:42px;border-radius:999px;border:1.5px solid var(--line);background:var(--sf);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+        <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Năm</span><input inputMode="numeric" value="{{ form.y }}" onChange="{{ setY }}" disabled="{{ form.yearly }}" style="{{ form.yearStyle }}"></label>
+      </div>
+      <button class="kbtn" onClick="{{ toggleYearly }}" style="display:flex;align-items:center;gap:10px;padding:2px 4px;text-align:left"><span style="{{ form.yearlyBox }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span style="font:500 13.5px/1 'Be Vietnam Pro',sans-serif">Lặp hàng năm</span></button>
+      <sc-if value="{{ form.isLunar }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:4px">Năm có tháng nhuận trùng tháng</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--sf);box-shadow:0 1px 2px var(--sh)">
+            <sc-for list="{{ form.leapOpts }}" as="o" hint-placeholder-count="3"><button class="kbtn" onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:8px">
+        <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Số ngày</span><input inputMode="numeric" value="{{ form.dur }}" onChange="{{ setDur }}" style="height:42px;border-radius:999px;border:1.5px solid var(--line);background:var(--sf);padding:0 12px;font:500 14px/1 'Be Vietnam Pro',sans-serif;color:var(--tx)"></label>
+        <label style="display:flex;flex-direction:column;gap:3px"><span style="font:500 11px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:12px">Nhắc trước</span><select value="{{ form.remind }}" onChange="{{ setFormRemind }}" style="height:42px;border-radius:999px;border:1.5px solid var(--line);background:var(--sf);color:var(--tx);padding:0 12px;font:500 13px/1 'Be Vietnam Pro',sans-serif"><option value="-1">Không nhắc</option><option value="0">Đúng ngày</option><option value="1">1 ngày trước</option><option value="3">3 ngày trước</option><option value="7">7 ngày trước</option><option value="14">14 ngày trước</option></select></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:4px"><span style="font:500 11.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:14px">Ghi chú</span><textarea value="{{ form.note }}" onChange="{{ setNote }}" rows="2" style="border-radius:20px;border:1.5px solid var(--line);background:var(--sf);padding:12px 16px;font:400 14px/1.4 'Be Vietnam Pro',sans-serif;color:var(--tx);resize:none"></textarea></label>
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 11.5px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding-left:4px">Màu</span><div style="display:flex;flex-wrap:wrap;gap:10px"><sc-for list="{{ form.colors }}" as="c" hint-placeholder-count="8"><button class="kbtn" onClick="{{ c.pick }}" style="{{ c.style }}"><sc-if value="{{ c.on }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if></button></sc-for></div></div>
+      <sc-if value="{{ form.dateError }}" hint-placeholder-val="{{ false }}"><span style="font:500 12.5px/1.4 'Be Vietnam Pro',sans-serif;color:var(--offT)">Ngày/tháng không hợp lệ</span></sc-if>
+      <button class="kbtn" onClick="{{ saveEvent }}" style="height:48px;border-radius:999px;background:var(--ac);color:var(--on);font:600 15px/1 'Be Vietnam Pro',sans-serif;margin-top:4px;box-shadow:0 6px 16px var(--sh)">Lưu</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:6px 10px 10px;gap:6px;background:var(--bg)">
+    <button class="kbtn" onClick="{{ goMonth }}" style="{{ nav.month }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="3"/><path d="M3 10h18"/></svg><span style="font:600 10.5px/1 'Be Vietnam Pro',sans-serif">Lịch</span></button>
+    <button class="kbtn" onClick="{{ goUpcoming }}" style="{{ nav.upcoming }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span style="font:600 10.5px/1 'Be Vietnam Pro',sans-serif">Sắp tới</span></button>
+    <button class="kbtn" onClick="{{ goConvert }}" style="{{ nav.convert }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg><span style="font:600 10.5px/1 'Be Vietnam Pro',sans-serif">Đổi ngày</span></button>
+    <button class="kbtn" onClick="{{ goSettings }}" style="{{ nav.settings }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span style="font:600 10.5px/1 'Be Vietnam Pro',sans-serif">Cài đặt</span></button>
+  </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:412,&quot;height&quot;:820},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;hong&quot;,&quot;options&quot;:[&quot;hong&quot;,&quot;mint&quot;,&quot;bien&quot;,&quot;lavender&quot;,&quot;dao&quot;,&quot;kem&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;dark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;month&quot;,&quot;options&quot;:[&quot;month&quot;,&quot;day&quot;,&quot;upcoming&quot;,&quot;convert&quot;,&quot;settings&quot;,&quot;theme&quot;,&quot;events&quot;,&quot;form&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;sel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Thoáng&quot;,&quot;options&quot;:[&quot;Thoáng&quot;,&quot;Lớn&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { L: null, T: null, screen: this.props.screen ?? 'month', stack: [], y: 2026, m: 9, lunarNav: false, dark: null, theme: null, sel: this.props.sel ?? null,
+    layers: { vnHoliday: true, vnMemorial: true, international: true, personal: true }, remind: 7,
+    userEvents: null, form: null, conv: { solarIso: '2026-09-11', d: '1', m: '8', y: '2026', leap: false, result: null, error: null } };
+  componentDidMount() { Promise.all([import('./lunar.js'), import('./themes.js')]).then(([L, T]) => this.setState({ L, T, userEvents: L.USER_EVENTS.map(e => ({ ...e })) })); }
+  go(screen, extra = {}) { this.setState(s => ({ screen, stack: [...s.stack, s.screen], ...extra })); }
+  tab(screen) { this.setState({ screen, stack: [] }); }
+  back() { this.setState(s => { const st = [...s.stack]; const prev = st.pop() || 'month'; return { screen: prev, stack: st }; }); }
+  blankForm(dateIso, existing) {
+    const L = this.state.L, d = dateIso ? new Date(dateIso) : L.utc(2026, 9, 11);
+    if (existing) return { id: existing.id, name: existing.title, type: existing.type, d: String(existing.day), m: String(existing.month), y: existing.year ? String(existing.year) : '2026', yearly: !existing.year, leap: 'first', dur: String(existing.durationDays), remind: existing.remind == null ? -1 : existing.remind, note: existing.note || '', color: existing.colorIndex, err: null, nameErr: false };
+    return { id: null, name: '', type: 'solar', d: String(d.getUTCDate()), m: String(d.getUTCMonth() + 1), y: String(d.getUTCFullYear()), yearly: true, leap: 'first', dur: '1', remind: -1, note: '', color: 0, err: null, nameErr: false, baseIso: L.iso(d) };
+  }
+  setForm(patch) { this.setState(s => ({ form: { ...(s.form || this.blankForm(s.sel)), ...patch } })); }
+  renderVals() {
+    const { L, T } = this.state; if (!L || !T) return {};
+    const S = this.state, theme = S.theme ?? this.props.theme ?? 'hong', dark = S.dark ?? !!this.props.dark, big = (this.props.density ?? 'Thoáng') === 'Lớn';
+    const vars = T.cssVars(theme, dark), K = dark ? T.KIND_DARK : T.KIND, UC = T.USER, today = L.utc(2026, 9, 11), UE = S.userEvents;
+    const font = (w, sz, lh, fam) => `${w} ${sz}px/${lh} '${fam || 'Be Vietnam Pro'}',sans-serif`;
+    const tag = (type, color) => ({ tag: type === 'lunar' ? 'ÂL' : 'DL', tagStyle: { flex: 'none', minWidth: 30, textAlign: 'center', padding: '4px 7px', borderRadius: 999, background: color, color: '#fff', font: font(700, 10, 1) } });
+    const rel = n => n === 0 ? 'Hôm nay' : n === 1 ? 'Ngày mai' : `Còn ${n} ngày`;
+    const month = L.buildMonth(S.y, S.m, UE);
+    const cells = month.days.map(c => {
+      const l = c.info.lunar, sun = L.weekdayIdx(c.date) === 6, isToday = c.date.getTime() === today.getTime(), emph = l.day === 1 || l.day === 15, iso = L.iso(c.date);
+      return {
+        day: c.date.getUTCDate(), lunar: l.day === 1 ? `1/${l.month}${l.isLeap ? 'N' : ''}` : String(l.day),
+        dots: [...c.appEvents.map(e => K[e.kind]), ...c.userEvents.map(e => UC[e.colorIndex % 8])].slice(0, 3).map(col => ({ width: 6, height: 6, borderRadius: '50%', background: isToday ? 'var(--on)' : col, flex: 'none' })),
+        open: () => this.go('day', { sel: iso }),
+        style: { background: isToday ? 'var(--ac)' : c.isOffDay ? 'var(--off)' : 'var(--sf)', borderRadius: 12, padding: '6px 6px 5px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', boxShadow: isToday ? '0 4px 12px var(--sh)' : '0 1px 2px var(--sh)', minHeight: 0, overflow: 'hidden', border: 0, cursor: 'pointer' },
+        dayStyle: { font: font(700, big ? 21 : 18, 1, 'Baloo 2'), color: isToday ? 'var(--on)' : c.isOffDay ? 'var(--offT)' : sun ? 'var(--sun)' : 'var(--tx)' },
+        lunarStyle: { font: font(emph ? 700 : 500, big ? 12 : 10.5, '14px'), color: isToday ? 'var(--on)' : emph ? 'var(--acT)' : 'var(--mu)', opacity: isToday ? .92 : 1 },
+      };
+    });
+    const blank = { day: '', lunar: '', dots: [], open: () => {}, style: { background: 'transparent', border: 0 }, dayStyle: {}, lunarStyle: {} };
+    const all = [...Array(L.weekdayIdx(month.days[0].date)).fill(blank), ...cells]; while (all.length % 7) all.push(blank);
+    const weeks = []; for (let i = 0; i < all.length; i += 7) weeks.push(all.slice(i, i + 7));
+    const seen = []; for (const c of month.days) { const t = L.lunarMonthTitle(c.info.lunar); if (!seen.length || seen[seen.length - 1] !== t) seen.push(t); }
+    const shiftMonth = dl => { const d = new Date(Date.UTC(S.y, S.m - 1 + dl, 1)); this.setState({ y: d.getUTCFullYear(), m: d.getUTCMonth() + 1 }); };
+    const selDate = S.sel ? new Date(S.sel) : today, cell = L.dayCell(selDate, UE), info = cell.info, l = info.lunar;
+    const day = {
+      dateStr: L.fmtDate(selDate), weekday: L.S.weekdays[L.weekdayIdx(selDate)], dayNum: selDate.getUTCDate(), monthYear: `Tháng ${selDate.getUTCMonth() + 1} · ${selDate.getUTCFullYear()}`,
+      lunarShort: L.fmtLunarShort(l), lunarMonthName: `Tháng ${L.S.lunarMonthNames[l.month - 1]}${l.isLeap ? ' nhuận' : ''}`, canChiYear: info.canChiYear,
+      heroStyle: { background: cell.isOffDay ? 'var(--off)' : 'var(--ac1)', borderRadius: 28, padding: '16px 18px', display: 'flex', gap: 12, alignItems: 'stretch' },
+      isOff: cell.isOffDay, canChiMonth: `${info.canChiMonth} (${L.S.lunarMonthNames[l.month - 1]})`, canChiDay: info.canChiDay, hasTietKhi: !!info.tietKhi, tietKhi: info.tietKhi || '',
+      hdLabel: info.isHoangDao ? 'Ngày hoàng đạo' : 'Ngày hắc đạo', than: info.than,
+      hdStyle: { padding: '4px 10px', borderRadius: 999, background: info.isHoangDao ? 'var(--b1)' : 'var(--sf2)', color: info.isHoangDao ? 'var(--bT)' : 'var(--mu)', font: font(600, 12.5, 1.3) },
+      gio: info.gioHoangDao, noEvents: !cell.appEvents.length,
+      events: cell.appEvents.map(e => ({ title: e.title, sub: [L.S.kind[e.kind], e.description].filter(Boolean).join(' · '), ...tag(e.type, K[e.kind]) })),
+      noUser: !cell.userEvents.length,
+      userItems: cell.userEvents.map(e => ({ title: e.title, sub: e.note || `${e.day}/${e.month} ${e.type === 'lunar' ? 'ÂL' : 'DL'} · hàng năm`, ...tag(e.type, UC[e.colorIndex % 8]), edit: () => this.go('form', { form: this.blankForm(null, e) }) })),
+    };
+    const layerDefs = [['vnHoliday', 'Nghỉ lễ'], ['vnMemorial', 'Kỷ niệm'], ['international', 'Quốc tế'], ['personal', 'Cá nhân']];
+    const layerChips = layerDefs.map(([k, label]) => ({ label, toggle: () => this.setState(s => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),
+      style: { height: 32, padding: '0 12px 0 10px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', gap: 6, font: font(600, 12, 1), background: S.layers[k] ? 'var(--sf)' : 'transparent', color: S.layers[k] ? 'var(--tx)' : 'var(--mu)', border: S.layers[k] ? '1.5px solid transparent' : '1.5px solid var(--line)', boxShadow: S.layers[k] ? '0 1px 2px var(--sh)' : 'none', opacity: S.layers[k] ? 1 : .8 },
+      dot: { width: 8, height: 8, borderRadius: '50%', background: K[k], opacity: S.layers[k] ? 1 : .4 } }));
+    const active = new Set(layerDefs.map(x => x[0]).filter(k => S.layers[k]));
+    const upcomingDays = L.upcoming(today, 60, active, UE).map(d => ({
+      dayNum: d.cell.date.getUTCDate(), monthShort: `TH ${d.cell.date.getUTCMonth() + 1}`, rel: rel(d.daysFromToday),
+      relStyle: { font: font(700, 14, 1.3), color: d.daysFromToday === 0 ? 'var(--acT)' : 'var(--tx)' },
+      sub: `${L.S.weekdays[L.weekdayIdx(d.cell.date)]}, ${L.fmtDate(d.cell.date)} · ${L.fmtLunarShort(d.cell.info.lunar)} ÂL`,
+      cardStyle: { background: 'var(--sf)', borderRadius: 22, padding: 8, display: 'flex', flexDirection: 'column', boxShadow: '0 1px 2px var(--sh)' },
+      badgeStyle: { width: 48, height: 48, borderRadius: 16, background: d.daysFromToday === 0 ? 'var(--ac)' : 'var(--ac1)', color: d.daysFromToday === 0 ? 'var(--on)' : 'var(--acT)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, flex: 'none' },
+      items: d.items.map(it => ({ title: it.title, sub: [L.S.kind[it.layer], it.durationDays > 1 ? `${it.durationDays} ngày` : null].filter(Boolean).join(' · '), ...tag(it.type, it.layer === 'personal' ? UC[it.user.colorIndex % 8] : K[it.layer]), open: () => this.go('day', { sel: L.iso(it.date) }) })),
+    }));
+    const C = S.conv, cs = new Date(C.solarIso + 'T00:00:00Z'), ci = isNaN(cs) ? L.dayInfo(today) : L.dayInfo(cs);
+    const conv = { solarIso: C.solarIso, lunarFull: `${L.fmtLunarShort(ci.lunar)}/${ci.lunar.year}`, canChiLine: `Năm ${ci.canChiYear} · Tháng ${ci.canChiMonth} · Ngày ${ci.canChiDay}`, d: C.d, m: C.m, y: C.y,
+      leapBoxStyle: { width: 22, height: 22, borderRadius: 7, display: 'grid', placeItems: 'center', background: C.leap ? 'var(--ac)' : 'transparent', color: 'var(--on)', border: C.leap ? '2px solid var(--ac)' : '2px solid var(--line)' },
+      hasResult: !!C.result, result: C.result || '', hasError: !!C.error, error: C.error || '' };
+    const setConv = p => this.setState(s => ({ conv: { ...s.conv, ...p } }));
+    const doConvert = () => { const d = +C.d, m = +C.m, y = +C.y; if (!d || !m || !y || d < 1 || d > 30 || m < 1 || m > 12) return setConv({ result: null, error: 'Nhập ngày (1–30), tháng (1–12) và năm là số' });
+      const s = L.lunarToSolar(d, m, y, C.leap); if (s) return setConv({ result: `${L.S.weekdays[L.weekdayIdx(s)]}, ${L.fmtDate(s)}`, error: null });
+      const hasLeap = !!L.lunarToSolar(1, m, y, true); setConv({ result: null, error: C.leap && !hasLeap ? `Năm ${y} không có tháng ${m} nhuận` : `Ngày ${d}/${m}${C.leap ? ' nhuận' : ''}/${y} âm lịch không tồn tại` }); };
+    const th = T.THEMES.find(t => t.id === theme) || T.THEMES[0];
+    const swatches = T.THEMES.map(t => { const p = dark ? t.dark : t.light, on = t.id === theme; return { name: t.name, pick: () => this.setState({ theme: t.id }),
+      style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '12px 8px', borderRadius: 20, background: 'var(--sf)', border: on ? '2px solid var(--ac)' : '2px solid transparent', boxShadow: on ? '0 4px 14px var(--sh)' : '0 1px 2px var(--sh)', color: 'var(--tx)' },
+      previewStyle: { width: 56, height: 56, borderRadius: '50%', background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, border: `1px solid ${p.line}` },
+      dotStyle: { width: 20, height: 20, borderRadius: '50%', background: p.ac }, dot2Style: { width: 12, height: 12, borderRadius: '50%', background: p.b } }; });
+    const seg = on => ({ height: 36, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, font: font(600, 13, 1), background: on ? 'var(--ac)' : 'transparent', color: on ? 'var(--on)' : 'var(--mu)' });
+    const when = e => `${e.day}/${e.month} ${e.type === 'lunar' ? 'ÂL' : 'DL'} · ${e.year ? e.year : 'hàng năm'}${e.durationDays > 1 ? ` · ${e.durationDays} ngày` : ''}`;
+    const myEvents = UE.map(e => ({ title: e.title, sub: when(e), ...tag(e.type, UC[e.colorIndex % 8]), edit: () => this.go('form', { form: this.blankForm(null, e) }) }));
+    const F = S.form || this.blankForm(S.sel);
+    const segF = on => ({ height: 38, borderRadius: 999, font: font(600, 13, 1), background: on ? 'var(--ac)' : 'transparent', color: on ? 'var(--on)' : 'var(--mu)' });
+    const leapLabels = [['first', 'Tháng chính'], ['second', 'Tháng nhuận'], ['both', 'Cả hai']];
+    const form = { title: F.id ? 'Sửa sự kiện' : 'Sự kiện mới', isEdit: !!F.id, name: F.name, nameError: F.nameErr, d: F.d, m: F.m, y: F.y, yearly: F.yearly, dur: F.dur, remind: F.remind, note: F.note, isLunar: F.type === 'lunar',
+      solarSeg: segF(F.type === 'solar'), lunarSeg: segF(F.type === 'lunar'),
+      yearStyle: { height: 42, borderRadius: 999, border: '1.5px solid var(--line)', background: 'var(--sf)', padding: '0 12px', font: font(500, 14, 1), color: 'var(--tx)', opacity: F.yearly ? .45 : 1 },
+      yearlyBox: { width: 22, height: 22, borderRadius: 7, display: 'grid', placeItems: 'center', background: F.yearly ? 'var(--ac)' : 'transparent', color: 'var(--on)', border: F.yearly ? '2px solid var(--ac)' : '2px solid var(--line)' },
+      leapOpts: leapLabels.map(([v, label]) => ({ label, pick: () => this.setForm({ leap: v }), style: { ...segF(F.leap === v), height: 34, font: font(600, 12, 1) } })),
+      colors: UC.map((c, i) => ({ on: F.color === i, pick: () => this.setForm({ color: i }), style: { width: 36, height: 36, borderRadius: '50%', background: c, display: 'grid', placeItems: 'center', boxShadow: F.color === i ? `0 0 0 3px var(--sf), 0 0 0 5px ${c}` : 'none' } })),
+      dateError: !!F.err };
+    const fillFromType = type => { const d = new Date(F.baseIso || L.iso(today)); if (type === 'solar') return { type, d: String(d.getUTCDate()), m: String(d.getUTCMonth() + 1), y: String(d.getUTCFullYear()) }; const ll = L.solarToLunar(d.getUTCDate(), d.getUTCMonth() + 1, d.getUTCFullYear()); return { type, d: String(ll.day), m: String(ll.month), y: String(ll.year), leap: ll.isLeap ? 'second' : 'first' }; };
+    const saveEvent = () => { const name = F.name.trim(), d = +F.d, m = +F.m, dur = +F.dur || 1, maxD = F.type === 'lunar' ? 30 : 31;
+      if (!name) return this.setForm({ nameErr: true }); if (!d || !m || d < 1 || d > maxD || m < 1 || m > 12) return this.setForm({ err: true, nameErr: false });
+      const ev = { id: F.id || 'u' + Date.now(), title: name, type: F.type, day: d, month: m, year: F.yearly ? null : (+F.y || null), durationDays: dur, colorIndex: F.color, note: F.note.trim() || null, remind: F.remind < 0 ? null : F.remind };
+      this.setState(s => ({ userEvents: F.id ? s.userEvents.map(e => e.id === F.id ? ev : e) : [...s.userEvents, ev], form: null })); this.back(); };
+    const deleteEvent = () => { this.setState(s => ({ userEvents: s.userEvents.filter(e => e.id !== F.id), form: null })); this.back(); };
+    const navStyle = on => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 0 7px', borderRadius: 18, background: on ? 'var(--ac1)' : 'transparent', color: on ? 'var(--acT)' : 'var(--mu)' });
+    const isTab = ['month', 'upcoming', 'convert', 'settings'].includes(S.screen);
+    return {
+      varsFill: { ...vars, height: '100%', minHeight: '100%', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }, monthTitle: `Tháng ${S.m} · ${S.y}`, lunarMonths: seen.join(' · '), weeks,
+      prevMonth: () => shiftMonth(-1), nextMonth: () => shiftMonth(1), goToday: () => this.setState({ y: 2026, m: 9 }), toggleLunarNav: () => this.setState(s => ({ lunarNav: !s.lunarNav })),
+      lunarBtnStyle: { height: 32, padding: '0 14px', borderRadius: 999, font: font(600, 12.5, 1), background: S.lunarNav ? 'var(--ac2)' : 'var(--sf)', color: 'var(--acT)', boxShadow: '0 1px 2px var(--sh)' },
+      isMonth: S.screen === 'month', isDay: S.screen === 'day', isUpcoming: S.screen === 'upcoming', isConvert: S.screen === 'convert', isSettings: S.screen === 'settings', isTheme: S.screen === 'theme', isEvents: S.screen === 'events', isForm: S.screen === 'form', showNav: isTab,
+      nav: { month: navStyle(S.screen === 'month'), upcoming: navStyle(S.screen === 'upcoming'), convert: navStyle(S.screen === 'convert'), settings: navStyle(S.screen === 'settings') },
+      goMonth: () => this.tab('month'), goUpcoming: () => this.tab('upcoming'), goConvert: () => this.tab('convert'), goSettings: () => this.tab('settings'), back: () => this.back(),
+      day, prevDay: () => this.setState({ sel: L.iso(L.addDays(selDate, -1)) }), nextDay: () => this.setState({ sel: L.iso(L.addDays(selDate, 1)) }), newEventHere: () => this.go('form', { form: this.blankForm(L.iso(selDate)) }),
+      layerChips, upcomingDays, noUpcoming: !upcomingDays.length,
+      conv, setConvSolar: e => setConv({ solarIso: e.target.value }), setConvD: e => setConv({ d: e.target.value }), setConvM: e => setConv({ m: e.target.value }), setConvY: e => setConv({ y: e.target.value }), toggleConvLeap: () => setConv({ leap: !C.leap }), doConvert,
+      themeSummary: `${th.name} · ${dark ? 'Tối' : 'Sáng'}`, themeIconStyle: { width: 36, height: 36, borderRadius: 12, background: 'var(--ac1)', color: 'var(--acT)', display: 'grid', placeItems: 'center', flex: 'none' },
+      goTheme: () => this.go('theme'), goEvents: () => this.go('events'), remindDays: S.remind, setRemind: e => this.setState({ remind: +e.target.value }),
+      swatches, setLight: () => this.setState({ dark: false }), setDark: () => this.setState({ dark: true }), lightSegStyle: seg(!dark), darkSegStyle: seg(dark),
+      myEvents, newEvent: () => this.go('form', { form: this.blankForm(null) }),
+      form, setName: e => this.setForm({ name: e.target.value, nameErr: false }), setSolar: () => this.setForm(F.id ? { type: 'solar' } : fillFromType('solar')), setLunar: () => this.setForm(F.id ? { type: 'lunar' } : fillFromType('lunar')),
+      setD: e => this.setForm({ d: e.target.value, err: null }), setM: e => this.setForm({ m: e.target.value, err: null }), setY: e => this.setForm({ y: e.target.value }), toggleYearly: () => this.setForm({ yearly: !F.yearly }),
+      setDur: e => this.setForm({ dur: e.target.value }), setFormRemind: e => this.setForm({ remind: +e.target.value }), setNote: e => this.setForm({ note: e.target.value }), saveEvent, deleteEvent,
+    };
+  }
+}
+</script>
+</body>
+</html>

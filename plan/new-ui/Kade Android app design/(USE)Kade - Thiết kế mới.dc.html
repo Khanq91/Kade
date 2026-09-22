@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>body{margin:0;background:#efebe6;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#201e1d}a{color:#8C491A}a:hover{color:#643312}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-opt{display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-opt:target .dv-oid{background:#7A8A5E;color:#fff}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.55)}</style>
+</helmet>
+
+<section id="t4" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:22px;scroll-margin-top:16px">
+<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><a class="dv-tid" href="#t4">4</a><span style="font:700 20px/1.2 'Baloo 2',sans-serif">Biến thể của <a class="dv-oid" href="#3b">3b</a> — vòng tròn âm lịch</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.55)">Sắp tới ghi rõ thứ + ngày dương, nhãn ÂL/DL theo màu lớp; ngày âm của hôm đó ở cột phải</span></div>
+<div style="{{ vars }}">
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--tx)">
+
+  <div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Giữ 2×2 của 3b · 4×2 trắng, cột trái lặp đúng bố cục 2×2, cột phải 5 dòng có thứ/ngày + ÂL/DL</div>
+    <div data-screen-label="Widget 4a" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:14px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh);position:relative;overflow:hidden">
+        <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.weekday }} · {{ w.monthShort }}</span>
+        <span style="font:800 64px/1 'Baloo 2',sans-serif;margin-top:4px">{{ w.day }}</span>
+        <span style="align-self:flex-start;margin-top:auto"><span style="{{ w.hdStyle }}">{{ w.hd }}</span></span>
+        <div style="position:absolute;right:-14px;bottom:-14px;width:96px;height:96px;border-radius:50%;background:var(--ac);color:var(--on);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:10px;padding-bottom:10px">
+          <span style="font:800 34px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span>
+          <span style="font:600 9.5px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9;text-align:center">{{ w.lMonth }}</span>
+        </div>
+      </div>
+      <div style="flex:1;height:204px;box-sizing:border-box;background:var(--sf);border-radius:28px;display:flex;box-shadow:0 8px 24px var(--sh);overflow:hidden">
+        <div style="width:168px;flex:none;padding:14px;display:flex;flex-direction:column;position:relative;border-right:1px solid var(--line)">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.weekday }} · {{ w.monthShort }}</span>
+          <span style="font:800 64px/1 'Baloo 2',sans-serif;margin-top:4px">{{ w.day }}</span>
+          <span style="margin-top:auto;font:400 11px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.canChiDay }}</span>
+          <div style="position:absolute;right:-8px;bottom:-14px;width:96px;height:96px;border-radius:50%;background:var(--ac);color:var(--on);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:4px;padding-bottom:10px">
+            <span style="font:800 34px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span>
+            <span style="font:600 9.5px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9;text-align:center">{{ w.lMonth }}</span>
+          </div>
+        </div>
+        <div style="flex:1;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+              <span style="display:flex;align-items:center;gap:6px"><span style="{{ u.tagStyle }}">{{ u.tag }}</span><span style="font:800 11.5px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ u.wd }} {{ u.date }}</span><span style="font:500 9px/1 'Be Vietnam Pro',sans-serif;color:var(--mu)">· {{ u.lunarDate }} âm</span></span>
+              <span style="font:500 12.5px/1.25 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dv-opt" id="4b"><div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>Vòng tròn lớn góc trên phải, số dương neo đáy · 4×2: đĩa âm lịch tách hẳn thành cột giữa</div>
+    <div data-screen-label="Widget 4b" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 8px 24px var(--sh);position:relative;overflow:hidden">
+        <div style="position:absolute;right:-22px;top:-22px;width:118px;height:118px;border-radius:50%;background:var(--ac);color:var(--on);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:14px;padding-top:14px">
+          <span style="font:600 9px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;opacity:.85">ÂM LỊCH</span>
+          <span style="font:800 38px/1 'Baloo 2',sans-serif;margin-top:2px">{{ w.lDay }}</span>
+          <span style="font:600 9.5px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9;text-align:center">{{ w.lMonth }}</span>
+        </div>
+        <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.weekday }}</span>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 60px/1 'Baloo 2',sans-serif">{{ w.day }}</span><span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }}</span></div>
+      </div>
+      <div style="flex:1;height:204px;box-sizing:border-box;background:var(--sf);border-radius:28px;padding:14px;display:flex;gap:12px;box-shadow:0 8px 24px var(--sh);align-items:center">
+        <div style="width:112px;flex:none;display:flex;flex-direction:column;justify-content:flex-end;height:100%">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.weekday }}</span>
+          <span style="font:800 64px/1 'Baloo 2',sans-serif">{{ w.day }}</span>
+          <span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }} · {{ w.year }}</span>
+        </div>
+        <div style="width:120px;height:120px;flex:none;border-radius:50%;background:var(--ac);color:var(--on);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--sh)">
+          <span style="font:600 9px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;opacity:.85">ÂM LỊCH</span>
+          <span style="font:800 44px/1 'Baloo 2',sans-serif;margin-top:2px">{{ w.lDay }}</span>
+          <span style="font:600 10px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9;text-align:center">{{ w.lMonth }}</span>
+          <span style="font:500 9px/1.2 'Be Vietnam Pro',sans-serif;opacity:.8">{{ w.canChiYear }}</span>
+        </div>
+        <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;min-width:0;padding-left:4px">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:7px;min-width:0"><span style="{{ u.tagStyle }}">{{ u.tag }}</span><span style="flex:none;font:800 12.5px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ u.wd }} {{ u.date }}</span><span style="flex:1;font:500 12px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dv-opt" id="4c"><div class="dv-olabel"><a class="dv-oid" href="#4c">4c</a>Đảo màu — nền màu chủ, vòng tròn trắng chứa số dương, âm lịch chữ trắng · 4×2 chia hai nửa</div>
+    <div data-screen-label="Widget 4c" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--ac);color:var(--on);border-radius:28px;padding:14px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh);position:relative;overflow:hidden">
+        <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.weekday }}</span>
+        <div style="position:absolute;left:-18px;bottom:-18px;width:120px;height:120px;border-radius:50%;background:var(--sf);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:14px;padding-bottom:14px">
+          <span style="font:800 50px/1 'Baloo 2',sans-serif">{{ w.day }}</span>
+          <span style="font:600 10px/1.2 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }}</span>
+        </div>
+        <div style="margin-top:auto;align-self:flex-end;display:flex;flex-direction:column;align-items:flex-end;text-align:right">
+          <span style="font:600 9px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;opacity:.85">ÂM LỊCH</span>
+          <span style="font:800 40px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span>
+          <span style="font:600 10px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.lMonth }}</span>
+          <span style="font:500 9.5px/1.2 'Be Vietnam Pro',sans-serif;opacity:.8">{{ w.canChiYear }}</span>
+        </div>
+      </div>
+      <div style="flex:1;height:204px;box-sizing:border-box;border-radius:28px;display:flex;box-shadow:0 8px 24px var(--sh);overflow:hidden">
+        <div style="width:164px;flex:none;background:var(--ac);color:var(--on);padding:14px;display:flex;flex-direction:column;position:relative;overflow:hidden">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.weekday }}</span>
+          <div style="position:absolute;left:-18px;bottom:-18px;width:112px;height:112px;border-radius:50%;background:var(--sf);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:14px;padding-bottom:14px">
+            <span style="font:800 46px/1 'Baloo 2',sans-serif">{{ w.day }}</span>
+            <span style="font:600 10px/1.2 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }}</span>
+          </div>
+          <div style="margin-top:auto;align-self:flex-end;display:flex;flex-direction:column;align-items:flex-end;text-align:right">
+            <span style="font:600 9px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;opacity:.85">ÂM LỊCH</span>
+            <span style="font:800 40px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span>
+            <span style="font:600 10px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.lMonth }}</span>
+          </div>
+        </div>
+        <div style="flex:1;background:var(--sf);padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+              <span style="display:flex;align-items:center;gap:6px"><span style="{{ u.tagSoft }}">{{ u.tag }}</span><span style="font:800 11.5px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ u.wd }} {{ u.date }}</span><i style="{{ u.dot }}"></i></span>
+              <span style="font:500 12.5px/1.25 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+<p style="margin:0;font:12px/1.5 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.5)">Thử tiếp: "4a nhưng cột phải chỉ 3 dòng chữ to hơn" · "4b bỏ đĩa giữa, dùng vòng tròn góc như 2×2" · "4c dùng màu sage thay màu chủ"</p>
+</section>
+
+<section id="t3" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:22px;scroll-margin-top:16px">
+<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><a class="dv-tid" href="#t3">3</a><span style="font:700 20px/1.2 'Baloo 2',sans-serif">Mẫu widget màn hình chính</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.55)"><a class="dv-oid" href="#3a">3a</a> theo ý bạn; <a class="dv-oid" href="#3b">3b</a>–<a class="dv-oid" href="#3d">3d</a> tôi sáng tạo thêm · cùng bộ màu với <a class="dv-oid" href="#1a">1a</a></span></div>
+<div style="{{ vars }}">
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--tx)">
+
+  <div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Ý bạn — âm lịch to gần bằng dương, Sắp tới 5 dòng dàn đều</div>
+    <div data-screen-label="Widget 3a" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:14px 16px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh)">
+        <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.weekday }}</span>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-top:2px">
+          <span style="font:800 54px/1 'Baloo 2',sans-serif">{{ w.day }}</span>
+          <span style="font:800 40px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ w.lDay }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:6px;margin-top:2px">
+          <span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif">{{ w.monthShort }}</span>
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT);text-align:right">{{ w.lMonth }}</span>
+        </div>
+        <span style="margin-top:auto;font:400 11.5px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">Ngày {{ w.canChiDay }} · {{ w.canChiYear }}</span>
+      </div>
+      <div style="flex:1;height:176px;background:var(--sf);border-radius:28px;padding:14px 16px;display:flex;gap:14px;box-shadow:0 8px 24px var(--sh)">
+        <div style="width:150px;display:flex;flex-direction:column">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.weekday }}</span>
+          <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px"><span style="font:800 50px/1 'Baloo 2',sans-serif">{{ w.day }}</span><span style="font:800 36px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ w.lDay }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:6px"><span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif">{{ w.monthShort }}</span><span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.lMonth }}</span></div>
+          <span style="margin-top:auto;font:400 11.5px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.canChiDay }} · {{ w.canChiYear }}</span>
+        </div>
+        <div style="width:1px;background:var(--line)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0"><i style="{{ u.dot }}"></i><span style="flex:none;width:42px;font:700 12px/1 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ u.date }}</span><span style="flex:1;font:500 13px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Đôi số — dương trên nền trắng, âm trong vòng tròn màu chủ</div>
+    <div data-screen-label="Widget 3b" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:14px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh);position:relative;overflow:hidden">
+        <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.weekday }} · {{ w.monthShort }}</span>
+        <span style="font:800 64px/1 'Baloo 2',sans-serif;margin-top:4px">{{ w.day }}</span>
+        <span style="align-self:flex-start;margin-top:auto"><span style="{{ w.hdStyle }}">{{ w.hd }}</span></span>
+        <div style="position:absolute;right:-14px;bottom:-14px;width:96px;height:96px;border-radius:50%;background:var(--ac);color:var(--on);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:10px;padding-bottom:10px">
+          <span style="font:800 34px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span>
+          <span style="font:600 9.5px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9;text-align:center">{{ w.lMonth }}</span>
+        </div>
+      </div>
+      <div style="flex:1;height:176px;background:var(--ac);color:var(--on);border-radius:28px;padding:16px 18px;display:flex;gap:16px;box-shadow:0 8px 24px var(--sh)">
+        <div style="display:flex;flex-direction:column;width:170px">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;opacity:.85">{{ w.weekday }}</span>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="font:800 60px/1 'Baloo 2',sans-serif">{{ w.day }}</span><span style="font:500 13px/1.3 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.monthShort }}</span></div>
+          <div style="margin-top:auto;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.22);border-radius:999px;padding:6px 12px;align-self:flex-start"><span style="font:800 18px/1 'Baloo 2',sans-serif;white-space:nowrap">{{ w.lShort }}</span><span style="font:600 11px/1 'Be Vietnam Pro',sans-serif;white-space:nowrap">{{ w.lMonth }}</span></div>
+        </div>
+        <div style="flex:1;background:var(--sf);color:var(--tx);border-radius:20px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0"><span style="flex:none;min-width:46px;text-align:center;padding:3px 6px;border-radius:999px;background:var(--ac1);color:var(--acT);font:700 10px/1 'Be Vietnam Pro',sans-serif">{{ u.rel }}</span><span style="flex:1;font:500 12.5px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dv-opt" id="3c"><div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>Dải tuần — 4×2 hiện cả tuần (số dương + âm nhỏ dưới), 2×2 xếp sự kiện gần nhất</div>
+    <div data-screen-label="Widget 3c" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:14px 16px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh)">
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 40px/1 'Baloo 2',sans-serif">{{ w.day }}</span><span style="font:800 26px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ w.lDay }}</span><span style="font:500 11px/1.2 'Be Vietnam Pro',sans-serif;color:var(--mu);margin-left:auto;text-align:right">{{ w.weekday }}</span></div>
+        <span style="font:500 11px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }} · <b style="color:var(--acT)">{{ w.lMonth }}</b></span>
+        <div style="margin-top:auto;background:var(--ac1);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:2px">
+          <span style="font:600 9.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--acT)">SẮP TỚI · {{ w.nextUp.rel }}</span>
+          <span style="font:700 13px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.nextUp.title }}</span>
+          <span style="font:500 11px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.nextUp.date }}</span>
+        </div>
+      </div>
+      <div style="flex:1;height:176px;background:var(--sf);border-radius:28px;padding:14px 16px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh)">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font:800 30px/1 'Baloo 2',sans-serif">{{ w.monthShort }}</span>
+          <span style="font:700 15px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ w.lMonth }} {{ w.canChiYear }}</span>
+          <span style="margin-left:auto;font:500 11px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.weekday }}, {{ w.day }}</span>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:10px">
+          <sc-for list="{{ w.week }}" as="d" hint-placeholder-count="7">
+            <div style="{{ d.style }}"><span style="{{ d.wdStyle }}">{{ d.wd }}</span><span style="{{ d.dayStyle }}">{{ d.day }}</span><span style="{{ d.lunarStyle }}">{{ d.lunar }}</span><i style="{{ d.dotStyle }}"></i></div>
+          </sc-for>
+        </div>
+        <div style="margin-top:auto;display:flex;align-items:center;gap:8px;min-width:0"><i style="{{ w.nextUp.dot }}"></i><span style="font:700 12px/1 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ w.nextUp.date }}</span><span style="font:500 12.5px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.nextUp.title }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dv-opt" id="3d"><div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>Tờ lịch bloc — số dương khổng lồ, âm lịch là dải chân trang màu chủ</div>
+    <div data-screen-label="Widget 3d" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start">
+      <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh);overflow:hidden">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px 4px">
+          <span style="font:600 11px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--mu)">{{ w.weekday }}</span>
+          <span style="font:800 72px/1 'Baloo 2',sans-serif;margin-top:2px">{{ w.day }}</span>
+          <span style="font:500 12px/1 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }} · {{ w.year }}</span>
+        </div>
+        <div style="background:var(--ac);color:var(--on);padding:10px 14px;display:flex;align-items:center;gap:8px"><span style="font:800 26px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span><span style="display:flex;flex-direction:column"><span style="font:700 11px/1.2 'Be Vietnam Pro',sans-serif">{{ w.lMonth }}</span><span style="font:500 10px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.canChiYear }} · {{ w.canChiDay }}</span></span></div>
+      </div>
+      <div style="flex:1;height:176px;background:var(--sf);border-radius:28px;display:flex;box-shadow:0 8px 24px var(--sh);overflow:hidden">
+        <div style="width:190px;display:flex;flex-direction:column;border-right:1px solid var(--line)">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px 4px">
+            <span style="font:600 11px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--mu)">{{ w.weekday }}</span>
+            <span style="font:800 66px/1 'Baloo 2',sans-serif;margin-top:2px">{{ w.day }}</span>
+            <span style="font:500 12px/1 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ w.monthShort }} · {{ w.year }}</span>
+          </div>
+          <div style="background:var(--ac);color:var(--on);padding:9px 14px;display:flex;align-items:center;gap:8px"><span style="font:800 24px/1 'Baloo 2',sans-serif">{{ w.lDay }}</span><span style="display:flex;flex-direction:column"><span style="font:700 11px/1.2 'Be Vietnam Pro',sans-serif">{{ w.lMonth }}</span><span style="font:500 10px/1.2 'Be Vietnam Pro',sans-serif;opacity:.9">{{ w.canChiYear }}</span></span></div>
+        </div>
+        <div style="flex:1;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+          <sc-for list="{{ w.up5 }}" as="u" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="flex:none;width:44px;font:800 14px/1 'Baloo 2',sans-serif;color:var(--acT)">{{ u.date }}</span><i style="{{ u.dot }}"></i><span style="flex:1;font:500 13px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+<p style="margin:0;font:12px/1.5 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.5)">Thử tiếp: "lấy 3a nhưng vòng tròn âm lịch như 3b" · "3c thêm chấm ngày nghỉ" · "widget nền tối trong suốt"</p>
+</section>
+
+<section id="t2" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:22px;scroll-margin-top:16px">
+<div style="display:flex;align-items:baseline;gap:10px"><a class="dv-tid" href="#t2">2</a><span style="font:700 20px/1.2 'Baloo 2',sans-serif">Các màn hình còn lại — bản sáng</span><span style="font:400 12px/1.4 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.55)">cùng bộ màu với <a class="dv-oid" href="#1a">1a</a> (đổi ở Tweaks → theme); mọi màn đều bấm được</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+  <div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Chi tiết ngày · 25/09 Tết Trung Thu</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="day" sel="2026-09-25" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Chi tiết ngày · 02/09 Quốc khánh (ngày nghỉ)</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="day" sel="2026-09-02" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Sắp tới · 60 ngày, lọc theo lớp</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="upcoming" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2d"><div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Đổi ngày · Dương ↔ Âm</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="convert" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2e"><div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a>Cài đặt · thêm mục Giao diện lên đầu</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="settings" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2f"><div class="dv-olabel"><a class="dv-oid" href="#2f">2f</a>Giao diện · chọn bộ màu + xem trước ô ngày</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="theme" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2g"><div class="dv-olabel"><a class="dv-oid" href="#2g">2g</a>Sự kiện của tôi</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="events" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+  <div class="dv-opt" id="2h"><div class="dv-olabel"><a class="dv-oid" href="#2h">2h</a>Sự kiện mới · điền sẵn từ ngày 25/09</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" screen="form" sel="2026-09-25" theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import></div>
+</div>
+<p style="margin:0;font:12px/1.5 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.5)">Thử tiếp: "form sự kiện: gộp Ngày/Tháng thành một ô chọn" · "Sắp tới: nhóm theo tháng" · "chi tiết ngày: thêm giờ hắc đạo"</p>
+</section>
+
+<section id="t1" style="padding:40px 44px 32px;display:flex;flex-direction:column;gap:22px;scroll-margin-top:16px">
+<div style="max-width:760px;display:flex;flex-direction:column;gap:10px">
+  <div style="display:flex;align-items:baseline;gap:10px"><a class="dv-tid" href="#t1">1</a><span style="font:700 22px/1.2 'Baloo 2',sans-serif">Kade Android — bộ màu pastel &amp; lưới ngày rõ ràng</span></div>
+  <p style="margin:0;font:400 13px/1.55 'Be Vietnam Pro',sans-serif;color:#5b544c">Bản tái tạo UI hiện tại nằm ở <a href="Kade — Hiện tại.dc.html">Kade — Hiện tại</a>. Thiết kế mới giữ đúng luồng &amp; chữ trong <code>strings.dart</code>, chỉ đổi lớp hình ảnh.</p>
+  <ul style="margin:0;padding-left:18px;font:400 13px/1.6 'Be Vietnam Pro',sans-serif;color:#5b544c;display:flex;flex-direction:column;gap:2px">
+    <li><b>Chữ tiếng Việt:</b> Caprasimo &amp; Figtree của hệ Organic <u>không có glyph tiếng Việt</u> → dùng <b>Baloo 2</b> (tiêu đề, tròn đậm cùng tinh thần Caprasimo) và <b>Be Vietnam Pro</b> (nội dung).</li>
+    <li><b>6 bộ màu</b>: Hồng phấn, Xanh mint, Xanh biển, Tím lavender, Cam đào, Kem be ấm — chọn ở <i>Cài đặt → Giao diện</i>.</li>
+    <li><b>Lưới ngày:</b> mỗi ngày là một thẻ nổi cách nhau 4px; hôm nay tô đặc màu chủ, ngày nghỉ tô hồng, Chủ nhật đỏ, mùng 1 &amp; rằm đậm màu chủ; sự kiện = chấm màu, nhãn ÂL/DL dời sang Chi tiết ngày.</li>
+  </ul>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+  <div class="dv-opt" id="1a">
+    <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Prototype tương tác — bấm ngày, đổi tháng, Cài đặt → Giao diện, thêm sự kiện</div>
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px"><dc-import name="Kade App" theme="{{ theme }}" density="{{ density }}" style="height:100%;display:flex;flex-direction:column" hint-size="100%,100%"></dc-import></x-import>
+  </div>
+  <div class="dv-opt" id="1b">
+    <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>6 bộ màu × sáng / tối — màn Lịch tháng thu nhỏ 50%</div>
+    <div style="display:grid;grid-template-columns:repeat(3,auto);gap:22px 18px">
+      <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font:600 12px/1.2 'Be Vietnam Pro',sans-serif;color:#3a342e">{{ g.name }}</span>
+          <div style="display:flex;gap:8px">
+            <div style="width:206px;height:320px;overflow:hidden;border-radius:12px"><div style="transform:scale(.5);transform-origin:top left;width:412px;height:640px"><dc-import name="Kade Preview" theme="{{ g.id }}" dark="{{ false }}" hint-size="412px,640px"></dc-import></div></div>
+            <div style="width:206px;height:320px;overflow:hidden;border-radius:12px"><div style="transform:scale(.5);transform-origin:top left;width:412px;height:640px"><dc-import name="Kade Preview" theme="{{ g.id }}" dark="{{ true }}" hint-size="412px,640px"></dc-import></div></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="dv-opt" id="1c" style="margin-top:18px">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Widget màn hình chính 2×2 và 4×2</div>
+      <div style="{{ vars }}">
+      <div data-screen-label="Widget mới" style="width:660px;border-radius:24px;background:linear-gradient(150deg,var(--ac2),var(--bg) 55%,var(--b1));padding:26px;display:flex;gap:18px;align-items:flex-start;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--tx)">
+        <div style="flex:none;box-sizing:content-box;width:176px;height:176px;background:var(--sf);border-radius:28px;padding:16px;display:flex;flex-direction:column;box-shadow:0 8px 24px var(--sh)">
+          <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ widget.weekday }}</span>
+          <span style="font:800 52px/1 'Baloo 2',sans-serif;margin-top:2px">{{ widget.day }}</span>
+          <span style="font:500 13px/1.4 'Be Vietnam Pro',sans-serif">{{ widget.month }}</span>
+          <div style="margin-top:auto;display:flex;flex-direction:column"><span style="font:700 13px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ widget.lunar }}</span><span style="font:400 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ widget.line5 }}</span></div>
+        </div>
+        <div style="flex:1;height:176px;background:var(--sf);border-radius:28px;padding:16px;display:flex;gap:14px;box-shadow:0 8px 24px var(--sh)">
+          <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+            <span style="font:600 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ widget.weekday }}</span>
+            <div style="display:flex;align-items:baseline;gap:6px"><span style="font:800 48px/1 'Baloo 2',sans-serif">{{ widget.day }}</span><span style="font:500 13px/1.4 'Be Vietnam Pro',sans-serif">{{ widget.month }}</span></div>
+            <div style="margin-top:auto;display:flex;flex-direction:column"><span style="font:700 13px/1.3 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ widget.lunar }}</span><span style="font:400 12px/1.3 'Be Vietnam Pro',sans-serif;color:var(--mu)">{{ widget.line5 }}</span></div>
+          </div>
+          <div style="width:1px;background:var(--line)"></div>
+          <div style="flex:1.3;display:flex;flex-direction:column;gap:6px;min-width:0">
+            <span style="font:600 11px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.08em;color:var(--acT)">SẮP TỚI</span>
+            <sc-for list="{{ widget.up }}" as="u" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0"><span style="{{ u.badge }}">{{ u.date }}</span><span style="font:500 12.5px/1.3 'Be Vietnam Pro',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p style="margin:10px 0 0;font:12px/1.5 'Be Vietnam Pro',sans-serif;color:rgba(0,0,0,.5)">Thử tiếp: "tăng cỡ số ngày cho người lớn tuổi" · "hiện tên sự kiện ngay trong ô ngày" · "thêm bộ màu xanh sage"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;hong&quot;,&quot;options&quot;:[&quot;hong&quot;,&quot;mint&quot;,&quot;bien&quot;,&quot;lavender&quot;,&quot;dao&quot;,&quot;kem&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Giao diện&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Thoáng&quot;,&quot;options&quot;:[&quot;Thoáng&quot;,&quot;Lớn&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lưới ngày&quot;}}">
+class Component extends DCLogic {
+  state = { L: null, T: null };
+  componentDidMount() { Promise.all([import('./lunar.js'), import('./themes.js')]).then(([L, T]) => this.setState({ L, T })); }
+  renderVals() {
+    const { L, T } = this.state, theme = this.props.theme ?? 'hong', density = this.props.density ?? 'Thoáng';
+    if (!L || !T) return { theme, density };
+    const vars = T.cssVars(theme, false), today = L.utc(2026, 9, 11), ti = L.dayInfo(today), tl = ti.lunar;
+    const widget = { weekday: L.S.weekdays[L.weekdayIdx(today)], day: today.getUTCDate(), month: `Tháng ${today.getUTCMonth() + 1} · ${today.getUTCFullYear()}`, lunar: `${tl.day}/${tl.month}${tl.isLeap ? ' nhuận' : ''} âm · ${ti.canChiYear}`, line5: `Ngày ${ti.canChiDay}`,
+      up: L.upcoming(today, 35).flatMap(d => d.items).slice(0, 3).map(it => ({ date: L.fmtDate(it.date).slice(0, 5), title: it.title, badge: { flex: 'none', padding: '3px 7px', borderRadius: 999, background: 'var(--ac1)', color: 'var(--acT)', font: "700 10.5px/1 'Be Vietnam Pro',sans-serif" } })) };
+    const up5 = L.upcoming(today, 35).flatMap(d => d.items).slice(0, 5).map(it => ({ date: L.fmtDate(it.date).slice(0, 5), title: it.title, wd: L.S.weekdaysShort[L.weekdayIdx(it.date)], tag: it.type === 'lunar' ? 'ÂL' : 'DL', lunarDate: `${L.solarToLunar(it.date.getUTCDate(), it.date.getUTCMonth() + 1, it.date.getUTCFullYear()).day}/${L.solarToLunar(it.date.getUTCDate(), it.date.getUTCMonth() + 1, it.date.getUTCFullYear()).month}`,
+      tagStyle: { flex: 'none', minWidth: 26, textAlign: 'center', padding: '3px 5px', borderRadius: 999, background: it.layer === 'personal' ? T.USER[it.user.colorIndex % 8] : T.KIND[it.layer], color: '#fff', font: "700 9px/1 'Be Vietnam Pro',sans-serif" },
+      tagSoft: { flex: 'none', minWidth: 26, textAlign: 'center', padding: '3px 5px', borderRadius: 999, background: it.type === 'lunar' ? 'var(--ac1)' : 'var(--b1)', color: it.type === 'lunar' ? 'var(--acT)' : 'var(--bT)', font: "700 9px/1 'Be Vietnam Pro',sans-serif" }, dot: { width: 8, height: 8, borderRadius: '50%', background: it.layer === 'personal' ? T.USER[it.user.colorIndex % 8] : T.KIND[it.layer], flex: 'none' }, rel: (n => n === 0 ? 'Hôm nay' : n === 1 ? 'Mai' : `${n} ng`)(Math.round((it.date - today) / 86400000)) }));
+    const monday = L.addDays(today, -L.weekdayIdx(today));
+    const week = Array.from({ length: 7 }, (_, i) => { const d = L.addDays(monday, i), c = L.dayCell(d), isT = d.getTime() === today.getTime(), sun = i === 6; return {
+      wd: L.S.weekdaysShort[i], day: d.getUTCDate(), lunar: c.info.lunar.day === 1 ? `1/${c.info.lunar.month}` : String(c.info.lunar.day), hasEv: c.appEvents.length + c.userEvents.length > 0,
+      style: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 0', borderRadius: 14, background: isT ? 'var(--ac)' : c.isOffDay ? 'var(--off)' : 'transparent', color: isT ? 'var(--on)' : 'var(--tx)' },
+      wdStyle: { font: "600 9.5px/1 'Be Vietnam Pro',sans-serif", letterSpacing: '.04em', color: isT ? 'var(--on)' : sun ? 'var(--sun)' : 'var(--mu)', opacity: isT ? .9 : 1 },
+      dayStyle: { font: "700 17px/1 'Baloo 2',sans-serif", color: isT ? 'var(--on)' : c.isOffDay ? 'var(--offT)' : sun ? 'var(--sun)' : 'var(--tx)' },
+      lunarStyle: { font: "500 9.5px/1 'Be Vietnam Pro',sans-serif", color: isT ? 'var(--on)' : 'var(--acT)', opacity: isT ? .9 : 1 },
+      dotStyle: { width: 4, height: 4, borderRadius: '50%', background: isT ? 'var(--on)' : 'var(--ac)', opacity: c.appEvents.length + c.userEvents.length > 0 ? 1 : 0 } }; });
+    const w = { weekday: widget.weekday, day: widget.day, monthShort: `Tháng ${today.getUTCMonth() + 1}`, year: today.getUTCFullYear(), lDay: tl.day, lMonth: `Tháng ${L.S.lunarMonthNames[tl.month - 1]}${tl.isLeap ? ' nhuận' : ''}`, lShort: `${tl.day}/${tl.month}`, canChiYear: ti.canChiYear, canChiDay: ti.canChiDay, hd: ti.isHoangDao ? 'Hoàng đạo' : 'Hắc đạo', hdStyle: { padding: '3px 8px', borderRadius: 999, background: ti.isHoangDao ? 'var(--b1)' : 'var(--sf2)', color: ti.isHoangDao ? 'var(--bT)' : 'var(--mu)', font: "600 10px/1 'Be Vietnam Pro',sans-serif" }, up5, week, nextUp: up5[0] };
+    return { theme, density, vars, widget, w, gallery: T.THEMES.map(t => ({ id: t.id, name: t.name })) };
+  }
+}
+</script>
+</body>
+</html>

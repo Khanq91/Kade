@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="{{ vars }}" data-screen-label="Preview lịch tháng">
+<div style="width:412px;height:640px;border-radius:24px;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Be Vietnam Pro',system-ui,sans-serif;display:flex;flex-direction:column;box-shadow:0 8px 28px var(--sh)">
+  <div style="display:flex;align-items:center;padding:18px 14px 6px 18px;gap:8px">
+    <span style="width:36px;height:36px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></span>
+    <div style="flex:1;text-align:center;display:flex;flex-direction:column;gap:0">
+      <span style="font:700 24px/1.1 'Baloo 2',sans-serif;color:var(--tx)">{{ monthTitle }}</span>
+      <span style="font:500 11px/1.4 'Be Vietnam Pro',sans-serif;color:var(--acT)">{{ lunarMonths }}</span>
+    </div>
+    <span style="width:36px;height:36px;border-radius:999px;background:var(--sf);display:grid;place-items:center;color:var(--acT);box-shadow:0 1px 2px var(--sh)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:6px 10px 4px">
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T2</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T3</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T4</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T5</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T6</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--mu)">T7</div>
+    <div style="text-align:center;font:600 11px/16px 'Be Vietnam Pro',sans-serif;letter-spacing:.06em;color:var(--sun)">CN</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:4px;padding:0 10px;min-height:0">
+    <sc-for list="{{ weeks }}" as="week" hint-placeholder-count="5">
+      <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;min-height:0">
+        <sc-for list="{{ week }}" as="c" hint-placeholder-count="7">
+          <div style="{{ c.style }}">
+            <span style="{{ c.dayStyle }}">{{ c.day }}</span>
+            <span style="{{ c.lunarStyle }}">{{ c.lunar }}</span>
+            <div style="display:flex;gap:3px;margin-top:auto">
+              <sc-for list="{{ c.dots }}" as="d" hint-placeholder-count="0"><i style="{{ d }}"></i></sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:flex;justify-content:center;gap:6px;padding:10px 12px 8px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:5px;font:500 10px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:4px 8px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#D65B5B"></i>Nghỉ lễ</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font:500 10px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:4px 8px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#E0913F"></i>Kỷ niệm</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font:500 10px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:4px 8px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#5B8DD6"></i>Quốc tế</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font:500 10px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:4px 8px;border-radius:999px;background:var(--sf)"><i style="width:6px;height:6px;border-radius:50%;background:#9B6BC9"></i>Cá nhân</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font:500 10px/1 'Be Vietnam Pro',sans-serif;color:var(--mu);padding:4px 8px;border-radius:999px;background:var(--off)"><i style="width:6px;height:6px;border-radius:50%;background:var(--offT)"></i>Ngày nghỉ</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:6px 10px 12px;gap:6px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:16px;background:var(--ac1);color:var(--acT)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="3"/><path d="M3 10h18"/></svg><span style="font:600 10px/1 'Be Vietnam Pro',sans-serif">Lịch</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--mu)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span style="font:600 10px/1 'Be Vietnam Pro',sans-serif">Sắp tới</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--mu)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg><span style="font:600 10px/1 'Be Vietnam Pro',sans-serif">Đổi ngày</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--mu)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span style="font:600 10px/1 'Be Vietnam Pro',sans-serif">Cài đặt</span></div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:412,&quot;height&quot;:640},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;hong&quot;,&quot;options&quot;:[&quot;hong&quot;,&quot;mint&quot;,&quot;bien&quot;,&quot;lavender&quot;,&quot;dao&quot;,&quot;kem&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;dark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { L: null, T: null };
+  componentDidMount() { Promise.all([import('./lunar.js'), import('./themes.js')]).then(([L, T]) => this.setState({ L, T })); }
+  renderVals() {
+    const { L, T } = this.state, theme = this.props.theme ?? 'hong', dark = !!this.props.dark;
+    if (!L || !T) return {};
+    const vars = T.cssVars(theme, dark), today = L.utc(2026, 9, 11), m = L.buildMonth(2026, 9), K = dark ? T.KIND_DARK : T.KIND;
+    const cells = m.days.map(c => {
+      const l = c.info.lunar, sun = L.weekdayIdx(c.date) === 6, isToday = c.date.getTime() === today.getTime(), emph = l.day === 1 || l.day === 15;
+      const dots = [...c.appEvents.map(e => K[e.kind]), ...c.userEvents.map(() => K.personal)].slice(0, 3).map(col => ({ width: 6, height: 6, borderRadius: '50%', background: isToday ? 'var(--on)' : col, flex: 'none' }));
+      return {
+        day: c.date.getUTCDate(), lunar: l.day === 1 ? `1/${l.month}${l.isLeap ? 'N' : ''}` : String(l.day), dots,
+        style: { background: isToday ? 'var(--ac)' : c.isOffDay ? 'var(--off)' : 'var(--sf)', borderRadius: 12, padding: '6px 6px 5px', display: 'flex', flexDirection: 'column', boxShadow: isToday ? '0 4px 12px var(--sh)' : '0 1px 2px var(--sh)', minHeight: 0, overflow: 'hidden' },
+        dayStyle: { font: "700 17px/1 'Baloo 2',sans-serif", color: isToday ? 'var(--on)' : c.isOffDay ? 'var(--offT)' : sun ? 'var(--sun)' : 'var(--tx)' },
+        lunarStyle: { font: `${emph ? 700 : 500} 10px/14px 'Be Vietnam Pro',sans-serif`, color: isToday ? 'var(--on)' : emph ? 'var(--acT)' : 'var(--mu)', opacity: isToday ? .9 : 1 },
+      };
+    });
+    const blank = { day: '', lunar: '', dots: [], style: { background: 'transparent' }, dayStyle: {}, lunarStyle: {} };
+    const all = [...Array(L.weekdayIdx(m.days[0].date)).fill(blank), ...cells]; while (all.length % 7) all.push(blank);
+    const weeks = []; for (let i = 0; i < all.length; i += 7) weeks.push(all.slice(i, i + 7));
+    const seen = []; for (const c of m.days) { const t = L.lunarMonthTitle(c.info.lunar); if (!seen.length || seen[seen.length - 1] !== t) seen.push(t); }
+    return { vars, weeks, monthTitle: 'Tháng 9 · 2026', lunarMonths: seen.join(' · ') };
+  }
+}
+</script>
+</body>
+</html>

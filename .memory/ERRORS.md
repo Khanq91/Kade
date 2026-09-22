@@ -165,3 +165,17 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: endpoint OIDC của GitHub timeout (quá tải/incident), không phải cấu hình.
 - Cách xử lý: Re-run failed jobs là đủ. Workflow thêm `continue-on-error` cho bước deploy + bước `retry` chạy lại `deploy-pages@v4` khi bước đầu fail, `timeout-minutes: 15`. Nếu lỗi lặp lại nhiều lần với message khác ("Get Pages site failed", "Resource not accessible") → xem setup-google C.1/C.5.
 - Trạng thái: workaround
+
+## 2026-09-22 — E021 — Pub workspace glob bị coi là thư mục literal khi dùng Flutter/Dart cũ
+- Bối cảnh: Redesign Phase 0, chạy `flutter pub get` từ root hoặc `apps/kade` trên Windows.
+- Triệu chứng: `Could not find a file named "pubspec.yaml" in ... packages\\*`; `flutter pubget` cũng bị từ chối vì sai tên lệnh.
+- Nguyên nhân: shell đang dùng Flutter SDK có Dart 3.10.8; glob trong `workspace` (`packages/*`, `apps/*`) cần Dart 3.11+, và repo còn yêu cầu SDK `^3.12.0`.
+- Cách xử lý: ưu tiên Flutter SDK `D:\\khang\\data\\flutterDev\\flutter_windows_3.44.5-stable\\flutter\\bin` (Dart 3.12.2), mở terminal mới rồi kiểm tra `where.exe flutter`, `where.exe dart`, `dart --version`; không sửa `pubspec.yaml`.
+- Trạng thái: workaround
+
+## 2026-09-22 — E022 — `flutter analyze` báo thiếu getter do Freezed chưa được generate
+- Bối cảnh: Redesign Phase 0, sau khi `pub get` thành công rồi chạy analyze tại `apps/kade`.
+- Triệu chứng: hàng loạt getter/method của `UserEvent` và `SyncEnvelope` không tồn tại; các URI `*.freezed.dart` và `*.g.dart` bị thiếu.
+- Nguyên nhân: file generated bị gitignore và chưa được sinh sau khi checkout/paste code model.
+- Cách xử lý: chạy `dart run build_runner build` trong `apps/kade`; khi Pub cố lấy advisory nhưng mạng bị chặn, chạy trực tiếp executable `build_runner` với root `.dart_tool/package_config.json`. Đã sinh 6 output; `dart analyze apps/kade` báo `No issues found`.
+- Trạng thái: fixed

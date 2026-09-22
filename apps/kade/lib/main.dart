@@ -9,6 +9,8 @@ import 'package:hive_ce/hive.dart';
 import 'core/env.dart';
 import 'core/router.dart';
 import 'core/strings.dart';
+import 'core/theme/kade_palette.dart';
+import 'core/theme/kade_theme.dart';
 import 'data/local/hive_boxes.dart';
 import 'data/local/user_event_repository.dart';
 import 'data/reminder_scheduler.dart';
@@ -62,20 +64,32 @@ Future<void> main() async {
 }
 
 /// Gốc app: MaterialApp.router với go_router (core/router.dart), locale vi.
-class KadeApp extends StatelessWidget {
+/// Theme dựng động từ [themeIdProvider] (6 palette pastel) và
+/// [darkModeProvider] (ép Sáng/Tối hoặc theo hệ thống) — redesign Phase 0
+/// (REDESIGN_PLAN.md §2.3, D039). Đổi từ StatelessWidget sang ConsumerWidget
+/// là thay đổi tối thiểu, không đụng logic điều hướng trong [AppLifecycle].
+class KadeApp extends ConsumerWidget {
   const KadeApp({super.key, this.router});
 
   /// Router thay thế (test mở thẳng một route); mặc định [appRouter].
   final GoRouter? router;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final r = router ?? appRouter;
+    final palette = kadePaletteById(ref.watch(themeIdProvider));
+    final darkOverride = ref.watch(darkModeProvider);
     return AppLifecycle(
       router: r,
       child: MaterialApp.router(
         title: Strings.appName,
-        theme: ThemeData(colorSchemeSeed: Colors.red, useMaterial3: true),
+        theme: buildKadeTheme(palette, dark: false),
+        darkTheme: buildKadeTheme(palette, dark: true),
+        themeMode: switch (darkOverride) {
+          true => ThemeMode.dark,
+          false => ThemeMode.light,
+          null => ThemeMode.system,
+        },
         routerConfig: r,
         locale: const Locale('vi'),
         supportedLocales: const [Locale('vi')],

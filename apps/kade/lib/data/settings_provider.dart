@@ -56,6 +56,58 @@ final holidayRemindDaysProvider =
       HolidayRemindDaysNotifier.new,
     );
 
+/// Bộ màu pastel đang chọn (redesign Phase 0, D039): lưu key `themeId`
+/// trong box settings; mặc định `'hong'` (Hồng phấn — người dùng chốt
+/// trong REDESIGN_PLAN.md).
+class ThemeIdNotifier extends Notifier<String> {
+  static const key = 'themeId';
+  static const defaultId = 'hong';
+
+  @override
+  String build() {
+    final raw = ref.watch(settingsBoxProvider).get(key);
+    return raw is String ? raw : defaultId;
+  }
+
+  Future<void> set(String id) async {
+    state = id;
+    await ref.read(settingsBoxProvider).put(key, id);
+  }
+}
+
+/// Bộ màu pastel đang chọn (id trong `kadePalettes`, `core/theme/kade_palette.dart`).
+final themeIdProvider = NotifierProvider<ThemeIdNotifier, String>(
+  ThemeIdNotifier.new,
+);
+
+/// Ép Sáng/Tối (redesign Phase 0, D039): `true`/`false` = ép, `null` =
+/// theo hệ thống (mặc định). Lưu key `darkMode` trong box settings; `null`
+/// xóa key thay vì ghi giá trị null (Hive không phân biệt tốt kiểu null).
+class DarkModeNotifier extends Notifier<bool?> {
+  static const key = 'darkMode';
+
+  @override
+  bool? build() {
+    final raw = ref.watch(settingsBoxProvider).get(key);
+    return raw is bool ? raw : null;
+  }
+
+  Future<void> set(bool? dark) async {
+    state = dark;
+    final box = ref.read(settingsBoxProvider);
+    if (dark == null) {
+      await box.delete(key);
+    } else {
+      await box.put(key, dark);
+    }
+  }
+}
+
+/// Ép Sáng/Tối; `null` = theo hệ thống.
+final darkModeProvider = NotifierProvider<DarkModeNotifier, bool?>(
+  DarkModeNotifier.new,
+);
+
 /// Box `settings` (đã mở) — override trong `main()`; test dùng box in-memory.
 final settingsBoxProvider = Provider<Box<dynamic>>(
   (ref) => throw UnimplementedError(

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&display=swap">
+<style>body{margin:0;background:#e9e6e2;font-family:Roboto,system-ui,sans-serif;color:#231918}a{color:#904A43}a:hover{color:#3B0907}.msi{font-family:'Material Symbols Outlined';font-size:24px;line-height:1;display:inline-block;font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24}.msi.f{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}.msi.s{font-size:18px;font-variation-settings:'FILL' 0,'wght' 400,'opsz' 20}</style>
+</helmet>
+<section style="padding:40px 44px 32px;display:flex;flex-direction:column;gap:20px">
+<div style="max-width:720px;display:flex;flex-direction:column;gap:8px">
+<div style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;width:max-content">BƯỚC 1 · TÁI TẠO UI HIỆN TẠI</div>
+<h1 style="font:500 22px/1.2 Roboto,sans-serif;margin:0">Kade trên Android hôm nay — Material 3, seed đỏ</h1>
+<p style="font:400 13px/1.5 Roboto,sans-serif;color:#534341;margin:0">Tái tạo từ <code>apps/kade/lib/features/*</code>, <code>core/event_style.dart</code>, <code>core/strings.dart</code> và layout widget native <code>android/.../res/layout/widget_*.xml</code>. Dữ liệu âm lịch tính thật bằng thuật toán <code>amlich-aa98.js</code>. Hôm nay: 11/09/2026. Đây là mốc để so với thiết kế mới ở file <a href="Kade — Thiết kế mới.dc.html">Kade — Thiết kế mới</a>.</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<!-- 1. Lịch tháng -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0a</b>Lịch tháng · month_view_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Lịch tháng (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 4px 0 8px;gap:0">
+    <button style="height:40px;padding:0 12px;border:0;background:transparent;border-radius:20px;font:400 22px/28px Roboto,sans-serif;color:#231918;cursor:pointer">{{ monthTitle }}</button>
+    <div style="flex:1"></div>
+    <button style="height:40px;padding:0 12px;border:0;background:transparent;border-radius:20px;font:500 14px/20px Roboto,sans-serif;color:#904A43;letter-spacing:.1px;cursor:pointer">Tháng âm</button>
+    <button style="height:40px;padding:0 12px;border:0;background:transparent;border-radius:20px;font:500 14px/20px Roboto,sans-serif;color:#904A43;letter-spacing:.1px;cursor:pointer">Hôm nay</button>
+  </div>
+  <div style="display:flex;align-items:center;height:48px">
+    <span style="width:48px;height:48px;display:grid;place-items:center;color:#534341"><span class="msi">chevron_left</span></span>
+    <div style="flex:1;text-align:center;font:400 12px/16px Roboto,sans-serif;color:#231918;letter-spacing:.4px">{{ lunarMonths }}</div>
+    <span style="width:48px;height:48px;display:grid;place-items:center;color:#534341"><span class="msi">chevron_right</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);padding:4px 0">
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T2</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T3</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T4</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T5</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T6</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#534341">T7</div>
+    <div style="text-align:center;font:700 14px/20px Roboto,sans-serif;color:#BA1A1A">CN</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <sc-for list="{{ weeks }}" as="week" hint-placeholder-count="5">
+      <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);min-height:0">
+        <sc-for list="{{ week }}" as="cell" hint-placeholder-count="7">
+          <div style="{{ cell.style }}">
+            <div style="display:flex;align-items:baseline;gap:2px">
+              <span style="{{ cell.dayStyle }}">{{ cell.day }}</span>
+              <span style="{{ cell.lunarStyle }}">{{ cell.lunar }}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:2px;overflow:hidden">
+              <sc-for list="{{ cell.tags }}" as="t" hint-placeholder-count="0">
+                <span style="{{ t.style }}">{{ t.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+  <div style="padding:4px 8px 6px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 12px;font:400 12px/16px Roboto,sans-serif;letter-spacing:.4px">
+    <span style="display:inline-flex;align-items:center;gap:4px"><i style="width:10px;height:10px;border-radius:2px;background:#C62828"></i>Nghỉ lễ</span>
+    <span style="display:inline-flex;align-items:center;gap:4px"><i style="width:10px;height:10px;border-radius:2px;background:#EF6C00"></i>Kỷ niệm</span>
+    <span style="display:inline-flex;align-items:center;gap:4px"><i style="width:10px;height:10px;border-radius:2px;background:#1565C0"></i>Quốc tế</span>
+    <span style="display:inline-flex;align-items:center;gap:4px"><i style="width:10px;height:10px;border-radius:2px;background:#FFDAD6"></i>Ngày nghỉ</span>
+    <span>ÂL = âm lịch · DL = dương lịch · N = tháng nhuận</span>
+  </div>
+  <div style="height:80px;background:#FCEAE7;display:grid;grid-template-columns:repeat(4,1fr);padding-top:12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;border-radius:16px;background:#FFDAD5;display:grid;place-items:center;color:#2C1512"><span class="msi f">calendar_month</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#231918;letter-spacing:.5px">Lịch</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">upcoming</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Sắp tới</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">swap_horiz</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Đổi ngày</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">settings</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Cài đặt</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 2. Chi tiết ngày -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0b</b>Chi tiết ngày · day_detail_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Chi tiết ngày (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 4px">
+    <span style="width:48px;height:48px;display:grid;place-items:center;color:#231918"><span class="msi">arrow_back</span></span>
+    <div style="flex:1;font:400 22px/28px Roboto,sans-serif;padding-left:4px">{{ detail.dateStr }}</div>
+    <span style="width:48px;height:48px;display:grid;place-items:center;color:#534341"><span class="msi">chevron_left</span></span>
+    <span style="width:48px;height:48px;display:grid;place-items:center;color:#534341"><span class="msi">chevron_right</span></span>
+  </div>
+  <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column">
+    <div style="font:400 24px/32px Roboto,sans-serif">{{ detail.headline }}</div>
+    <div style="font:500 16px/24px Roboto,sans-serif;letter-spacing:.15px">{{ detail.lunarLine }}</div>
+    <sc-if value="{{ detail.isOff }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:4px;height:32px;padding:0 12px;border-radius:8px;background:#FFDAD6;display:inline-flex;align-items:center;width:max-content;font:500 14px/20px Roboto,sans-serif;color:#231918">Ngày nghỉ</div>
+    </sc-if>
+    <div style="height:12px"></div>
+    <div style="margin:4px;background:#FFF0EE;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15);padding:16px;display:flex;flex-direction:column">
+      <div style="display:flex;padding:4px 0"><span style="width:128px;flex:none;font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Tháng</span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ detail.canChiMonth }}</span></div>
+      <div style="display:flex;padding:4px 0"><span style="width:128px;flex:none;font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Ngày</span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ detail.canChiDay }}</span></div>
+      <sc-if value="{{ detail.hasTietKhi }}" hint-placeholder-val="{{ false }}"><div style="display:flex;padding:4px 0"><span style="width:128px;flex:none;font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Tiết khí</span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ detail.tietKhi }}</span></div></sc-if>
+      <div style="display:flex;padding:4px 0"><span style="{{ detail.hdLabelStyle }}">{{ detail.hdLabel }}</span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ detail.than }}</span></div>
+      <div style="display:flex;padding:4px 0;align-items:flex-start"><span style="width:128px;flex:none;font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Giờ hoàng đạo</span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ detail.gio }}</span></div>
+    </div>
+    <div style="height:16px"></div>
+    <div style="font:500 16px/24px Roboto,sans-serif;letter-spacing:.15px">Sự kiện</div>
+    <sc-for list="{{ detail.groups }}" as="g" hint-placeholder-count="1">
+      <div style="{{ g.labelStyle }}">{{ g.label }}</div>
+      <sc-for list="{{ g.items }}" as="e" hint-placeholder-count="1">
+        <div style="min-height:56px;display:flex;align-items:center;gap:16px;padding:8px 0">
+          <span style="{{ e.tagStyle }}">{{ e.tag }}</span>
+          <div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ e.title }}</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">{{ e.description }}</span></div>
+        </div>
+      </sc-for>
+    </sc-for>
+    <sc-if value="{{ detail.noEvents }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 0;font:400 14px/20px Roboto,sans-serif">Không có sự kiện</div></sc-if>
+    <div style="height:16px"></div>
+    <div style="display:flex;align-items:center">
+      <div style="flex:1;font:500 16px/24px Roboto,sans-serif;letter-spacing:.15px">Sự kiện cá nhân</div>
+      <span style="height:40px;padding:0 16px 0 12px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;color:#904A43;font:500 14px/20px Roboto,sans-serif"><span class="msi s">add</span>Thêm sự kiện</span>
+    </div>
+    <sc-for list="{{ detail.userItems }}" as="u" hint-placeholder-count="0">
+      <div style="min-height:56px;display:flex;align-items:center;gap:16px;padding:8px 0">
+        <span style="{{ u.tagStyle }}">{{ u.tag }}</span>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ u.title }}</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">{{ u.sub }}</span></div>
+        <span class="msi" style="color:#534341">chevron_right</span>
+      </div>
+    </sc-for>
+    <sc-if value="{{ detail.noUser }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 0;font:400 14px/20px Roboto,sans-serif">Chưa có sự kiện nào</div></sc-if>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 3. Sắp tới -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0c</b>Sắp tới · upcoming_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Sắp tới (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 16px;font:400 22px/28px Roboto,sans-serif">Sắp tới</div>
+  <div style="padding:8px 12px 4px;display:flex;flex-wrap:wrap;gap:4px 8px">
+    <span style="height:32px;padding:0 16px 0 8px;border-radius:8px;background:#FFDAD5;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif;color:#2C1512"><span class="msi s" style="color:#C62828;font-variation-settings:'FILL' 1;font-size:12px">circle</span>Nghỉ lễ</span>
+    <span style="height:32px;padding:0 16px 0 8px;border-radius:8px;background:#FFDAD5;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif;color:#2C1512"><span class="msi s" style="color:#EF6C00;font-variation-settings:'FILL' 1;font-size:12px">circle</span>Kỷ niệm</span>
+    <span style="height:32px;padding:0 16px 0 8px;border-radius:8px;background:#FFDAD5;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif;color:#2C1512"><span class="msi s" style="color:#1565C0;font-variation-settings:'FILL' 1;font-size:12px">circle</span>Quốc tế</span>
+    <span style="height:32px;padding:0 16px 0 8px;border-radius:8px;background:#FFDAD5;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif;color:#2C1512"><span class="msi s" style="color:#6A1B9A;font-variation-settings:'FILL' 1;font-size:12px">circle</span>Cá nhân</span>
+  </div>
+  <div style="flex:1;overflow:auto;padding-bottom:16px">
+    <sc-for list="{{ upcomingDays }}" as="d" hint-placeholder-count="4">
+      <div style="{{ d.headerStyle }}">{{ d.header }}</div>
+      <sc-for list="{{ d.items }}" as="it" hint-placeholder-count="1">
+        <div style="min-height:64px;display:flex;align-items:center;gap:16px;padding:4px 16px">
+          <span style="{{ it.tagStyle }}">{{ it.tag }}</span>
+          <div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">{{ it.title }}</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">{{ it.sub }}</span></div>
+        </div>
+      </sc-for>
+    </sc-for>
+  </div>
+  <div style="height:80px;background:#FCEAE7;display:grid;grid-template-columns:repeat(4,1fr);padding-top:12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">calendar_month</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Lịch</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;border-radius:16px;background:#FFDAD5;display:grid;place-items:center;color:#2C1512"><span class="msi f">upcoming</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#231918;letter-spacing:.5px">Sắp tới</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">swap_horiz</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Đổi ngày</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">settings</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Cài đặt</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 4. Đổi ngày -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0d</b>Đổi ngày · converter_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Đổi ngày (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 16px;font:400 22px/28px Roboto,sans-serif">Đổi ngày</div>
+  <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:16px">
+    <div style="margin:4px;background:#FFF0EE;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15);padding:16px;display:flex;flex-direction:column">
+      <div style="font:500 16px/24px Roboto,sans-serif;letter-spacing:.15px">Dương → Âm</div>
+      <div style="height:8px"></div>
+      <div style="height:40px;border:1px solid #857371;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:8px;color:#904A43;font:500 14px/20px Roboto,sans-serif"><span class="msi s">calendar_today</span>{{ conv.solarStr }}</div>
+      <div style="height:12px"></div>
+      <div style="font:400 22px/28px Roboto,sans-serif">Âm lịch: {{ conv.lunarFull }}</div>
+      <div style="font:400 14px/20px Roboto,sans-serif;letter-spacing:.25px">{{ conv.canChiLine }}</div>
+    </div>
+    <div style="margin:4px;background:#FFF0EE;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15);padding:16px;display:flex;flex-direction:column">
+      <div style="font:500 16px/24px Roboto,sans-serif;letter-spacing:.15px">Âm → Dương</div>
+      <div style="height:8px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px">
+        <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Ngày</span><span style="font:400 16px/24px Roboto,sans-serif">{{ conv.lDay }}</span></div>
+        <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Tháng</span><span style="font:400 16px/24px Roboto,sans-serif">{{ conv.lMonth }}</span></div>
+        <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Năm</span><span style="font:400 16px/24px Roboto,sans-serif">{{ conv.lYear }}</span></div>
+      </div>
+      <div style="min-height:48px;display:flex;align-items:center;gap:16px;padding:4px 0"><span style="width:18px;height:18px;border:2px solid #534341;border-radius:2px;margin:0 3px"></span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Tháng nhuận</span></div>
+      <div style="height:40px;border-radius:20px;background:#904A43;color:#fff;display:flex;align-items:center;justify-content:center;font:500 14px/20px Roboto,sans-serif">Đổi</div>
+    </div>
+  </div>
+  <div style="height:80px;background:#FCEAE7;display:grid;grid-template-columns:repeat(4,1fr);padding-top:12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">calendar_month</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Lịch</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">upcoming</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Sắp tới</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;border-radius:16px;background:#FFDAD5;display:grid;place-items:center;color:#2C1512"><span class="msi f">swap_horiz</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#231918;letter-spacing:.5px">Đổi ngày</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">settings</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Cài đặt</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 5. Cài đặt -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0e</b>Cài đặt · settings_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Cài đặt (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 16px;font:400 22px/28px Roboto,sans-serif">Cài đặt</div>
+  <div style="flex:1;overflow:auto;padding:8px 0;display:flex;flex-direction:column">
+    <div style="min-height:72px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">event_note</span><div style="flex:1;display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Sự kiện của tôi</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Ngày giỗ, sinh nhật, kỷ niệm… theo âm hoặc dương lịch</span></div><span class="msi" style="color:#534341">chevron_right</span></div>
+    <div style="height:1px;background:#D8C2BE;margin:8px 0"></div>
+    <div style="min-height:72px;display:flex;align-items:center;padding:8px 16px"><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Nhắc nhở</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Thông báo lúc 08:00 trên Android. Sự kiện cá nhân đặt "Nhắc trước" ngay trong form sự kiện.</span></div></div>
+    <div style="min-height:56px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">notifications</span><span style="flex:1;font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Nhắc lễ trước</span><span style="display:inline-flex;align-items:center;gap:4px;font:400 16px/24px Roboto,sans-serif">7 ngày trước<span class="msi" style="color:#534341">arrow_drop_down</span></span></div>
+    <div style="height:1px;background:#D8C2BE;margin:8px 0"></div>
+    <div style="min-height:72px;display:flex;align-items:center;padding:8px 16px"><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Đồng bộ Google</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Lưu sự kiện cá nhân vào thư mục riêng của app trên Google Drive và đồng bộ giữa các máy.</span></div></div>
+    <div style="padding:8px 16px"><span style="height:40px;padding:0 24px 0 16px;border-radius:20px;background:#904A43;color:#fff;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif"><span class="msi s">login</span>Đồng bộ với Google</span></div>
+    <div style="height:1px;background:#D8C2BE;margin:8px 0"></div>
+    <div style="min-height:72px;display:flex;align-items:center;padding:8px 16px"><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Sao lưu</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Xuất sự kiện cá nhân ra file JSON để giữ hoặc chuyển máy; nhập lại từ file đã xuất.</span></div></div>
+    <div style="padding:8px 16px;display:flex;flex-wrap:wrap;gap:8px">
+      <span style="height:40px;padding:0 24px 0 16px;border:1px solid #857371;border-radius:20px;color:#904A43;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif"><span class="msi s">upload_file</span>Xuất file JSON</span>
+      <span style="height:40px;padding:0 24px 0 16px;border:1px solid #857371;border-radius:20px;color:#904A43;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif"><span class="msi s">file_open</span>Nhập file JSON</span>
+    </div>
+    <div style="height:1px;background:#D8C2BE;margin:8px 0"></div>
+    <div style="min-height:72px;display:flex;align-items:center;padding:8px 16px"><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Lịch nghỉ bù theo năm</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px">Ngày nghỉ thêm / làm bù do Nhà nước công bố từng năm, tải từ Google Sheet.</span></div></div>
+    <div style="min-height:72px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">storage</span><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Nguồn dữ liệu</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341">Mặc định kèm app</span></div></div>
+    <div style="min-height:72px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">tag</span><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Phiên bản</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341">3</span></div></div>
+    <div style="min-height:72px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">edit_calendar</span><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Sheet sửa lúc</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341">02/01/2026 09:15</span></div></div>
+    <div style="min-height:72px;display:flex;align-items:center;gap:16px;padding:8px 16px"><span class="msi" style="color:#534341">sync</span><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Kiểm tra lần cuối</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341">10/09/2026 16:40</span></div></div>
+    <div style="padding:8px 16px"><span style="height:40px;padding:0 24px 0 16px;border-radius:20px;background:#904A43;color:#fff;display:inline-flex;align-items:center;gap:8px;font:500 14px/20px Roboto,sans-serif"><span class="msi s">refresh</span>Kiểm tra cập nhật</span></div>
+    <div style="height:1px;background:#D8C2BE;margin:8px 0"></div>
+    <div style="min-height:88px;display:flex;align-items:flex-start;gap:16px;padding:12px 16px"><span class="msi" style="color:#534341">calendar_month</span><div style="display:flex;flex-direction:column"><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Năm 2026</span><span style="font:400 14px/20px Roboto,sans-serif;color:#534341;letter-spacing:.25px;white-space:pre-line">Nghỉ: 02/01/2026, 16/02/2026, 20/02/2026, 21/02/2026, 01/09/2026
+Làm bù: —</span></div></div>
+  </div>
+  <div style="height:80px;background:#FCEAE7;display:grid;grid-template-columns:repeat(4,1fr);padding-top:12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">calendar_month</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Lịch</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">upcoming</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Sắp tới</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;display:grid;place-items:center;color:#534341"><span class="msi">swap_horiz</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#534341;letter-spacing:.5px">Đổi ngày</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:32px;border-radius:16px;background:#FFDAD5;display:grid;place-items:center;color:#2C1512"><span class="msi f">settings</span></span><span style="font:500 12px/16px Roboto,sans-serif;color:#231918;letter-spacing:.5px">Cài đặt</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 6. Form sự kiện -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0f</b>Sự kiện mới (âm lịch) · user_event_form_screen.dart</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div data-screen-label="Sự kiện mới (hiện tại)" style="display:flex;flex-direction:column;height:100%;background:#FFF8F7;font-family:Roboto,system-ui,sans-serif;color:#231918">
+  <div style="height:64px;display:flex;align-items:center;padding:0 4px">
+    <span style="width:48px;height:48px;display:grid;place-items:center"><span class="msi">arrow_back</span></span>
+    <div style="flex:1;font:400 22px/28px Roboto,sans-serif;padding-left:4px">Sự kiện mới</div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column">
+    <div style="display:flex;flex-direction:column;border-bottom:2px solid #904A43;padding:8px 0 8px"><span style="font:400 12px/16px Roboto,sans-serif;color:#904A43">Tên sự kiện</span><span style="font:400 16px/24px Roboto,sans-serif">Giỗ ông nội</span></div>
+    <div style="height:16px"></div>
+    <div style="height:40px;display:grid;grid-template-columns:1fr 1fr;border:1px solid #857371;border-radius:20px;overflow:hidden">
+      <span style="display:flex;align-items:center;justify-content:center;color:#904A43;font:500 14px/20px Roboto,sans-serif;border-right:1px solid #857371">Dương lịch</span>
+      <span style="display:flex;align-items:center;justify-content:center;gap:8px;background:#FFDAD5;color:#2C1512;font:500 14px/20px Roboto,sans-serif"><span class="msi s">check</span>Âm lịch</span>
+    </div>
+    <div style="height:12px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px">
+      <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Ngày</span><span style="font:400 16px/24px Roboto,sans-serif">12</span></div>
+      <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Tháng</span><span style="font:400 16px/24px Roboto,sans-serif">8</span></div>
+      <div style="display:flex;flex-direction:column;border-bottom:1px solid #D8C2BE;padding:8px 0 4px;opacity:.6"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Năm</span><span style="font:400 16px/24px Roboto,sans-serif">2026</span></div>
+    </div>
+    <div style="min-height:48px;display:flex;align-items:center;gap:16px;padding:4px 0"><span style="width:18px;height:18px;border-radius:2px;background:#904A43;margin:0 3px;display:grid;place-items:center;color:#fff"><span class="msi s" style="font-size:16px;font-variation-settings:'wght' 700">check</span></span><span style="font:400 16px/24px Roboto,sans-serif;letter-spacing:.5px">Lặp hàng năm</span></div>
+    <div style="padding:4px 0 8px;font:400 14px/20px Roboto,sans-serif;letter-spacing:.25px">Năm có tháng nhuận trùng tháng</div>
+    <div style="height:40px;display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #857371;border-radius:20px;overflow:hidden">
+      <span style="display:flex;align-items:center;justify-content:center;gap:6px;background:#FFDAD5;color:#2C1512;font:500 14px/20px Roboto,sans-serif"><span class="msi s">check</span>Tháng chính</span>
+      <span style="display:flex;align-items:center;justify-content:center;color:#904A43;font:500 14px/20px Roboto,sans-serif;border-left:1px solid #857371;border-right:1px solid #857371">Tháng nhuận</span>
+      <span style="display:flex;align-items:center;justify-content:center;color:#904A43;font:500 14px/20px Roboto,sans-serif">Cả hai</span>
+    </div>
+    <div style="height:12px"></div>
+    <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 4px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Số ngày</span><span style="font:400 16px/24px Roboto,sans-serif">1</span></div>
+    <div style="height:12px"></div>
+    <div style="display:flex;align-items:flex-end;border-bottom:1px solid #534341;padding:8px 0 8px"><div style="flex:1;display:flex;flex-direction:column"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Nhắc trước</span><span style="font:400 16px/24px Roboto,sans-serif">3 ngày trước</span></div><span class="msi" style="color:#534341">arrow_drop_down</span></div>
+    <div style="height:12px"></div>
+    <div style="display:flex;flex-direction:column;border-bottom:1px solid #534341;padding:8px 0 8px"><span style="font:400 12px/16px Roboto,sans-serif;color:#534341">Ghi chú</span><span style="font:400 16px/24px Roboto,sans-serif">Về quê từ sáng</span></div>
+    <div style="height:16px"></div>
+    <div style="font:400 14px/20px Roboto,sans-serif;letter-spacing:.25px">Màu</div>
+    <div style="height:8px"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <span style="width:32px;height:32px;border-radius:50%;background:#6A1B9A;display:grid;place-items:center;color:#fff"><span class="msi s">check</span></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#00838F"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#2E7D32"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#AD1457"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#4527A0"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#00695C"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#9E9D24"></span>
+      <span style="width:32px;height:32px;border-radius:50%;background:#5D4037"></span>
+    </div>
+    <div style="height:20px"></div>
+    <div style="height:40px;border-radius:20px;background:#904A43;color:#fff;display:flex;align-items:center;justify-content:center;font:500 14px/20px Roboto,sans-serif">Lưu</div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- 7. Widget -->
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.55)"><b style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);border-radius:5px;margin-right:6px">0g</b>Widget màn hình chính 2×2 và 4×2 · widget_2x2.xml, widget_4x2.xml</div>
+<div data-screen-label="Widget (hiện tại)" style="width:412px;height:420px;border-radius:18px;border:8px solid #2b2b2b;box-sizing:border-box;background:linear-gradient(160deg,#5b6f8a,#2f3b52 60%,#1b2233);padding:32px 20px;display:flex;flex-direction:column;gap:20px;font-family:Roboto,system-ui,sans-serif">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div style="width:172px;height:172px;background:rgba(255,255,255,.95);border-radius:16px;padding:12px;box-sizing:border-box;display:flex;flex-direction:column">
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#C62828">{{ widget.weekday }}</span>
+      <span style="font:700 40px/44px Roboto,sans-serif;color:#1C1B1F">{{ widget.day }}</span>
+      <span style="font:400 14px/20px Roboto,sans-serif;color:#1C1B1F">{{ widget.month }}</span>
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#5F5C63">{{ widget.lunar }}</span>
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#5F5C63;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ widget.line5 }}</span>
+    </div>
+  </div>
+  <div style="width:100%;height:172px;background:rgba(255,255,255,.95);border-radius:16px;padding:12px;box-sizing:border-box;display:flex;gap:12px">
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#C62828">{{ widget.weekday }}</span>
+      <div style="display:flex;align-items:flex-end;gap:6px"><span style="font:700 36px/40px Roboto,sans-serif;color:#1C1B1F">{{ widget.day }}</span><span style="font:400 14px/20px Roboto,sans-serif;color:#1C1B1F;padding-bottom:4px">{{ widget.month }}</span></div>
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#5F5C63">{{ widget.lunar }}</span>
+      <span style="font:400 13px/18px Roboto,sans-serif;color:#5F5C63;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ widget.line5 }}</span>
+    </div>
+    <div style="flex:1.4;display:flex;flex-direction:column;min-width:0">
+      <span style="font:700 13px/18px Roboto,sans-serif;color:#C62828">Sắp tới</span>
+      <sc-for list="{{ widget.up }}" as="u" hint-placeholder-count="3">
+        <span style="font:400 13px/18px Roboto,sans-serif;color:#1C1B1F;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u }}</span>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { L: null };
+  componentDidMount() { import('./lunar.js').then(L => this.setState({ L })); }
+  renderVals() {
+    const L = this.state.L; if (!L) return {};
+    const today = L.utc(2026, 9, 11), Y = 2026, M = 9;
+    const month = L.buildMonth(Y, M);
+    const tagStyle = c => ({ padding: '1px 3px', borderRadius: 3, background: c, color: '#fff', font: '700 9px/1.2 Roboto,sans-serif' });
+    const cells = month.days.map(c => {
+      const sun = L.weekdayIdx(c.date) === 6, l = c.info.lunar, isToday = c.date.getTime() === today.getTime();
+      return {
+        day: c.date.getUTCDate(),
+        lunar: l.day === 1 ? `1/${l.month}${l.isLeap ? 'N' : ''}` : String(l.day),
+        style: { margin: 1, padding: '2px 3px', borderRadius: 6, background: c.isOffDay ? '#FFDAD6' : 'transparent', border: isToday ? '2px solid #904A43' : '2px solid transparent', display: 'flex', flexDirection: 'column', overflow: 'hidden', cursor: 'pointer' },
+        dayStyle: { font: '700 15px/20px Roboto,sans-serif', color: c.isOffDay || sun ? '#BA1A1A' : '#231918' },
+        lunarStyle: { flex: 1, textAlign: 'right', font: `${l.day === 1 ? 700 : 400} 10px/14px Roboto,sans-serif`, color: l.day === 1 ? '#904A43' : '#534341', whiteSpace: 'nowrap' },
+        tags: [...c.appEvents.map(e => ({ label: e.type === 'lunar' ? 'ÂL' : 'DL', style: tagStyle(L.KIND_COLOR[e.kind]) })), ...c.userEvents.map(e => ({ label: e.type === 'lunar' ? 'ÂL' : 'DL', style: tagStyle(L.USER_COLORS[e.colorIndex]) }))].slice(0, 3),
+      };
+    });
+    const offset = L.weekdayIdx(month.days[0].date), blank = { day: '', lunar: '', style: {}, dayStyle: {}, lunarStyle: {}, tags: [] };
+    const all = [...Array(offset).fill(blank), ...cells]; while (all.length % 7) all.push(blank);
+    const weeks = []; for (let i = 0; i < all.length; i += 7) weeks.push(all.slice(i, i + 7));
+    const seen = []; for (const c of month.days) { const t = L.lunarMonthTitle(c.info.lunar); if (!seen.length || seen[seen.length - 1] !== t) seen.push(t); }
+    // Day detail — 25/09/2026 (Tết Trung Thu)
+    const dd = L.utc(2026, 9, 25), cell = L.dayCell(dd), info = cell.info;
+    const groups = ['vnHoliday', 'vnMemorial', 'international'].filter(k => cell.appEvents.some(e => e.kind === k)).map(k => ({
+      label: L.S.kind[k], labelStyle: { paddingTop: 8, font: '500 14px/20px Roboto,sans-serif', color: L.KIND_COLOR[k], letterSpacing: '.1px' },
+      items: cell.appEvents.filter(e => e.kind === k).map(e => ({ title: e.title, description: e.description || '', tag: e.type === 'lunar' ? 'ÂL' : 'DL', tagStyle: tagStyle(L.KIND_COLOR[k]) })),
+    }));
+    const detail = {
+      dateStr: L.fmtDate(dd), headline: `${L.S.weekdays[L.weekdayIdx(dd)]}, ${L.fmtDate(dd)}`,
+      lunarLine: `Âm lịch ${L.fmtLunarShort(info.lunar)} · Năm ${info.canChiYear}`, isOff: cell.isOffDay,
+      canChiMonth: `${info.canChiMonth} (${L.S.lunarMonthNames[info.lunar.month - 1]})`, canChiDay: info.canChiDay,
+      hasTietKhi: !!info.tietKhi, tietKhi: info.tietKhi || '', hdLabel: info.isHoangDao ? 'Ngày hoàng đạo' : 'Ngày hắc đạo',
+      hdLabelStyle: { width: 128, flex: 'none', font: '400 14px/20px Roboto,sans-serif', color: info.isHoangDao ? '#2E7D32' : '#534341' },
+      than: info.than, gio: info.gioHoangDao.join(', '), groups, noEvents: !cell.appEvents.length,
+      userItems: cell.userEvents.map(e => ({ title: e.title, sub: e.note || `${e.day}/${e.month} ${e.type === 'lunar' ? 'ÂL' : 'DL'} · hàng năm`, tag: e.type === 'lunar' ? 'ÂL' : 'DL', tagStyle: tagStyle(L.USER_COLORS[e.colorIndex]) })), noUser: !cell.userEvents.length,
+    };
+    const rel = n => n === 0 ? 'Hôm nay' : n === 1 ? 'Ngày mai' : `Còn ${n} ngày`;
+    const upcomingDays = L.upcoming(today).slice(0, 8).map(d => ({
+      header: `${rel(d.daysFromToday)} · ${L.S.weekdays[L.weekdayIdx(d.cell.date)]}, ${L.fmtDate(d.cell.date)} · ${L.fmtLunarShort(d.cell.info.lunar)} ÂL`,
+      headerStyle: { padding: '16px 16px 4px', font: '500 14px/20px Roboto,sans-serif', letterSpacing: '.1px', color: d.daysFromToday === 0 ? '#904A43' : '#231918' },
+      items: d.items.map(it => ({ title: it.title, tag: it.type === 'lunar' ? 'ÂL' : 'DL', tagStyle: tagStyle(it.color), sub: [L.S.kind[it.layer], it.durationDays > 1 ? `${it.durationDays} ngày` : null].filter(Boolean).join(' · ') })),
+    }));
+    const ti = L.dayInfo(today), tl = ti.lunar;
+    const conv = { solarStr: `${L.S.weekdays[L.weekdayIdx(today)]}, ${L.fmtDate(today)}`, lunarFull: `${L.fmtLunarShort(tl)}/${tl.year}`, canChiLine: `Năm ${ti.canChiYear} · Tháng ${ti.canChiMonth} · Ngày ${ti.canChiDay}`, lDay: tl.day, lMonth: tl.month, lYear: tl.year };
+    const widget = { weekday: L.S.weekdays[L.weekdayIdx(today)], day: today.getUTCDate(), month: `Tháng ${today.getUTCMonth() + 1}`, lunar: `${tl.day}/${tl.month}${tl.isLeap ? ' nhuận' : ''} âm`, line5: ti.canChiDay, up: L.upcoming(today, 35).flatMap(d => d.items.map(it => `${L.fmtDate(it.date).slice(0, 5)} · ${it.title}`)).slice(0, 3) };
+    return { monthTitle: `Tháng ${M}/${Y}`, lunarMonths: seen.join(' · '), weeks, detail, upcomingDays, conv, widget };
+  }
+}
+</script>
+</body>
+</html>
