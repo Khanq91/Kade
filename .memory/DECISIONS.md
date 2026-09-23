@@ -242,3 +242,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: mở rộng `.github/workflows/deploy-web.yml` thành workflow `build-and-deploy`, chạy test + web release + Android debug APK cho mọi branch push; chỉ `main` chạy deploy Pages. Android debug được upload thành artifact; workflow tag `v*` vẫn dành riêng cho release APK/AAB ký.
 - Lý do: mọi push đều phát hiện lỗi compile Android sớm mà không cần keystore; tránh chạy trùng workflow release khi push tag.
 - Hệ quả: build CI cần Java 17; các push branch không phải `main` không deploy Pages.
+
+## 2026-09-23 — D041 — Giữ layout redesign không overflow trong widget test
+- Bởi: agent
+- Quyết định: cấp header MonthView 140px cho header hai hàng; cho nội dung DayTile render tự nhiên trong OverflowBox và cắt bằng ClipRect theo chiều cao ô; gộp nhãn âm lịch + can chi năm thành một dòng trong DayDetail và dùng tên tháng dài để tránh trùng tiêu đề tháng phía sau dialog.
+- Lý do: redesign làm header/ô lịch vượt constraint và 27 test UI fail; cách này giữ đủ nội dung, chỉ cắt tag ở ô quá thấp, đồng thời không đổi route hay logic dữ liệu.
+- Hệ quả: header tháng cao hơn; ô lịch rất thấp ưu tiên ngày + âm lịch, tag phụ có thể bị cắt; toàn bộ 135 test và analyze pass.

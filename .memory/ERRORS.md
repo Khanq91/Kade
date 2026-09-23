@@ -179,3 +179,17 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: file generated bị gitignore và chưa được sinh sau khi checkout/paste code model.
 - Cách xử lý: chạy `dart run build_runner build` trong `apps/kade`; khi Pub cố lấy advisory nhưng mạng bị chặn, chạy trực tiếp executable `build_runner` với root `.dart_tool/package_config.json`. Đã sinh 6 output; `dart analyze apps/kade` báo `No issues found`.
 - Trạng thái: fixed
+
+## 2026-09-23 — E023 — Redesign làm 27 widget test fail do overflow và text trùng
+- Bối cảnh: verify Redesign Phase 0 sau commit redesign.
+- Triệu chứng: `flutter test` cho `+108 -27`; `_MonthHeader` overflow 50px, `DayTile` overflow 9.2px, DayDetail thiếu text âm lịch đúng chuỗi và dialog có hai tiêu đề tháng giống nhau.
+- Nguyên nhân: header hai hàng vẫn nằm trong `kToolbarHeight`; font/layout mới lớn hơn hàng lịch thấp; Hero DayDetail tách nhãn thành nhiều Text và dùng lại `monthTitle` phía sau dialog.
+- Cách xử lý: tăng `PreferredSize`, bọc nội dung ô bằng `ClipRect`/`OverflowBox`, gộp nhãn âm lịch + năm, đổi dòng tháng Hero sang `monthYearLong`.
+- Trạng thái: fixed
+
+## 2026-09-23 — E024 — Flutter wrapper bị kẹt cache lock trên Windows
+- Bối cảnh: chạy verify `flutter test`/`flutter analyze` trong SDK Flutter 3.44.5.
+- Triệu chứng: `flutter test` không phát log quá 3 phút; `flutter --version` cũng treo sau khi tiến trình bị dừng.
+- Nguyên nhân: lock file tạm trong `flutter/bin/cache` còn bị giữ sau tiến trình dở dang; SDK nằm ngoài workspace nên sandbox không cho dọn cache.
+- Cách xử lý: dừng các tiến trình Dart do lệnh verify tạo, xin quyền xóa đúng hai lock file cache, rồi chạy trực tiếp `flutter_tools.snapshot` với SDK 3.44.5.
+- Trạng thái: workaround

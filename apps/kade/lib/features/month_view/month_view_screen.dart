@@ -20,6 +20,8 @@ import '../upcoming/upcoming_screen.dart';
 import 'month_picker.dart';
 import 'today_card.dart';
 
+const _monthHeaderHeight = 140.0;
+
 /// Lưới tháng dương (plan §3.3). Tháng lấy từ route `/YYYY/MM` nên reload giữ
 /// tháng. [lunar] (`?lunar=1`, D033): ◀ ▶ nhảy theo tháng âm. Layout theo
 /// bề rộng (plan §4.2): ≥ 1024 thêm panel phải (hero hôm nay + Sắp tới),
@@ -131,7 +133,7 @@ class MonthViewScreen extends ConsumerWidget {
         autofocus: true,
         child: Scaffold(
           appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
+            preferredSize: const Size.fromHeight(_monthHeaderHeight),
             child: SafeArea(
               bottom: false,
               child: Padding(
@@ -596,73 +598,67 @@ class DayTile extends StatelessWidget {
             ],
           ),
           child: LayoutBuilder(
-            builder: (context, constraints) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${cell.date.day}',
-                  style: TextStyle(
-                    fontFamily: kadeDisplayFont,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: dayColor,
-                  ),
-                ),
-                Text(
-                  lunarCellText(lunar),
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontFamily: kadeBodyFont,
-                    fontSize: 10.5,
-                    fontWeight: lunar.day == 1
-                        ? FontWeight.w700
-                        : FontWeight.w500,
-                    color: lunarColor,
-                  ),
-                ),
-                // Ô thấp (layout medium, cửa sổ nhỏ) → phần nhãn bị cắt thay
-                // vì báo overflow.
-                if (tags.isNotEmpty)
-                  Flexible(
-                    child: ClipRect(
-                      child: OverflowBox(
-                        alignment: Alignment.topLeft,
-                        maxHeight: double.infinity,
+            builder: (context, constraints) => ClipRect(
+              child: OverflowBox(
+                alignment: Alignment.topLeft,
+                maxHeight: double.infinity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${cell.date.day}',
+                      style: TextStyle(
+                        fontFamily: kadeDisplayFont,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: dayColor,
+                      ),
+                    ),
+                    Text(
+                      lunarCellText(lunar),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.clip,
+                      style: TextStyle(
+                        fontFamily: kadeBodyFont,
+                        fontSize: 10.5,
+                        fontWeight: lunar.day == 1
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: lunarColor,
+                      ),
+                    ),
+                    if (tags.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (constraints.maxWidth >= 96 &&
                                 firstTitle != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  firstTitle,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: kadeBodyFont,
-                                    fontSize: 10,
-                                    color: isToday ? dayColor : firstColor,
-                                  ),
+                              Text(
+                                firstTitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: kadeBodyFont,
+                                  fontSize: 10,
+                                  color: isToday ? dayColor : firstColor,
                                 ),
                               ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Wrap(
-                                spacing: 2,
-                                runSpacing: 2,
-                                children: tags.take(3).toList(),
-                              ),
+                            Wrap(
+                              spacing: 2,
+                              runSpacing: 2,
+                              children: tags.take(3).toList(),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),

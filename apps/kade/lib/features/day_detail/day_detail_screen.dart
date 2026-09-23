@@ -113,7 +113,7 @@ class DayDetailScreen extends ConsumerWidget {
                       weekday: weekdayName(date.weekday),
                       dateLine: '${weekdayName(date.weekday)}, ${formatDate(date)}',
                       dayNum: '${date.day}',
-                      monthYear: Strings.monthTitle(date.month, date.year),
+                      monthYear: Strings.monthYearLong(date.month, date.year),
                       lunarShort: formatLunarShort(lunar),
                       lunarMonthName: Strings.lunarMonthLabel(
                         lunar.month,
@@ -418,7 +418,7 @@ class _HeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                Strings.lunarLabel,
+                '${Strings.lunarLabel} $lunarShort · ${Strings.yearLabel} $canChiYear',
                 style: TextStyle(
                   fontFamily: kadeBodyFont,
                   fontWeight: FontWeight.w600,
@@ -438,15 +438,6 @@ class _HeroCard extends StatelessWidget {
               ),
               Text(
                 lunarMonthName,
-                style: TextStyle(
-                  fontFamily: kadeBodyFont,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12,
-                  color: k?.mu ?? scheme.onSurfaceVariant,
-                ),
-              ),
-              Text(
-                '${Strings.yearLabel} $canChiYear',
                 style: TextStyle(
                   fontFamily: kadeBodyFont,
                   fontWeight: FontWeight.w500,
