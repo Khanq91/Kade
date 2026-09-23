@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kade/core/strings.dart';
+import 'package:kade/core/theme/kade_theme_extension.dart';
 import 'package:kade/features/month_view/month_view_screen.dart';
 
 import 'test_app.dart';
@@ -51,7 +52,8 @@ void main() {
     expect(tile(tester, 20).cell.isOffDay, isFalse);
     expect(inTile(20, Strings.lunarTag), findsOneWidget);
 
-    // Ô nghỉ tô màu errorContainer, ô thường không.
+    // Mỗi ô là thẻ bo góc riêng nền `off`/`sf` tùy trạng thái (Phase 1,
+    // REDESIGN_PLAN.md §3): ô nghỉ nền `off`, ô thường nền `sf`.
     Color? bg(int d) {
       final c = tester.widget<Container>(
         find
@@ -64,9 +66,11 @@ void main() {
       return (c.decoration as BoxDecoration?)?.color;
     }
 
-    final scheme = Theme.of(tester.element(find.byKey(key(6)))).colorScheme;
-    expect(bg(6), scheme.errorContainer);
-    expect(bg(14), isNull);
+    final k = Theme.of(
+      tester.element(find.byKey(key(6))),
+    ).extension<KadeColors>()!;
+    expect(bg(6), k.off);
+    expect(bg(14), k.sf);
 
     // Chú giải (trong phần lịch — panel Sắp tới ở ≥ 600 nằm ngoài).
     Finder inCalendar(String text) => find.descendant(

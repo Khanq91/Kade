@@ -3,9 +3,9 @@
 // lại), KadeColors extension, và bo góc mặc định cho Card/Button theo
 // phong cách thiết kế mới (số cụ thể lấy từ CSS trong `.dc.html`: card
 // 22–24px, nút pill 999px). Redesign Phase 0 (REDESIGN_PLAN.md §2.1, D039).
-//
-// CHƯA đụng NavigationBar/NavigationRail theme — đó là việc của Phase 2
-// (REDESIGN_PLAN.md §4), sẽ thêm vào hàm này ở phase sau.
+// NavigationBar/NavigationRail theme thêm ở Phase 2 (REDESIGN_PLAN.md §4):
+// pill nền `ac1`/chữ `acT` khi active, qua ThemeData thay vì sửa
+// `app_shell.dart` để không đụng logic `_select`/`shell.goBranch`.
 import 'package:flutter/material.dart';
 
 import 'kade_palette.dart';
@@ -20,6 +20,10 @@ const kadeCardRadius = 24.0;
 
 /// Bo góc nút dạng pill theo thiết kế mới (`.dc.html`: 999px).
 const kadePillRadius = 999.0;
+
+/// Bo góc ô ngày trong lưới tháng (`.dc.html` §isMonth `c.style`: 12px).
+/// Phase 1 (REDESIGN_PLAN.md §3).
+const kadeDayTileRadius = 12.0;
 
 /// Dựng [ThemeData] đầy đủ cho 1 [KadePalette] ở biến thể sáng ([dark]
 /// false) hoặc tối ([dark] true).
@@ -151,6 +155,46 @@ ThemeData buildKadeTheme(KadePalette palette, {required bool dark}) {
       labelStyle: TextStyle(fontFamily: kadeBodyFont, color: set.tx),
       shape: pillShape,
       side: BorderSide.none,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: set.bg,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      indicatorColor: set.ac1,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final selected = states.contains(WidgetState.selected);
+        return TextStyle(
+          fontFamily: kadeBodyFont,
+          fontWeight: FontWeight.w600,
+          fontSize: 10.5,
+          color: selected ? set.acT : set.mu,
+        );
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        final selected = states.contains(WidgetState.selected);
+        return IconThemeData(color: selected ? set.acT : set.mu);
+      }),
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: set.bg,
+      indicatorColor: set.ac1,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      selectedLabelTextStyle: TextStyle(
+        fontFamily: kadeBodyFont,
+        fontWeight: FontWeight.w600,
+        color: set.acT,
+      ),
+      unselectedLabelTextStyle: TextStyle(
+        fontFamily: kadeBodyFont,
+        color: set.mu,
+      ),
+      selectedIconTheme: IconThemeData(color: set.acT),
+      unselectedIconTheme: IconThemeData(color: set.mu),
     ),
   );
 }

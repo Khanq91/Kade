@@ -159,14 +159,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(UpcomingScreen), findsOneWidget);
       expect(find.text(Strings.navUpcoming), findsNWidgets(2)); // AppBar + nav
-      expect(
-        find.textContaining('${Strings.today} · Thứ Sáu, 01/01/2027'),
-        findsOneWidget,
-      );
+      // Thiết kế mới (`.dc.html` §isUpcoming): nhãn tương đối (rel) và dòng
+      // thứ/ngày/âm lịch (sub) tách 2 Text riêng thay vì gộp 1 dòng.
+      expect(find.text(Strings.today), findsOneWidget);
+      expect(find.textContaining('Thứ Sáu, 01/01/2027 · '), findsOneWidget);
       expect(find.text('Tết Dương lịch'), findsOneWidget);
       expect(find.text('Tết Nguyên đán', skipOffstage: false), findsOneWidget);
       expect(
-        find.textContaining(Strings.inDays(36), skipOffstage: false),
+        find.text(Strings.inDays(36), skipOffstage: false),
         findsOneWidget,
       );
 

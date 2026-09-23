@@ -18,6 +18,10 @@ abstract final class Strings {
   /// "Còn 5 ngày".
   static String inDays(int n) => 'Còn $n ngày';
 
+  /// "TH 1".."TH 12" (badge ngày trong "Sắp tới", `.dc.html` §isUpcoming
+  /// `d.monthShort`).
+  static String monthShort(int month) => 'TH $month';
+
   // Chung
   static const cancel = 'Hủy';
   static const back = 'Quay lại';

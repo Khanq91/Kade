@@ -11,6 +11,8 @@ import '../../core/formats.dart';
 import '../../core/lunar_utils.dart';
 import '../../core/router.dart';
 import '../../core/strings.dart';
+import '../../core/theme/kade_theme.dart';
+import '../../core/theme/kade_theme_extension.dart';
 import '../../data/month_provider.dart';
 import '../../data/settings_provider.dart';
 import '../../data/upcoming_provider.dart';
@@ -75,7 +77,7 @@ class MonthViewScreen extends ConsumerWidget {
     final data = ref.watch(monthProvider((year, month)));
     final today = ref.watch(todayProvider);
     final layout = layoutOf(MediaQuery.sizeOf(context).width);
-    final scheme = Theme.of(context).colorScheme;
+    final lunarMonths = _lunarMonths(data);
     final calendar = MonthCalendar(
       data: data,
       today: today,
@@ -128,37 +130,225 @@ class MonthViewScreen extends ConsumerWidget {
       child: Focus(
         autofocus: true,
         child: Scaffold(
-          appBar: AppBar(
-            title: TextButton(
-              onPressed: () => _pickSolar(context),
-              style: TextButton.styleFrom(foregroundColor: scheme.onSurface),
-              child: Text(
-                Strings.monthTitle(month, year),
-                style: Theme.of(context).textTheme.titleLarge,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+                child: _MonthHeader(
+                  monthTitle: Strings.monthTitle(month, year),
+                  lunarMonths: lunarMonths,
+                  onPickMonth: () => _pickSolar(context),
+                  onPrev: () => _shift(context, -1),
+                  onNext: () => _shift(context, 1),
+                  lunarActive: lunar,
+                  onToggleLunar: () => _pickLunar(context, data),
+                  onToday: () => _goMonth(context, today.year, today.month),
+                ),
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => _pickLunar(context, data),
-                style: lunar
-                    ? TextButton.styleFrom(
-                        backgroundColor: scheme.secondaryContainer,
-                        foregroundColor: scheme.onSecondaryContainer,
-                      )
-                    : null,
-                child: const Text(Strings.lunarMonthButton),
-              ),
-              TextButton(
-                onPressed: () => _goMonth(context, today.year, today.month),
-                child: const Text(Strings.today),
-              ),
-            ],
           ),
           body: Column(
             children: [
               if (ref.watch(webNoticeProvider)) const _WebNotice(),
               Expanded(child: body),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Header màn Lịch tháng theo thiết kế mới (`.dc.html` §isMonth): nút tròn
+/// ◀ ▶ (tap = đổi tháng dương), tiêu đề Baloo 2 (tap = mở picker tháng
+/// dương) + dòng tháng âm nhỏ màu `acT` ngay dưới, pill "Tháng âm" (tap =
+/// mở picker tháng âm — plan giữ nguyên hành vi cũ, không thêm nút bật/tắt
+/// chế độ) + pill "Hôm nay". Chuyển từ 2 `IconButton` + dòng tháng âm cũ
+/// trong [MonthCalendar] lên đây (`_lunarMonths(data)` tính 1 lần trong
+/// `build()`, không đụng logic tính).
+class _MonthHeader extends StatelessWidget {
+  const _MonthHeader({
+    required this.monthTitle,
+    required this.lunarMonths,
+    required this.onPickMonth,
+    required this.onPrev,
+    required this.onNext,
+    required this.lunarActive,
+    required this.onToggleLunar,
+    required this.onToday,
+  });
+
+  final String monthTitle;
+  final String lunarMonths;
+  final VoidCallback onPickMonth;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+  final bool lunarActive;
+  final VoidCallback onToggleLunar;
+  final VoidCallback onToday;
+
+  @override
+  Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _RoundIconButton(
+              tooltip: Strings.prevMonth,
+              icon: Icons.chevron_left,
+              onPressed: onPrev,
+            ),
+            Expanded(
+              child: TextButton(
+                onPressed: onPickMonth,
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      monthTitle,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      lunarMonths,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: kadeBodyFont,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11.5,
+                        color: k?.acT,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            _RoundIconButton(
+              tooltip: Strings.nextMonth,
+              icon: Icons.chevron_right,
+              onPressed: onNext,
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _PillButton(
+                label: Strings.lunarMonthButton,
+                onPressed: onToggleLunar,
+                selected: lunarActive,
+                selectedColor: k?.ac2,
+                foregroundColor: k?.acT,
+              ),
+              const SizedBox(width: 8),
+              _PillButton(
+                label: Strings.today,
+                onPressed: onToday,
+                selected: true,
+                selectedColor: k?.ac,
+                foregroundColor: k?.on,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Nút tròn (back/prev/next) nền `sf`, bóng nhẹ. Private trong file này —
+/// các phase sau (Chi tiết ngày, Giao diện, Sự kiện của tôi) định nghĩa
+/// widget tương tự riêng theo cùng phong cách nếu cần (không import từ đây).
+class _RoundIconButton extends StatelessWidget {
+  const _RoundIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
+    final scheme = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: tooltip ?? '',
+      child: Material(
+        color: k?.sf ?? scheme.surfaceContainer,
+        shape: const CircleBorder(),
+        elevation: 1,
+        shadowColor: k?.sh,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Icon(icon, size: 22, color: k?.acT ?? scheme.primary),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Nút pill bo tròn hoàn toàn (999px) dùng cho "Tháng âm"/"Hôm nay" và các
+/// nút hành động nhỏ theo thiết kế mới.
+class _PillButton extends StatelessWidget {
+  const _PillButton({
+    required this.label,
+    required this.onPressed,
+    required this.selected,
+    this.selectedColor,
+    this.foregroundColor,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool selected;
+  final Color? selectedColor;
+  final Color? foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
+    final scheme = Theme.of(context).colorScheme;
+    final bg = selected ? (selectedColor ?? k?.ac) : (k?.sf ?? scheme.surface);
+    final fg = selected
+        ? (foregroundColor ?? k?.on)
+        : (k?.acT ?? scheme.primary);
+    return Material(
+      color: bg,
+      shape: const StadiumBorder(),
+      elevation: selected ? 0 : 1,
+      shadowColor: k?.sh,
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontFamily: kadeBodyFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 12.5,
+              color: fg,
+            ),
           ),
         ),
       ),
@@ -196,7 +386,8 @@ class _WebNotice extends ConsumerWidget {
   }
 }
 
-/// Phần lịch: dòng tháng âm + ◀ ▶, header thứ, lưới, chú giải; vuốt đổi tháng.
+/// Phần lịch: header thứ, lưới ô ngày, chú giải; vuốt trái/phải đổi tháng
+/// (◀ ▶ và dòng tháng âm chuyển lên `_MonthHeader` trong AppBar — Phase 1).
 /// Public để test tìm chú giải trong đúng phần này (panel Sắp tới nằm ngoài).
 class MonthCalendar extends StatelessWidget {
   const MonthCalendar({
@@ -224,30 +415,13 @@ class MonthCalendar extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 960),
           child: Column(
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: Strings.prevMonth,
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => onShift(-1),
-                  ),
-                  Expanded(
-                    child: Text(
-                      _lunarMonths(data),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: Strings.nextMonth,
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => onShift(1),
-                  ),
-                ],
-              ),
+              const SizedBox(height: 8),
               const _WeekdayHeader(),
               Expanded(
-                child: _MonthGrid(data: data, today: today),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: _MonthGrid(data: data, today: today),
+                ),
               ),
               const _Legend(),
             ],
@@ -278,6 +452,7 @@ class _WeekdayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
     final scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
@@ -289,8 +464,13 @@ class _WeekdayHeader extends StatelessWidget {
                 Strings.weekdaysShort[i],
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: i == 6 ? scheme.error : scheme.onSurfaceVariant,
+                  fontFamily: kadeBodyFont,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  letterSpacing: 0.6,
+                  color: i == 6
+                      ? (k?.sun ?? scheme.error)
+                      : (k?.mu ?? scheme.onSurfaceVariant),
                 ),
               ),
             ),
@@ -341,6 +521,14 @@ class _MonthGrid extends StatelessWidget {
 
 /// Một ô ngày: số dương, số âm (mùng 1 dạng "1/M"), nền nghỉ, viền hôm nay,
 /// nhãn ÂL/DL màu theo kind (D021). Public để test đọc [cell].
+///
+/// Thiết kế mới (`.dc.html` §isMonth `c.style`, Phase 1): mỗi ô là 1 thẻ bo
+/// góc riêng biệt (nền `sf`/`off`/`ac` tùy trạng thái, bóng nhẹ) thay vì ô
+/// liền nhau trong suốt như bản cũ — [Container] đầu tiên bên trong
+/// [InkWell] vẫn là nơi tô nền/bo góc (test `month_view_test.dart` đọc
+/// đúng widget này). Cơ chế `LayoutBuilder` quyết định hiện/ẩn tên sự kiện
+/// theo `constraints.maxWidth`, và `EventTag`/`UserEventTag` trong ô, giữ
+/// nguyên 100% theo yêu cầu plan §3 — chỉ đổi style bọc ngoài.
 class DayTile extends StatelessWidget {
   const DayTile({
     super.key,
@@ -355,12 +543,27 @@ class DayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
     final scheme = Theme.of(context).colorScheme;
     final lunar = cell.info.lunar;
     final isSunday = cell.date.weekday == DateTime.sunday;
-    final dayColor = cell.isOffDay || isSunday
-        ? scheme.error
-        : scheme.onSurface;
+    final Color tileBg = isToday
+        ? (k?.ac ?? scheme.primary)
+        : cell.isOffDay
+        ? (k?.off ?? scheme.errorContainer)
+        : (k?.sf ?? scheme.surface);
+    final Color dayColor = isToday
+        ? (k?.on ?? scheme.onPrimary)
+        : cell.isOffDay
+        ? (k?.offT ?? scheme.error)
+        : isSunday
+        ? (k?.sun ?? scheme.error)
+        : (k?.tx ?? scheme.onSurface);
+    final Color lunarColor = isToday
+        ? (k?.on ?? scheme.onPrimary)
+        : lunar.day == 1
+        ? (k?.acT ?? scheme.primary)
+        : (k?.mu ?? scheme.onSurfaceVariant);
     final events = cell.appEvents;
     final userEvents = cell.userEvents;
     // Tên hiện trong ô: sự kiện app trước, không có thì sự kiện cá nhân.
@@ -373,83 +576,94 @@ class DayTile extends StatelessWidget {
       for (final e in events) EventTag(event: e),
       for (final e in userEvents) UserEventTag(event: e),
     ];
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(1),
-        padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
-        decoration: BoxDecoration(
-          color: cell.isOffDay ? scheme.errorContainer : null,
-          border: isToday ? Border.all(color: scheme.primary, width: 2) : null,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    '${cell.date.day}',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: dayColor,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: Text(
-                      lunarCellText(lunar),
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      softWrap: false,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: lunar.day == 1
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: lunar.day == 1
-                            ? scheme.primary
-                            : scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(kadeDayTileRadius),
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          padding: const EdgeInsets.fromLTRB(6, 6, 6, 5),
+          decoration: BoxDecoration(
+            color: tileBg,
+            borderRadius: BorderRadius.circular(kadeDayTileRadius),
+            boxShadow: [
+              BoxShadow(
+                color: k?.sh ?? Colors.black12,
+                blurRadius: isToday ? 12 : 2,
+                offset: Offset(0, isToday ? 4 : 1),
               ),
-              // Ô thấp (layout medium, cửa sổ nhỏ) → phần nhãn bị cắt thay vì
-              // báo overflow.
-              if (tags.isNotEmpty)
-                Flexible(
-                  child: ClipRect(
-                    child: OverflowBox(
-                      alignment: Alignment.topLeft,
-                      maxHeight: double.infinity,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (constraints.maxWidth >= 96 && firstTitle != null)
-                            Text(
-                              firstTitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 10, color: firstColor),
-                            ),
-                          Wrap(
-                            spacing: 2,
-                            runSpacing: 2,
-                            children: tags.take(3).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
+            ],
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${cell.date.day}',
+                  style: TextStyle(
+                    fontFamily: kadeDisplayFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: dayColor,
                   ),
                 ),
-            ],
+                Text(
+                  lunarCellText(lunar),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(
+                    fontFamily: kadeBodyFont,
+                    fontSize: 10.5,
+                    fontWeight: lunar.day == 1
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                    color: lunarColor,
+                  ),
+                ),
+                // Ô thấp (layout medium, cửa sổ nhỏ) → phần nhãn bị cắt thay
+                // vì báo overflow.
+                if (tags.isNotEmpty)
+                  Flexible(
+                    child: ClipRect(
+                      child: OverflowBox(
+                        alignment: Alignment.topLeft,
+                        maxHeight: double.infinity,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (constraints.maxWidth >= 96 &&
+                                firstTitle != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  firstTitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: kadeBodyFont,
+                                    fontSize: 10,
+                                    color: isToday ? dayColor : firstColor,
+                                  ),
+                                ),
+                              ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Wrap(
+                                spacing: 2,
+                                runSpacing: 2,
+                                children: tags.take(3).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -462,36 +676,69 @@ class _Legend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final k = Theme.of(context).extension<KadeColors>();
     final scheme = Theme.of(context).colorScheme;
-    final style = Theme.of(context).textTheme.bodySmall;
-    Widget item(Color color, String label) => Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
+    final dotStyle = TextStyle(
+      fontFamily: kadeBodyFont,
+      fontWeight: FontWeight.w500,
+      fontSize: 10.5,
+      color: k?.mu ?? scheme.onSurfaceVariant,
+    );
+    Widget pill(
+      String label, {
+      Color? dotColor,
+      Color? bg,
+      Color? fg,
+    }) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: bg ?? k?.sf ?? scheme.surface,
+        borderRadius: BorderRadius.circular(kadePillRadius),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dotColor != null) ...[
+            Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: fg != null ? dotStyle.copyWith(color: fg) : dotStyle,
           ),
-        ),
-        const SizedBox(width: 4),
-        Text(label, style: style),
-      ],
+        ],
+      ),
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
       child: Wrap(
-        spacing: 12,
-        runSpacing: 2,
+        spacing: 6,
+        runSpacing: 6,
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          item(kindColor(EventKind.vnHoliday), Strings.kindHoliday),
-          item(kindColor(EventKind.vnMemorial), Strings.kindMemorial),
-          item(kindColor(EventKind.international), Strings.kindInternational),
-          item(scheme.errorContainer, Strings.offDay),
-          Text(Strings.tagLegend, style: style),
+          pill(Strings.kindHoliday, dotColor: kindColor(EventKind.vnHoliday)),
+          pill(
+            Strings.kindMemorial,
+            dotColor: kindColor(EventKind.vnMemorial),
+          ),
+          pill(
+            Strings.kindInternational,
+            dotColor: kindColor(EventKind.international),
+          ),
+          pill(
+            Strings.offDay,
+            bg: k?.off ?? scheme.errorContainer,
+            fg: k?.offT ?? scheme.error,
+          ),
+          Text(Strings.tagLegend, style: dotStyle),
         ],
       ),
     );
