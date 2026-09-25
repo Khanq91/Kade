@@ -254,3 +254,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: màn Đổi ngày giữ `TextField`, `Checkbox` và `FilledButton` với style pill/bo góc theo `KadeColors`; phần kết quả dùng `Text.rich` để số và ngày nổi bật bằng Baloo 2. Giữ nguyên state, cách gọi engine và validation.
 - Lý do: control chuẩn có sẵn nhập bàn phím, focus và semantics; style đủ bám thiết kế mà không cần viết control mới.
 - Hệ quả: test converter dùng `buildKadeTheme` như app thật; nội dung và ý nghĩa các assert không đổi.
+
+## 2026-09-25 — D043 — Màn Giao diện mở bằng Navigator cục bộ
+- Bởi: agent
+- Quyết định: Settings mở `ThemeScreen` bằng `Navigator.push(MaterialPageRoute)`; màn chọn 6 palette từ `kadePalettes`, Sáng/Tối qua `DarkModeNotifier`, thêm nút "Theo hệ thống" để trả về mặc định `null`.
+- Lý do: REDESIGN_PLAN.md vừa yêu cầu màn mới vừa giữ `core/router.dart` nguyên 100%; route cục bộ đáp ứng cả hai. Nút reset giúp người dùng quay lại chế độ theo hệ thống đã có trong provider.
+- Hệ quả: không thêm route/deep link cho màn Giao diện; test kiểm chọn màu, chế độ và Hive settings.

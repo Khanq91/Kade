@@ -193,3 +193,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: lock file tạm trong `flutter/bin/cache` còn bị giữ sau tiến trình dở dang; SDK nằm ngoài workspace nên sandbox không cho dọn cache.
 - Cách xử lý: dừng các tiến trình Dart do lệnh verify tạo, xin quyền xóa đúng hai lock file cache, rồi chạy trực tiếp `flutter_tools.snapshot` với SDK 3.44.5.
 - Trạng thái: workaround
+
+## 2026-09-25 — E025 — ListTileTheme constructor và finder icon trong test redesign
+- Bối cảnh: Redesign Phase 6, thu gọn card Settings và chạy test điều hướng từ Cài đặt về Lịch.
+- Triệu chứng: `ListTileTheme(visualDensity/titleTextStyle:)` không compile; test `find.byIcon(Icons.calendar_month_outlined)` khớp 2 widget sau khi card Lịch nghỉ bù nằm trong viewport, rồi finder giới hạn `NavigationBar` không thấy gì.
+- Nguyên nhân: Flutter 3.44.5 đặt các thuộc tính style trong `ListTileThemeData`, không đặt trực tiếp trên `ListTileTheme`; viewport test 800px dùng `NavigationRail` (E018).
+- Cách xử lý: truyền `data: ListTileThemeData(...)`; giới hạn finder vào `NavigationRail` để kiểm đúng nút điều hướng.
+- Trạng thái: fixed
