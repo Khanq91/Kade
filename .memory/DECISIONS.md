@@ -248,3 +248,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: cấp header MonthView 140px cho header hai hàng; cho nội dung DayTile render tự nhiên trong OverflowBox và cắt bằng ClipRect theo chiều cao ô; gộp nhãn âm lịch + can chi năm thành một dòng trong DayDetail và dùng tên tháng dài để tránh trùng tiêu đề tháng phía sau dialog.
 - Lý do: redesign làm header/ô lịch vượt constraint và 27 test UI fail; cách này giữ đủ nội dung, chỉ cắt tag ở ô quá thấp, đồng thời không đổi route hay logic dữ liệu.
 - Hệ quả: header tháng cao hơn; ô lịch rất thấp ưu tiên ngày + âm lịch, tag phụ có thể bị cắt; toàn bộ 135 test và analyze pass.
+
+## 2026-09-25 — D042 — Redesign Phase 5 giữ control Flutter và đổi shape/style
+- Bởi: agent
+- Quyết định: màn Đổi ngày giữ `TextField`, `Checkbox` và `FilledButton` với style pill/bo góc theo `KadeColors`; phần kết quả dùng `Text.rich` để số và ngày nổi bật bằng Baloo 2. Giữ nguyên state, cách gọi engine và validation.
+- Lý do: control chuẩn có sẵn nhập bàn phím, focus và semantics; style đủ bám thiết kế mà không cần viết control mới.
+- Hệ quả: test converter dùng `buildKadeTheme` như app thật; nội dung và ý nghĩa các assert không đổi.

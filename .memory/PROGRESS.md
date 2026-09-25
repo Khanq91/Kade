@@ -18,8 +18,11 @@ Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties
 ## Đang dở
 Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verify; `flutter test --timeout 90s` pass 135/135 và `flutter analyze` sạch. Còn `flutter build web`/`apk --debug` và test tay trước khi sang Phase 2.
 
+2026-09-25 — Cập nhật: Phase 0, 2, 1, 3, 4 đã có code ở các commit trước; analyze, 135 test, build web và APK debug đều pass. Phase 5 (Đổi ngày) đã restyle, verify tự động pass và render ảnh để đối chiếu với `screenshot/doi-ngay.png`. Đang tiếp tục Phase 6; test tay UI toàn bộ gom cuối theo D031.
+
 ## Cần user làm
 - [ ] **Redesign Phase 0 — verify nền theme (mới, D039):** sau khi paste các file đã đổi (`pubspec.yaml`, `lib/main.dart`, `lib/data/settings_provider.dart`, `lib/core/theme/kade_palette.dart`, `lib/core/theme/kade_theme_extension.dart`, `lib/core/theme/kade_theme.dart`, `assets/fonts/*.ttf`) vào `apps/kade/`: (1) `dart pub get` (root); (2) `flutter analyze` — sạch; (3) `flutter test --timeout 90s` — không test nào đỏ (theme không nên phá test màu cụ thể); (4) `flutter build web` + `flutter build apk --debug` OK; (5) chạy app, xem theme nền hồng phấn thay cho đỏ Material 3 mặc định, chữ dùng Baloo 2 (số/tiêu đề to)/Be Vietnam Pro (còn lại) — bố cục từng màn hình vẫn y nguyên (đúng ý Phase 0, chưa restyle Card/ô lịch cụ thể). Báo "ok" hoặc dán lỗi/ảnh chụp sai khác → agent sửa rồi mới sang Phase 2 (AppShell).
+- [x] **Cập nhật 2026-09-25, thay cho mục Redesign Phase 0 ở trên:** code đã ở repo; agent chạy Flutter 3.44.5: analyze sạch, 135 test pass, build web + APK debug OK. UI của Phase 0–5 chờ test tay cuối theo D031; không cần user paste file hoặc chạy lại bốn lệnh verify.
 - [ ] **Bước 15 — Deploy GitHub Pages (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần C):** (1) repo Settings → Pages → Source: **GitHub Actions**; (2) Secrets `KADE_CONFIG_URL`, `KADE_WEB_CLIENT_ID` (giá trị lấy từ `dart_defines.json`); (3) OAuth client Web (B.3) thêm origin `https://khanq91.github.io`; (4) push `main` hoặc Actions → deploy-web → Run workflow → mở `https://khanq91.github.io/Kade/` → test manual-test.md 3.5 (+ 3.1 mục 6 Lighthouse). Báo ok → 15 ⏸ → ✅.
 - [ ] **Bước 18 — Release Android (⏸, chỉ user làm được; hướng dẫn `docs/setup-google.md` phần D):** (1) tạo keystore `kade-release.jks` NGOÀI repo (`keytool -genkey …`, D.1); (2) `apps/kade/android/key.properties` từ `key.properties.example` (gitignored); (3) SHA-1 release → OAuth client Android "Kade Android release" (B.4 / D.3); (4) `flutter build appbundle --release --dart-define-from-file=../../dart_defines.json` → upload Internal testing trên Play Console; (5) Play App Signing → SHA-1 của app signing key → OAuth client "Kade Android play"; (6) listing + Data safety + privacy policy `https://khanq91.github.io/Kade/privacy.html` (sau khi bước 15 deploy); (7) muốn phát hành APK qua GitHub Releases: 4 secret keystore (D.8) rồi `git tag v1.0.0 && git push origin main --tags`. Test manual-test.md 4.4. Báo ok → 18 ⏸ → ✅.
 - [ ] **Test tay toàn bộ (cuối, D031)** → theo `docs/manual-test.md`, chia phase × Web/Android; báo theo format "Ghi lỗi" ở cuối file đó. Các mục verify chi tiết bên dưới (bước 12, 11, 9, 6) đã gom vào file đó, giữ lại để tham khảo.
@@ -120,12 +123,12 @@ Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verif
 ### Redesign UI — theo REDESIGN_PLAN.md (song song với Phase 5+ sau MVP)
 | Phase | Nội dung | Trạng thái |
 |---|---|---|
-| 0 | Nền theme: `kade_palette`/`kade_theme_extension`/`kade_theme`, font bundle, `ThemeIdNotifier`/`DarkModeNotifier`, `main.dart` | 🔄 (code xong D039, chờ user chạy analyze/test/build) |
-| 2 | AppShell (bottom nav / rail) — NavigationBar/RailThemeData | ⬜ |
-| 1 | Lịch tháng (MonthView, DayTile, picker) | ⬜ |
-| 3 | Chi tiết ngày | ⬜ |
-| 4 | Sắp tới | ⬜ |
-| 5 | Đổi ngày | ⬜ |
+| 0 | Nền theme: `kade_palette`/`kade_theme_extension`/`kade_theme`, font bundle, `ThemeIdNotifier`/`DarkModeNotifier`, `main.dart` | 🧪 (analyze, 135 test, web, APK pass 2026-09-25) |
+| 2 | AppShell (bottom nav / rail) — NavigationBar/RailThemeData | 🧪 (code đã có trong `a7120dd`, verify tự động pass) |
+| 1 | Lịch tháng (MonthView, DayTile, picker) | 🧪 (code đã có trong `a7120dd`/`d3ed2eb`, verify tự động pass) |
+| 3 | Chi tiết ngày | 🧪 (code đã có trong `a7120dd`/`d3ed2eb`, verify tự động pass) |
+| 4 | Sắp tới | 🧪 (code đã có trong `a7120dd`, verify tự động pass) |
+| 5 | Đổi ngày | 🧪 (restyle 2026-09-25, analyze, 135 test, web, APK pass; chờ test tay) |
 | 6 | Cài đặt + Giao diện (theme picker) + Sự kiện của tôi + Form | ⬜ |
 | 7 | Widget Android (native) — chốt biến thể thiết kế lúc bắt đầu | ⬜ |
 
@@ -182,3 +185,5 @@ Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verif
 - 2026-09-10 — phase4-step18 — user yêu cầu: `.github/workflows/release-android.yml` (tag `v*` → test → APK + AAB ký từ secret keystore base64 → GitHub Release; Run workflow → artifact), setup-google D.8 (D038) — 19cf091
 - 2026-09-22 — redesign-phase0 — nền theme pastel: `kade_palette.dart` (6 palette port 1-1 từ themes.js), `kade_theme_extension.dart` (KadeColors), `kade_theme.dart` (buildKadeTheme: ColorScheme từ set.ac, TextTheme Baloo 2 + Be Vietnam Pro, card/button pill), font bundle tĩnh (`assets/fonts/`, Baloo 2 variable font), `ThemeIdNotifier`/`DarkModeNotifier` trong settings_provider.dart, `KadeApp` sang ConsumerWidget (D039); agent chưa tự chạy flutter analyze/test/build (không có Flutter SDK ở môi trường viết file) — chờ user chạy rồi báo lại; chưa có commit hash (chưa áp vào repo)
 - 2026-09-23 — redesign-phase0 — sửa overflow header/ô lịch + nhãn DayDetail (D041, E023); `flutter test --no-pub --timeout 90s` pass 135/135, `flutter analyze` sạch; chưa build web/APK — working tree còn 2 file UI
+- 2026-09-25 — redesign-phase0/2/1/3/4 — đối chiếu code đã có với plan; Flutter 3.44.5 analyze sạch, 135/135 test pass, build web + APK debug OK; cập nhật trạng thái 🧪, test tay gom cuối — a7120dd, d3ed2eb
+- 2026-09-25 — redesign-phase5 — restyle Đổi ngày theo palette pastel, input/date pill, checkbox bo góc, kết quả Baloo 2; golden tạm đối chiếu screenshot (đã xóa); analyze sạch, 135/135 test pass, build web + APK debug OK → 🧪 — a413fe2
