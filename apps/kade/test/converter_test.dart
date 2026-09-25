@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kade/core/strings.dart';
+import 'package:kade/core/theme/kade_palette.dart';
+import 'package:kade/core/theme/kade_theme.dart';
 import 'package:kade/features/converter/converter_screen.dart';
 import 'package:lunar_core/lunar_core.dart';
 
 void main() {
   Widget app({DateTime? initialDate}) => MaterialApp(
+    theme: buildKadeTheme(kadePaletteById('hong'), dark: false),
     locale: const Locale('vi'),
     supportedLocales: const [Locale('vi')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,

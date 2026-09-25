@@ -65,7 +65,17 @@ Sanity ngoài: `docs/reference/README.md`.
 | 4.2 | Nhắc nhở (bước 16, D035). (a) Mở app lần đầu: KHÔNG có hộp xin quyền thông báo. (b) Sự kiện của tôi → + → "Giỗ ông", Âm lịch 15/7, "Nhắc trước" = "3 ngày trước" → Lưu → Android 13+ hiện hộp xin quyền thông báo → Cho phép. (c) Kiểm tra nhanh không chờ 3 ngày: đổi giờ máy (Cài đặt hệ thống → Ngày giờ, tắt tự động) sang 07:59 của ngày (15/7 âm − 3) rồi chờ qua 08:00 → thông báo "Giỗ ông — Còn 3 ngày · Thứ …, dd/mm/yyyy (15/7 ÂL)"; chạm → mở đúng DayDetail ngày 15/7 âm (URL `/d/<ngày dương>`). Với app đang tắt hẳn: chạm thông báo → app mở thẳng DayDetail. (d) Cài đặt → Nhắc nhở → "Nhắc lễ trước" mặc định "7 ngày trước"; chọn "Không nhắc" rồi chọn lại "3 ngày trước" → hộp xin quyền (nếu chưa cho); đổi giờ máy tới 08:00 của (Tết − 3 ngày) → thông báo "Tết Nguyên đán — Còn 3 ngày…" (chỉ 1 thông báo cho Tết 3 ngày; Giao thừa có thông báo riêng). (e) Từ chối quyền → SnackBar "Chưa được phép hiện thông báo…"; bật lại trong Cài đặt hệ thống → Ứng dụng → Kade → Thông báo. (f) Khởi động lại máy → thông báo vẫn tới (receiver BOOT_COMPLETED). (g) Kênh thông báo "Nhắc sự kiện" hiện trong Cài đặt hệ thống → Kade → Thông báo. Trả giờ máy về tự động sau khi test | — | ⬜ |
 | 4.3 | Sync 2 chiều với web (như 2.5–2.7) | ⬜ | ⬜ |
 | 4.4 | Release (bước 18, sau `setup-google.md` phần D): (a) `flutter build apk --release --dart-define-from-file=../../dart_defines.json` — log KHÔNG có "Signing with debug keys"; `keytool -printcert -jarfile …app-release.apk` → SHA1 = keystore D.3. (b) Gỡ bản debug, cài `app-release.apk` → Cài đặt → "Đồng bộ với Google" → đăng nhập được, "Đã cấp quyền Google Drive", "Đồng bộ ngay" OK (cần OAuth client "Kade Android release"). (c) Cài từ Play Internal testing → đăng nhập được (cần OAuth client "Kade Android play" với SHA-1 App signing key; thiếu → `clientConfigurationError`). (d) Widget + thông báo trên bản release như 4.1/4.2. (e) `https://khanq91.github.io/Kade/privacy.html` mở được (sau bước 15) | — | ⬜ |
-| 4.5 | Dark mode: bật Dark theme hệ thống → widget nền tối chữ sáng (values-night), số ngày nghỉ đỏ nhạt; app Flutter hiện vẫn theme sáng (chưa có `darkTheme`, ghi nhận nếu user muốn); web không áp dụng | — | ⬜ |
+| 4.5 | Dark mode: bật Dark theme hệ thống → widget nền tối chữ sáng (values-night), số ngày nghỉ đỏ nhạt; app Flutter dùng palette tối tương ứng (D039) | — | ⬜ |
+
+## Redesign UI — so với `plan/new-ui/screenshot/`
+| Mục | Kiểm tra | Web | Android |
+|---|---|---|---|
+| R.0 | Mở app: nền hồng phấn mặc định, tiêu đề/số lớn dùng Baloo 2, chữ còn lại Be Vietnam Pro; đổi Dark theme hệ thống → palette tối, chữ đọc rõ. Logic lịch/sync vẫn như các mục trên | ⬜ | ⬜ |
+| R.2 | Cả 4 tab Lịch, Sắp tới, Đổi ngày, Cài đặt đúng thứ tự; tab active có pill hồng nhạt. Web rộng dùng rail, hẹp/Android dùng bottom nav | ⬜ | ⬜ |
+| R.1 | Lịch tháng: header, ô ngày bo góc rời, nhãn ÂL/DL vẫn đọc được, hôm nay/ngày nghỉ/CN khác màu; chọn tháng dương/âm và vuốt/đổi tháng vẫn đúng | ⬜ | ⬜ |
+| R.3 | Chi tiết ngày: hero 2 cột, thông tin can chi/giờ hoàng đạo và các sự kiện trong card; chuyển ngày, mở form sự kiện vẫn đúng | ⬜ | ⬜ |
+| R.4 | Sắp tới: chip lọc bật/tắt được, mỗi ngày gom sự kiện trong card có badge; panel compact trong Lịch tháng không tràn | ⬜ | ⬜ |
+| R.5 | Đổi ngày: 2 card pastel, ô nhập/date pill, checkbox tháng nhuận, nút Đổi; thử 1/1/2027 âm → 06/02/2027 dương và tháng nhuận sai → lỗi dễ đọc; không tràn ở màn hẹp | ⬜ | ⬜ |
 
 ## Lỗi hay gặp
 | Triệu chứng | Nguyên nhân / xử lý |
