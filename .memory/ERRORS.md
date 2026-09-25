@@ -200,3 +200,10 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: Flutter 3.44.5 đặt các thuộc tính style trong `ListTileThemeData`, không đặt trực tiếp trên `ListTileTheme`; viewport test 800px dùng `NavigationRail` (E018).
 - Cách xử lý: truyền `data: ListTileThemeData(...)`; giới hạn finder vào `NavigationRail` để kiểm đúng nút điều hướng.
 - Trạng thái: fixed
+
+## 2026-09-25 — E026 — apply_patch không xóa và thêm lại cùng file trong một patch
+- Bối cảnh: Redesign Phase 7, thay toàn bộ XML layout widget 2×2/4×2.
+- Triệu chứng: patch gồm `Delete File` và `Add File` cho cùng đường dẫn bị từ chối với `multiple operations target`.
+- Nguyên nhân: `apply_patch` không nhận hai operation trên một file trong cùng patch.
+- Cách xử lý: xóa layout trong một lần gọi, thêm nội dung mới ở lần gọi sau.
+- Trạng thái: fixed

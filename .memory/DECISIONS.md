@@ -260,3 +260,15 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: Settings mở `ThemeScreen` bằng `Navigator.push(MaterialPageRoute)`; màn chọn 6 palette từ `kadePalettes`, Sáng/Tối qua `DarkModeNotifier`, thêm nút "Theo hệ thống" để trả về mặc định `null`.
 - Lý do: REDESIGN_PLAN.md vừa yêu cầu màn mới vừa giữ `core/router.dart` nguyên 100%; route cục bộ đáp ứng cả hai. Nút reset giúp người dùng quay lại chế độ theo hệ thống đã có trong provider.
 - Hệ quả: không thêm route/deep link cho màn Giao diện; test kiểm chọn màu, chế độ và Hive settings.
+
+## 2026-09-25 — D044 — Redesign widget Android theo mẫu 4c
+- Bởi: user ("phase 7 4c, còn lại tùy ý")
+- Quyết định: widget 2×2 dùng nền accent Hồng phấn, đĩa tròn sáng chứa ngày dương và khối chữ âm lịch bên phải; widget 4×2 giữ nửa trái cùng bố cục, nửa phải sáng hiển thị 3 sự kiện sắp tới với nhãn ÂL/DL, ngày và tên. Giữ dữ liệu `days_json` và lịch cập nhật hiện tại; dùng drawable màu/bo góc native, bỏ gradient/bóng CSS và rút 5 dòng mẫu còn 3 để đọc được ở chiều cao 2 ô.
+- Lý do: Android RemoteViews và kích thước 4×2 không đủ chỗ cho 5 hàng hai dòng như CSS mẫu; user cho phép chọn cách đơn giản hóa. Màu widget lấy palette Hồng phấn mặc định, bản tối theo `values-night`; không nối theme picker Flutter sang widget trong phase này để không đổi logic/data sync.
+- Hệ quả: sửa Kotlin/XML/res colors và copy font vào Android `res/font`; không đổi schema Hive hay `packages/*`. Test tay widget trên launcher theo `docs/manual-test.md`.
+
+## 2026-09-25 — D045 — Widget theo bộ màu và Sáng/Tối trong app (sửa D044)
+- Bởi: user ("màu chính có thể linh hoạt theo user chọn trong app không?")
+- Quyết định: widget 4c dùng đúng màu palette và chế độ Sáng/Tối đã chọn trong app. `WidgetUpdater` đẩy cả bảng màu sáng/tối cùng `days_json` và cập nhật ngay khi `themeId` hoặc `darkMode` đổi; Kotlin chọn màu tương ứng, với "Theo hệ thống" lấy chế độ từ Android khi widget vẽ lại.
+- Lý do: widget là phần mở rộng của giao diện app; giữ cố định Hồng phấn như D044 không phản ánh lựa chọn của người dùng. Dùng chung token `KadePalette` từ Dart tránh hai bảng màu bị lệch.
+- Hệ quả: bổ sung trường `theme` vào payload widget (không đổi Hive/schema sync), tô drawable qua ImageView/RemoteViews; tag ÂL/DL dùng nền trung tính để hợp mọi palette. Thay phần D044 nói widget luôn lấy Hồng phấn mặc định.
