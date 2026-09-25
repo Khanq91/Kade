@@ -181,6 +181,13 @@ abstract final class Strings {
 
   // Settings
   static const settingsTitle = 'Cài đặt';
+  static const themeTitle = 'Giao diện';
+  static const themePaletteLabel = 'Bộ màu';
+  static const themeModeLabel = 'Chế độ';
+  static const themeLight = 'Sáng';
+  static const themeDark = 'Tối';
+  static const themeSystem = 'Theo hệ thống';
+  static const themePreview = 'Xem trước';
   static const remoteConfigSection = 'Lịch nghỉ bù theo năm';
   static const remoteConfigHint =
       'Ngày nghỉ thêm / làm bù do Nhà nước công bố từng năm, tải từ Google Sheet.';

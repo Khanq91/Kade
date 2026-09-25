@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/event_style.dart';
 import '../../core/formats.dart';
 import '../../core/strings.dart';
+import '../../core/theme/kade_theme_extension.dart';
 import '../../data/user_events_provider.dart';
 
 /// Danh sách sự kiện cá nhân (`/events`, mở từ Cài đặt → "Sự kiện của tôi").
@@ -14,6 +15,7 @@ class UserEventsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(activeUserEventsProvider);
+    final colors = Theme.of(context).extension<KadeColors>()!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -30,23 +32,37 @@ class UserEventsScreen extends ConsumerWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 720),
                 child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
                   itemCount: events.length,
                   itemBuilder: (context, i) {
                     final e = events[i];
-                    return ListTile(
-                      leading: UserEventTag(event: e),
-                      title: Text(e.title),
-                      subtitle: Text(formatUserEventWhen(e)),
-                      onTap: () => context.push('/events/${e.id}'),
+                    return Card(
+                      color: colors.sf,
+                      elevation: 1,
+                      shadowColor: colors.sh,
+                      margin: const EdgeInsets.only(bottom: 7),
+                      clipBehavior: Clip.antiAlias,
+                      child: ListTile(
+                        leading: UserEventTag(event: e),
+                        title: Text(e.title),
+                        subtitle: Text(formatUserEventWhen(e)),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push('/events/${e.id}'),
+                      ),
                     );
                   },
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         tooltip: Strings.addEvent,
         onPressed: () => context.push('/events/new'),
-        child: const Icon(Icons.add),
+        backgroundColor: colors.ac,
+        foregroundColor: colors.on,
+        elevation: 1,
+        shape: const StadiumBorder(),
+        icon: const Icon(Icons.add),
+        label: const Text(Strings.addEvent),
       ),
     );
   }

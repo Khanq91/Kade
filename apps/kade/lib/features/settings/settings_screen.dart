@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../core/env.dart';
 import '../../core/formats.dart';
 import '../../core/strings.dart';
+import '../../core/theme/kade_palette.dart';
+import '../../core/theme/kade_theme.dart';
+import '../../core/theme/kade_theme_extension.dart';
 import '../../data/models/sync_envelope.dart';
 import '../../data/reminder_scheduler.dart';
 import '../../data/remote/remote_config.dart';
@@ -17,6 +20,7 @@ import '../../data/sync/sync_provider.dart';
 import '../../data/user_events_provider.dart';
 import '../../platform/file_io.dart';
 import '../../platform/sign_in_button.dart';
+import 'theme_screen.dart';
 
 /// Màn Cài đặt (plan §5.1): Sự kiện của tôi, Đồng bộ Google (bước 11), Sao
 /// lưu (bước 9), khối "Lịch nghỉ bù theo năm" + nút Kiểm tra cập nhật (bước 5).
@@ -45,82 +49,122 @@ class _RemoteConfigSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final years = state.overrides.years.keys.toList()..sort();
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: [
-        ListTile(
-          leading: const Icon(Icons.event_note_outlined),
-          title: const Text(Strings.myEvents),
-          subtitle: const Text(Strings.myEventsHint),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.push('/events'),
-        ),
-        const Divider(),
-        // Nhắc nhở chỉ có trên Android (plan §4.6: web không nhắc).
-        if (!ref.watch(platformIsWebProvider)) ...[
-          const _RemindSection(),
-          const Divider(),
-        ],
-        const _SyncSection(),
-        const Divider(),
-        const _BackupSection(),
-        const Divider(),
-        const ListTile(
-          title: Text(Strings.remoteConfigSection),
-          subtitle: Text(Strings.remoteConfigHint),
-        ),
-        ListTile(
-          leading: const Icon(Icons.storage_outlined),
-          title: const Text(Strings.sourceLabel),
-          subtitle: Text(_sourceText(state.source)),
-        ),
-        ListTile(
-          leading: const Icon(Icons.tag),
-          title: const Text(Strings.versionLabel),
-          subtitle: Text('${state.overrides.version}'),
-        ),
-        ListTile(
-          leading: const Icon(Icons.edit_calendar_outlined),
-          title: const Text(Strings.updatedAtLabel),
-          subtitle: Text(
-            state.overrides.updatedAt == null
-                ? Strings.unknown
-                : formatDateTime(state.overrides.updatedAt!),
-          ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.sync_outlined),
-          title: const Text(Strings.fetchedAtLabel),
-          subtitle: Text(
-            state.fetchedAt == null
-                ? Strings.never
-                : formatDateTime(state.fetchedAt!),
-          ),
-        ),
-        if (!Env.hasConfigUrl)
-          const ListTile(
-            leading: Icon(Icons.warning_amber_outlined),
-            title: Text(Strings.noConfigUrl),
-          ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: FilledButton.icon(
-            onPressed: state.checking || !Env.hasConfigUrl
-                ? null
-                : () => _check(context, ref),
-            icon: const Icon(Icons.refresh),
-            label: Text(
-              state.checking ? Strings.checking : Strings.checkUpdates,
+    final colors = Theme.of(context).extension<KadeColors>()!;
+    final selected = ref.watch(themeIdProvider);
+    final darkOverride = ref.watch(darkModeProvider);
+    final mode = darkOverride == null
+        ? Strings.themeSystem
+        : darkOverride
+        ? Strings.themeDark
+        : Strings.themeLight;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _SettingsCard(
+              children: [
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: colors.ac1,
+                    child: Icon(Icons.palette_outlined, color: colors.acT),
+                  ),
+                  title: const Text(Strings.themeTitle),
+                  subtitle: Text('${kadePaletteById(selected).name} · $mode'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const ThemeScreen(),
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: colors.b1,
+                    child: Icon(Icons.event_note_outlined, color: colors.bT),
+                  ),
+                  title: const Text(Strings.myEvents),
+                  subtitle: const Text(Strings.myEventsHint),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/events'),
+                ),
+              ],
             ),
-          ),
+            const SizedBox(height: 8),
+            // Nhắc nhở chỉ có trên Android (plan §4.6: web không nhắc).
+            if (!ref.watch(platformIsWebProvider)) ...[
+              const _SettingsCard(children: [_RemindSection()]),
+              const SizedBox(height: 8),
+            ],
+            const _SettingsCard(children: [_SyncSection()]),
+            const SizedBox(height: 8),
+            const _SettingsCard(children: [_BackupSection()]),
+            const SizedBox(height: 8),
+            _SettingsCard(
+              children: [
+                const ListTile(
+                  title: Text(Strings.remoteConfigSection),
+                  subtitle: Text(Strings.remoteConfigHint),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.storage_outlined),
+                  title: const Text(Strings.sourceLabel),
+                  subtitle: Text(_sourceText(state.source)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.tag),
+                  title: const Text(Strings.versionLabel),
+                  subtitle: Text('${state.overrides.version}'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.edit_calendar_outlined),
+                  title: const Text(Strings.updatedAtLabel),
+                  subtitle: Text(
+                    state.overrides.updatedAt == null
+                        ? Strings.unknown
+                        : formatDateTime(state.overrides.updatedAt!),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.sync_outlined),
+                  title: const Text(Strings.fetchedAtLabel),
+                  subtitle: Text(
+                    state.fetchedAt == null
+                        ? Strings.never
+                        : formatDateTime(state.fetchedAt!),
+                  ),
+                ),
+                if (!Env.hasConfigUrl)
+                  const ListTile(
+                    leading: Icon(Icons.warning_amber_outlined),
+                    title: Text(Strings.noConfigUrl),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: FilledButton.icon(
+                    onPressed: state.checking || !Env.hasConfigUrl
+                        ? null
+                        : () => _check(context, ref),
+                    icon: const Icon(Icons.refresh),
+                    label: Text(
+                      state.checking ? Strings.checking : Strings.checkUpdates,
+                    ),
+                  ),
+                ),
+                if (years.isEmpty)
+                  const ListTile(title: Text(Strings.noOverrides))
+                else
+                  for (final y in years)
+                    _YearTile(year: y, data: state.overrides.years[y]!),
+              ],
+            ),
+          ],
         ),
-        const Divider(),
-        if (years.isEmpty)
-          const ListTile(title: Text(Strings.noOverrides))
-        else
-          for (final y in years)
-            _YearTile(year: y, data: state.overrides.years[y]!),
-      ],
+      ),
     );
   }
 
@@ -132,6 +176,41 @@ class _RemoteConfigSection extends ConsumerWidget {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(fetchResultText(result))));
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<KadeColors>()!;
+    final text = Theme.of(context).textTheme;
+    return Card(
+      color: colors.sf,
+      elevation: 1,
+      shadowColor: colors.sh,
+      clipBehavior: Clip.antiAlias,
+      child: ListTileTheme(
+        data: ListTileThemeData(
+          dense: true,
+          visualDensity: VisualDensity.compact,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+          iconColor: colors.acT,
+          titleTextStyle: text.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: colors.tx,
+          ),
+          subtitleTextStyle: text.bodySmall?.copyWith(color: colors.mu),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    );
   }
 }
 
@@ -387,12 +466,36 @@ class _BackupSection extends ConsumerWidget {
               OutlinedButton.icon(
                 key: const ValueKey('backup-export'),
                 onPressed: () => _export(context, ref),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  iconSize: 16,
+                  textStyle: const TextStyle(
+                    fontFamily: kadeBodyFont,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 icon: const Icon(Icons.upload_file_outlined),
                 label: const Text(Strings.exportJson),
               ),
               OutlinedButton.icon(
                 key: const ValueKey('backup-import'),
                 onPressed: () => _import(context, ref),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  iconSize: 16,
+                  textStyle: const TextStyle(
+                    fontFamily: kadeBodyFont,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 icon: const Icon(Icons.file_open_outlined),
                 label: const Text(Strings.importJson),
               ),

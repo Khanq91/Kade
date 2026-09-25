@@ -76,6 +76,7 @@ Sanity ngoài: `docs/reference/README.md`.
 | R.3 | Chi tiết ngày: hero 2 cột, thông tin can chi/giờ hoàng đạo và các sự kiện trong card; chuyển ngày, mở form sự kiện vẫn đúng | ⬜ | ⬜ |
 | R.4 | Sắp tới: chip lọc bật/tắt được, mỗi ngày gom sự kiện trong card có badge; panel compact trong Lịch tháng không tràn | ⬜ | ⬜ |
 | R.5 | Đổi ngày: 2 card pastel, ô nhập/date pill, checkbox tháng nhuận, nút Đổi; thử 1/1/2027 âm → 06/02/2027 dương và tháng nhuận sai → lỗi dễ đọc; không tràn ở màn hẹp | ⬜ | ⬜ |
+| R.6 | Cài đặt chia thành card; Giao diện chọn đủ 6 bộ màu, Sáng/Tối và Theo hệ thống, thoát/mở app giữ lựa chọn; Sự kiện của tôi và form theo style mới, tạo/sửa/xóa sự kiện vẫn đúng, 8 chấm màu nằm một hàng trên màn hẹp; sync/backup/nhắc nhở/lịch nghỉ bù vẫn hoạt động | ⬜ | ⬜ |
 
 ## Lỗi hay gặp
 | Triệu chứng | Nguyên nhân / xử lý |

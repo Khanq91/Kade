@@ -7,6 +7,8 @@ import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:kade/core/strings.dart';
+import 'package:kade/core/theme/kade_palette.dart';
+import 'package:kade/core/theme/kade_theme.dart';
 import 'package:kade/data/remote/remote_config.dart';
 import 'package:kade/data/remote/remote_config_provider.dart';
 import 'package:kade/data/settings_provider.dart';
@@ -45,7 +47,10 @@ void main() {
       settingsBoxProvider.overrideWithValue(settingsBox),
       googleAuthProvider.overrideWithValue(FakeGoogleAuth()),
     ],
-    child: const MaterialApp(home: SettingsScreen()),
+    child: MaterialApp(
+      theme: buildKadeTheme(kadePaletteById('hong'), dark: false),
+      home: const SettingsScreen(),
+    ),
   );
 
   /// Pump tới khi hết spinner (tối đa ~5s thời gian thật).

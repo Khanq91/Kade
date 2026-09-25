@@ -9,6 +9,8 @@ import '../../core/event_style.dart';
 import '../../core/formats.dart';
 import '../../core/lunar_utils.dart';
 import '../../core/strings.dart';
+import '../../core/theme/kade_theme.dart';
+import '../../core/theme/kade_theme_extension.dart';
 import '../../data/models/user_event.dart';
 import '../../data/reminder_scheduler.dart';
 import '../../data/settings_provider.dart';
@@ -218,7 +220,7 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).extension<KadeColors>()!;
     final text = Theme.of(context).textTheme;
     final isLunar = _type == CalendarType.lunar;
     return Scaffold(
@@ -239,20 +241,20 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               children: [
                 TextFormField(
                   key: const ValueKey('ev-title'),
                   controller: _title,
-                  decoration: const InputDecoration(
-                    labelText: Strings.titleField,
-                  ),
+                  decoration: _pillDecoration(context, Strings.titleField),
                   textInputAction: TextInputAction.next,
                   validator: (v) =>
                       (v ?? '').trim().isEmpty ? Strings.titleRequired : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 SegmentedButton<CalendarType>(
+                  showSelectedIcon: false,
+                  style: _segmentStyle(colors),
                   segments: const [
                     ButtonSegment(
                       value: CalendarType.solar,
@@ -266,7 +268,7 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                   selected: {_type},
                   onSelectionChanged: (s) => _setType(s.first),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
@@ -296,12 +298,25 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                     ),
                   ],
                 ),
-                CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text(Strings.yearly),
-                  value: _yearly,
-                  onChanged: (v) => setState(() => _yearly = v ?? true),
+                InkWell(
+                  onTap: () => setState(() => _yearly = !_yearly),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _yearly,
+                        onChanged: (v) => setState(() => _yearly = v ?? true),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        side: BorderSide(color: colors.line, width: 1.5),
+                        activeColor: colors.ac,
+                        checkColor: colors.on,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      const Text(Strings.yearly),
+                    ],
+                  ),
                 ),
                 if (isLunar) ...[
                   Padding(
@@ -309,6 +324,8 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                     child: Text(Strings.leapRuleLabel, style: text.bodyMedium),
                   ),
                   SegmentedButton<LeapMonthRule>(
+                    showSelectedIcon: false,
+                    style: _segmentStyle(colors),
                     segments: [
                       const ButtonSegment(
                         value: LeapMonthRule.firstMonth,
@@ -334,49 +351,66 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                         setState(() => _leapRule = s.first),
                   ),
                 ],
-                const SizedBox(height: 12),
-                _NumberField(
-                  key: const ValueKey('ev-duration'),
-                  controller: _duration,
-                  label: Strings.durationField,
-                ),
-                const SizedBox(height: 12),
-                // Nhắc trước N ngày lúc 08:00 (bước 16; chỉ Android).
-                DropdownButtonFormField<int>(
-                  key: const ValueKey('ev-remind'),
-                  initialValue: _remind ?? -1,
-                  decoration: InputDecoration(
-                    labelText: Strings.remindField,
-                    helperText: ref.watch(platformIsWebProvider)
-                        ? Strings.remindWebHint
-                        : null,
-                  ),
-                  items: [
-                    for (final o in remindOptions)
-                      DropdownMenuItem(
-                        value: o ?? -1,
-                        child: Text(remindLabel(o)),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _NumberField(
+                        key: const ValueKey('ev-duration'),
+                        controller: _duration,
+                        label: Strings.durationField,
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      // Nhắc trước N ngày lúc 08:00 (bước 16; chỉ Android).
+                      child: DropdownButtonFormField<int>(
+                        key: const ValueKey('ev-remind'),
+                        initialValue: _remind ?? -1,
+                        isExpanded: true,
+                        decoration: _pillDecoration(
+                          context,
+                          Strings.remindField,
+                          helperText: ref.watch(platformIsWebProvider)
+                              ? Strings.remindWebHint
+                              : null,
+                        ),
+                        items: [
+                          for (final o in remindOptions)
+                            DropdownMenuItem(
+                              value: o ?? -1,
+                              child: Text(
+                                remindLabel(o),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: (v) => setState(
+                          () => _remind = v == null || v < 0 ? null : v,
+                        ),
+                      ),
+                    ),
                   ],
-                  onChanged: (v) =>
-                      setState(() => _remind = v == null || v < 0 ? null : v),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 TextFormField(
                   key: const ValueKey('ev-note'),
                   controller: _note,
-                  decoration: const InputDecoration(
-                    labelText: Strings.noteField,
+                  decoration: _pillDecoration(
+                    context,
+                    Strings.noteField,
+                    radius: 18,
                   ),
                   maxLines: 3,
                   minLines: 1,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Text(Strings.colorLabel, style: text.bodyMedium),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     for (var i = 0; i < userEventColors.length; i++)
                       InkWell(
@@ -384,19 +418,28 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                         borderRadius: BorderRadius.circular(16),
                         onTap: () => setState(() => _color = i),
                         child: Container(
-                          width: 32,
-                          height: 32,
+                          width: 28,
+                          height: 28,
+                          padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: userEventColors[i],
                             shape: BoxShape.circle,
+                            border: Border.all(
+                              color: i == _color
+                                  ? colors.acT
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
                           ),
-                          child: i == _color
-                              ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 18,
-                                )
-                              : null,
+                          child: CircleAvatar(
+                            backgroundColor: userEventColors[i],
+                            child: i == _color
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 18,
+                                  )
+                                : null,
+                          ),
                         ),
                       ),
                   ],
@@ -406,14 +449,17 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(
                       _dateError!,
-                      style: TextStyle(color: scheme.error),
+                      style: TextStyle(color: colors.offT),
                     ),
                   ),
                 const SizedBox(height: 20),
-                FilledButton(
-                  key: const ValueKey('ev-save'),
-                  onPressed: _save,
-                  child: const Text(Strings.save),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    key: const ValueKey('ev-save'),
+                    onPressed: _save,
+                    child: const Text(Strings.save),
+                  ),
                 ),
               ],
             ),
@@ -443,10 +489,54 @@ class _NumberField extends StatelessWidget {
       enabled: enabled,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(labelText: label, isDense: true),
+      decoration: _pillDecoration(context, label),
     );
   }
 }
+
+InputDecoration _pillDecoration(
+  BuildContext context,
+  String label, {
+  String? helperText,
+  double radius = kadePillRadius,
+}) {
+  final colors = Theme.of(context).extension<KadeColors>()!;
+  final border = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(radius),
+    borderSide: BorderSide(color: colors.line, width: 1.5),
+  );
+  return InputDecoration(
+    labelText: label,
+    helperText: helperText,
+    floatingLabelBehavior: FloatingLabelBehavior.always,
+    isDense: true,
+    filled: true,
+    fillColor: colors.sf,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    enabledBorder: border,
+    disabledBorder: border,
+    focusedBorder: border.copyWith(
+      borderSide: BorderSide(color: colors.ac, width: 1.5),
+    ),
+    errorBorder: border.copyWith(
+      borderSide: BorderSide(color: colors.offT, width: 1.5),
+    ),
+    focusedErrorBorder: border.copyWith(
+      borderSide: BorderSide(color: colors.offT, width: 1.5),
+    ),
+  );
+}
+
+ButtonStyle _segmentStyle(KadeColors colors) => ButtonStyle(
+  backgroundColor: WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.selected) ? colors.ac : colors.sf,
+  ),
+  foregroundColor: WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.selected) ? colors.on : colors.tx,
+  ),
+  side: WidgetStatePropertyAll(BorderSide(color: colors.line)),
+  shape: const WidgetStatePropertyAll(StadiumBorder()),
+);
 
 /// Route `/events/:id`: tìm sự kiện rồi mở form sửa; không có → về danh sách.
 class UserEventEditScreen extends ConsumerWidget {

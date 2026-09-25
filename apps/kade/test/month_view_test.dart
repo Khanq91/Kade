@@ -145,7 +145,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(Strings.myEvents), findsOneWidget); // đầu trang Cài đặt
 
-    await tester.tap(find.byIcon(Icons.calendar_month_outlined));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(NavigationRail),
+        matching: find.byIcon(Icons.calendar_month_outlined),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text(Strings.monthTitle(2, 2027)), findsOneWidget);
   });
