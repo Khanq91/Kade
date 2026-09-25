@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Màu widget khi hệ thống bật Dark Mode. -->
+<!-- Widget 4c: biến thể tối của palette Hồng phấn. -->
 <resources>
-    <color name="widget_bg">#F21E1E1E</color>
-    <color name="widget_text">#E6E1E5</color>
-    <color name="widget_text_secondary">#CAC4D0</color>
-    <color name="widget_accent">#EF9A9A</color>
-    <color name="widget_off">#EF9A9A</color>
+    <color name="widget_bg">#F0A5B8</color>
+    <color name="widget_surface">#2A2127</color>
+    <color name="widget_text">#F5E9EE</color>
+    <color name="widget_text_secondary">#B39AA6</color>
+    <color name="widget_accent">#F0A5B8</color>
+    <color name="widget_accent_text">#F7C6D3</color>
+    <color name="widget_on_accent">#2B1E24</color>
+    <color name="widget_tag_bg">#3E2A34</color>
+    <color name="widget_solar_tag_bg">#26332C</color>
+    <color name="widget_solar_tag_text">#BFDACB</color>
+    <color name="widget_off">#F3A6A0</color>
 </resources>

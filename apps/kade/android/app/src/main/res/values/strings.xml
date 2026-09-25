@@ -6,9 +6,15 @@
     <string name="widget_wide_name">Kade · Hôm nay + Sắp tới</string>
     <string name="widget_wide_desc">Hôm nay kèm 3 sự kiện sắp tới</string>
     <string name="widget_open_to_update">Mở Kade để cập nhật</string>
+    <string name="widget_open_short">Mở Kade</string>
+    <string name="widget_update_short">để cập nhật</string>
     <string name="widget_upcoming">Sắp tới</string>
-    <string name="widget_no_upcoming">Không có sự kiện trong 35 ngày</string>
+    <string name="widget_no_upcoming">Chưa có sự kiện</string>
     <string name="widget_month">Tháng %1$d</string>
+    <string name="widget_lunar_label">ÂM LỊCH</string>
+    <string name="widget_lunar_month_leap">Tháng %1$d nhuận</string>
+    <string name="widget_tag_lunar">ÂL</string>
+    <string name="widget_tag_solar">DL</string>
     <string name="widget_lunar">%1$d/%2$d âm</string>
     <string name="widget_lunar_leap">%1$d/%2$d nhuận âm</string>
     <string name="widget_days">%1$d ng</string>

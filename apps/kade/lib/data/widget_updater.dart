@@ -1,14 +1,16 @@
 // Đẩy dữ liệu widget (plan §5.2, bước 17): lúc start, khi `widgetDataProvider`
-// đổi (hôm nay, sự kiện — kể cả sau sync —, overrides, lớp hiển thị), khi
+// đổi (hôm nay, sự kiện — kể cả sau sync —, overrides, lớp hiển thị, theme), khi
 // resume. Hẹn native vẽ lại lúc 00:00:05 mỗi ngày trong 35 ngày. Chạm widget
 // → mở route trong URI `kade://open/<route>`.
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:calendar_data/calendar_data.dart' show YearOverrides;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../platform/home_widgets.dart';
+import '../core/theme/kade_palette.dart';
 import 'models/event_layer.dart';
 import 'models/user_event.dart';
 import 'remote/remote_config_provider.dart';
@@ -39,6 +41,8 @@ class WidgetUpdater {
     // `push()` đọc `widgetDataProvider` nên luôn lấy bản mới.
     _ref.listen<List<UserEvent>>(userEventsProvider, (_, _) => push());
     _ref.listen<Set<EventLayer>>(layersProvider, (_, _) => push());
+    _ref.listen<String>(themeIdProvider, (_, _) => push());
+    _ref.listen<bool?>(darkModeProvider, (_, _) => push());
     _ref.listen<YearOverrides?>(
       remoteConfigProvider.select((s) => s.value?.overrides),
       (_, _) => push(),
@@ -94,12 +98,35 @@ class WidgetUpdater {
     last = data;
     pushes++;
     try {
-      await _hw.push(data.encode(), nextMidnights(now, data.days.length));
+      final palette = kadePaletteById(_ref.read(themeIdProvider));
+      final darkOverride = _ref.read(darkModeProvider);
+      final payload = data.toJson()
+        ..['theme'] = {
+          'mode': switch (darkOverride) {
+            true => 'dark',
+            false => 'light',
+            null => 'system',
+          },
+          'light': _widgetColors(palette.light),
+          'dark': _widgetColors(palette.dark),
+        };
+      await _hw.push(jsonEncode(payload), nextMidnights(now, data.days.length));
     } catch (e) {
       log('đẩy widget lỗi: $e', name: 'kade.widget');
     }
   }
 }
+
+Map<String, int> _widgetColors(KadeColorSet colors) => {
+  'ac': colors.ac.toARGB32(),
+  'sf': colors.sf.toARGB32(),
+  'tx': colors.tx.toARGB32(),
+  'mu': colors.mu.toARGB32(),
+  'acT': colors.acT.toARGB32(),
+  'on': colors.on.toARGB32(),
+  'bT': colors.bT.toARGB32(),
+  'offT': colors.offT.toARGB32(),
+};
 
 /// Tạo lúc app start (`AppLifecycle`), giữ sống.
 final widgetUpdaterProvider = Provider<WidgetUpdater>(WidgetUpdater.new);

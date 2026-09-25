@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kade/core/strings.dart';
+import 'package:kade/core/theme/kade_palette.dart';
 import 'package:kade/data/models/event_layer.dart';
 import 'package:kade/data/settings_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
@@ -44,6 +45,11 @@ void main() {
       expect(fake.refreshAt.length, widgetDays);
       expect(fake.refreshAt.first, DateTime(2027, 2, 2, 0, 0, 5));
       expect(fake.refreshAt.last, DateTime(2027, 3, 8, 0, 0, 5));
+      final initialTheme =
+          (jsonDecode(fake.pushed.last) as Map<String, dynamic>)['theme']
+              as Map;
+      expect(initialTheme['mode'], 'system');
+      expect((initialTheme['light'] as Map)['ac'], 0xFFD97A93);
 
       final c = ProviderScope.containerOf(
         tester.element(find.byType(AppLifecycle)),
@@ -68,10 +74,32 @@ void main() {
         isNot(contains('Giỗ ông')),
       );
 
+      await c.read(themeIdProvider.notifier).set('mint');
+      await tester.pumpAndSettle();
+      expect(fake.pushed.length, n0 + 3);
+      var theme =
+          (jsonDecode(fake.pushed.last) as Map<String, dynamic>)['theme']
+              as Map;
+      expect(
+        (theme['light'] as Map)['ac'],
+        kadePaletteById('mint').light.ac.toARGB32(),
+      );
+      await c.read(darkModeProvider.notifier).set(true);
+      await tester.pumpAndSettle();
+      expect(fake.pushed.length, n0 + 4);
+      theme =
+          (jsonDecode(fake.pushed.last) as Map<String, dynamic>)['theme']
+              as Map;
+      expect(theme['mode'], 'dark');
+      expect(
+        (theme['dark'] as Map)['ac'],
+        kadePaletteById('mint').dark.ac.toARGB32(),
+      );
+
       await sendLifecycle(tester, AppLifecycleState.paused);
       await sendLifecycle(tester, AppLifecycleState.resumed);
       await tester.pumpAndSettle();
-      expect(fake.pushed.length, n0 + 3);
+      expect(fake.pushed.length, n0 + 5);
     },
   );
 

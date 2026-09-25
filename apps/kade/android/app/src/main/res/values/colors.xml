@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Màu widget, bản sáng (values-night/colors.xml cho dark mode, plan §5.6). -->
+<!-- Widget 4c: màu Hồng phấn của KadePalette (values-night cho dark mode). -->
 <resources>
-    <color name="widget_bg">#F2FFFFFF</color>
-    <color name="widget_text">#1C1B1F</color>
-    <color name="widget_text_secondary">#5F5C63</color>
-    <color name="widget_accent">#C62828</color>
-    <color name="widget_off">#C62828</color>
+    <color name="widget_bg">#D97A93</color>
+    <color name="widget_surface">#FFFFFF</color>
+    <color name="widget_text">#2B1E24</color>
+    <color name="widget_text_secondary">#7A6570</color>
+    <color name="widget_accent">#D97A93</color>
+    <color name="widget_accent_text">#9B4560</color>
+    <color name="widget_on_accent">#FFFFFF</color>
+    <color name="widget_tag_bg">#FCE6EC</color>
+    <color name="widget_solar_tag_bg">#E1EFE7</color>
+    <color name="widget_solar_tag_text">#3F6B54</color>
+    <color name="widget_off">#B23A3A</color>
 </resources>

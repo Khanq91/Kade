@@ -1,57 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Widget 2x2 "hôm nay" (plan §5.3). Nội dung do KadeWidgetProvider điền. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@drawable/widget_bg">
+    android:background="@drawable/widget_bg"
+    android:clipToOutline="true">
+
+    <ImageView
+        android:id="@+id/widget_bg_tint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_bg" />
 
     <TextView
         android:id="@+id/weekday"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/widget_accent"
-        android:textSize="13sp"
-        android:maxLines="1"
-        android:text="Thứ Tư" />
-
-    <TextView
-        android:id="@+id/day"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/widget_text"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:includeFontPadding="false"
-        android:text="9" />
-
-    <TextView
-        android:id="@+id/month"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/widget_text"
-        android:textSize="14sp"
-        android:maxLines="1"
-        android:text="Tháng 9" />
-
-    <TextView
-        android:id="@+id/lunar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/widget_text_secondary"
-        android:textSize="13sp"
-        android:maxLines="1"
-        android:text="28/7 âm" />
-
-    <TextView
-        android:id="@+id/line5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/widget_text_secondary"
-        android:textSize="13sp"
-        android:maxLines="1"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
-        android:text="Giáp Tý" />
-</LinearLayout>
+        android:fontFamily="@font/be_vietnam_pro"
+        android:maxLines="1"
+        android:textColor="@color/widget_on_accent"
+        android:text="Hôm nay"
+        android:textSize="10sp" />
+
+    <FrameLayout
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|start"
+        android:background="@drawable/widget_solar_disc">
+        <ImageView android:id="@+id/widget_disc_tint" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:contentDescription="@null"
+            android:scaleType="fitXY" android:src="@drawable/widget_solar_disc" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center" android:orientation="vertical">
+            <TextView android:id="@+id/day" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:fontFamily="@font/baloo2" android:gravity="center" android:includeFontPadding="false"
+                android:textColor="@color/widget_text" android:textSize="34sp" android:textStyle="bold" android:text="--" />
+            <TextView android:id="@+id/month" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:ellipsize="end" android:fontFamily="@font/be_vietnam_pro" android:gravity="center"
+                android:maxLines="1" android:textColor="@color/widget_text_secondary" android:textSize="8sp" android:text="Tháng" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="7dp"
+        android:gravity="end"
+        android:orientation="vertical">
+        <TextView android:id="@+id/lunar_label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro" android:text="@string/widget_lunar_label"
+            android:textColor="@color/widget_on_accent" android:textSize="8sp" />
+        <TextView android:id="@+id/lunar_day" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:fontFamily="@font/baloo2" android:includeFontPadding="false"
+            android:textColor="@color/widget_on_accent" android:textSize="32sp" android:textStyle="bold" android:text="--" />
+        <TextView android:id="@+id/lunar_month" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro" android:maxLines="1"
+            android:textColor="@color/widget_on_accent" android:textSize="8sp" android:text="Tháng" />
+        <TextView android:id="@+id/line5" android:layout_width="65dp" android:layout_height="wrap_content"
+            android:ellipsize="end" android:fontFamily="@font/be_vietnam_pro" android:gravity="end"
+            android:maxLines="1" android:textColor="@color/widget_on_accent" android:textSize="7sp" />
+    </LinearLayout>
+</FrameLayout>
