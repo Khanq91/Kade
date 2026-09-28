@@ -2,7 +2,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../core/theme/kade_theme_extension.dart';
 
@@ -12,55 +11,38 @@ typedef KadeNavigationItem = ({
   String label,
 });
 
-/// Bottom navigation dùng chuyển động Snap Rail; [liquidGlass] chỉ đổi surface.
+/// Bottom navigation dùng chuyển động Snap Rail cho đồ họa Bình thường.
 class SnapRailNavigationBar extends StatelessWidget {
   const SnapRailNavigationBar({
     super.key,
     required this.items,
     required this.selectedIndex,
     required this.onSelected,
-    required this.liquidGlass,
   });
 
   final List<KadeNavigationItem> items;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
-  final bool liquidGlass;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<KadeColors>()!;
-    final track = _SnapTrack(
-      items: items,
-      selectedIndex: selectedIndex,
-      onSelected: onSelected,
-      backgroundColor: liquidGlass ? Colors.transparent : colors.sf,
-      borderColor: liquidGlass ? Colors.transparent : colors.line,
-      labelColor: colors.mu,
-      accentColor: colors.acT,
-      pillColor: colors.ac,
-    );
-    final Widget surface = liquidGlass
-        ? GlassContainer(
-            // Vị trí dùng liquid_glass_widgets duy nhất trong app.
-            useOwnLayer: true,
-            quality: GlassQuality.standard,
-            shape: const LiquidRoundedSuperellipse(borderRadius: 32),
-            settings: LiquidGlassSettings(
-              glassColor: colors.sf.withValues(alpha: .16),
-              backerColor: colors.sf.withValues(alpha: .12),
-              blur: 10,
-              thickness: 18,
-              lightIntensity: .55,
-              saturation: 1.15,
-            ),
-            child: track,
-          )
-        : track;
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-      child: SizedBox(height: 66, child: surface),
+      child: SizedBox(
+        height: 66,
+        child: _SnapTrack(
+          items: items,
+          selectedIndex: selectedIndex,
+          onSelected: onSelected,
+          backgroundColor: colors.sf,
+          borderColor: colors.line,
+          labelColor: colors.mu,
+          accentColor: colors.acT,
+          pillColor: colors.ac,
+        ),
+      ),
     );
   }
 }

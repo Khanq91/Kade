@@ -284,3 +284,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: tăng app từ `1.0.1+7` lên `1.0.2+8`, commit trên `main`, push `main` rồi tạo/push tag `v1.0.2+8`.
 - Lý do: đây là bản patch UI kế tiếp và Android `versionCode` phải tăng từ 7 lên 8; format tag giữ đúng chuỗi các tag release hiện có.
 - Hệ quả: push `main` kích hoạt workflow build/deploy web + APK debug; tag `v*` kích hoạt workflow release APK + AAB.
+
+## 2026-09-28 — D048 — Bottom nav Xịn xò dùng GlassTabBar nổi (sửa D046)
+- Bởi: user chốt lại mục tiêu; agent đối chiếu API `liquid_glass_widgets` 1.7.2
+- Quyết định: đồ họa `normal` giữ `SnapRailNavigationBar`; đồ họa `fancy` thay hẳn thanh này bằng `GlassTabBar.bottom` trong `GlassScaffold` nền trong suốt, `extendBody` mặc định bật để nội dung/particle nằm phía sau bar. Màu kính, indicator, icon và glow lấy từ `KadeColors` của palette đang chọn.
+- Lý do: user xác nhận Xịn xò phải dùng chính bottom navigation của package, không phải bọc/cải tiến Snap Rail hiện tại; `GlassScaffold` là pattern chính thức của package cho z-order, safe area và bar floating.
+- Hệ quả: bỏ `liquidGlass` và `GlassContainer` khỏi Snap Rail; `liquid_glass_widgets` vẫn chỉ xuất hiện ở duy nhất bottom nav compact của chế độ Xịn xò. Phần D046 nói `GlassContainer` là surface của Snap Rail không còn áp dụng.

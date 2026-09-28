@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../core/breakpoints.dart';
 import '../../core/strings.dart';
+import '../../core/theme/kade_theme_extension.dart';
 import '../../data/settings_provider.dart';
 import 'snap_rail_navigation_bar.dart';
 
@@ -44,13 +46,53 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (layoutOf(MediaQuery.sizeOf(context).width) == AppLayout.compact) {
+      final fancy = ref.watch(graphicsModeProvider) == GraphicsMode.fancy;
+      if (fancy) {
+        final colors = Theme.of(context).extension<KadeColors>()!;
+        return GlassScaffold(
+          backgroundColor: Colors.transparent,
+          topEdgeFade: false,
+          bottomEdgeFadeExtent: -20,
+          body: shell,
+          bottomBar: GlassTabBar.bottom(
+            tabs: [
+              for (final item in _items)
+                GlassTab(
+                  icon: Icon(item.icon),
+                  activeIcon: Icon(item.selectedIcon),
+                  label: item.label,
+                  glowColor: colors.ac,
+                ),
+            ],
+            selectedIndex: shell.currentIndex,
+            onTabSelected: _select,
+            horizontalPadding: 12,
+            verticalPadding: 8,
+            barHeight: 64,
+            quality: GlassQuality.standard,
+            backgroundQuality: GlassQuality.standard,
+            settings: LiquidGlassSettings(
+              glassColor: colors.sf.withValues(alpha: .16),
+              backerColor: colors.sf.withValues(alpha: .12),
+              blur: 10,
+              thickness: 18,
+              lightIntensity: .55,
+              saturation: 1.15,
+            ),
+            indicatorColor: colors.ac.withValues(alpha: .2),
+            selectedIconColor: colors.acT,
+            selectedLabelColor: colors.acT,
+            unselectedIconColor: colors.mu,
+            unselectedLabelColor: colors.mu,
+          ),
+        );
+      }
       return Scaffold(
         body: shell,
         bottomNavigationBar: SnapRailNavigationBar(
           items: _items,
           selectedIndex: shell.currentIndex,
           onSelected: _select,
-          liquidGlass: ref.watch(graphicsModeProvider) == GraphicsMode.fancy,
         ),
       );
     }

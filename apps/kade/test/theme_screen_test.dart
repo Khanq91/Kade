@@ -4,6 +4,7 @@ import 'package:kade/core/strings.dart';
 import 'package:kade/core/effects/particle_field.dart';
 import 'package:kade/features/settings/theme_screen.dart';
 import 'package:kade/features/shell/snap_rail_navigation_bar.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import 'test_app.dart';
 
@@ -46,17 +47,25 @@ void main() {
     await tester.pump();
     expect(box.get('graphicsMode'), 'fancy');
     expect(find.byType(ParticleField), findsOneWidget);
-    expect(
-      tester
-          .widget<SnapRailNavigationBar>(find.byType(SnapRailNavigationBar))
-          .liquidGlass,
-      isTrue,
+    expect(find.byType(GlassScaffold), findsOneWidget);
+    expect(find.byType(GlassTabBar), findsOneWidget);
+    expect(find.byType(SnapRailNavigationBar), findsNothing);
+    final glassScaffold = tester.widget<GlassScaffold>(
+      find.byType(GlassScaffold),
     );
+    final glassBar = tester.widget<GlassTabBar>(find.byType(GlassTabBar));
+    expect(glassScaffold.extendBody, isTrue);
+    expect(glassScaffold.backgroundColor, Colors.transparent);
+    expect(glassScaffold.bottomBar, same(glassBar));
+    expect(glassBar.tabs, hasLength(4));
+    expect(glassBar.selectedIndex, 3);
 
     await tester.tap(find.text(Strings.graphicsNormal));
     await tester.pumpAndSettle();
     expect(box.get('graphicsMode'), 'normal');
     expect(find.byType(ParticleField), findsNothing);
+    expect(find.byType(GlassTabBar), findsNothing);
+    expect(find.byType(SnapRailNavigationBar), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
