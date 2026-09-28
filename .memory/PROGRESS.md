@@ -211,3 +211,4 @@ Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verif
 - 2026-09-28 — phase5-step19 — phát hành `v1.0.4+10` (D051): push `main` + tag; Actions build/deploy Web và release Android thành công; Pages HTTP 200; Release có APK + AAB — a7c5382
 - 2026-09-28 — phase5-step19 — AppShell chừa vùng cuối cao hơn floating nav cho mọi tab compact; R.8 cập nhật; analyze + build web + APK debug pass; chờ yêu cầu bổ sung, chưa commit theo yêu cầu user —
 - 2026-09-28 — phase5-step19 — giữ GlassScaffold compact ổn định khi đổi đồ họa; thêm Tab Pill Glide cho Chế độ/Đồ họa/Âm-Dương/quy tắc nhuận, gộp Theo hệ thống vào cùng dải; version `1.0.5+11`; analyze + web release + APK debug pass → 🧪 — 63cd4e1
+- 2026-09-28 — phase5-step19 — phát hành `1.0.5+11` (D054): push `main` + tag `v1.0.5+11`; Actions build/deploy Web và release Android success; Pages HTTP 200; Release có `kade-v1.0.5+11.apk` + `.aab` — 0f03197
