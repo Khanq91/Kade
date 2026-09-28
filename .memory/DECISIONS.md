@@ -296,3 +296,8 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: tăng app từ `1.0.2+8` lên `1.0.3+9`, push `main` rồi tạo/push tag `v1.0.3+9`.
 - Lý do: đây là bản patch sửa bottom nav Xịn xò; Android `versionCode` tăng tuần tự từ 8 lên 9.
 - Hệ quả: push `main` kích hoạt build/deploy Web và APK debug; tag `v1.0.3+9` kích hoạt release APK + AAB.
+## 2026-09-28 — D050 — Bottom nav dùng liquid glass premium và nền nổi
+- Bởi: user yêu cầu; agent chọn cấu hình theo `liquid_glass_widgets 1.7.2`
+- Quyết định: chế độ Xịn xò đặt `GlassTabBar.bottom` và nền kính ở `GlassQuality.premium`, tăng khúc xạ và giảm mờ sương, đồng thời đặt rõ style nhãn không trang trí. Chế độ Bình thường bật `Scaffold.extendBody` để danh sách chạy dưới pill Snap Rail nổi.
+- Lý do: cấu hình `standard` trước đó chỉ cho bề mặt mờ; Scaffold Bình thường dành riêng vùng cuối màn hình cho nav.
+- Hệ quả: nav Xịn xò dùng mức render GPU cao nhất tại một surface tĩnh; nav Bình thường cho nội dung phía sau tiếp tục cuộn và hiện quanh pill. Không đổi schema hoặc logic dữ liệu.

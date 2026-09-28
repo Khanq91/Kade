@@ -57,6 +57,13 @@ void main() {
     expect(glassScaffold.extendBody, isTrue);
     expect(glassScaffold.backgroundColor, Colors.transparent);
     expect(glassScaffold.bottomBar, same(glassBar));
+    expect(glassBar.quality, GlassQuality.premium);
+    expect(glassBar.backgroundQuality, GlassQuality.premium);
+    expect(glassBar.textStyle?.decoration, TextDecoration.none);
+    expect(
+      tester.widget<Text>(find.text(Strings.navCalendar)).style?.decoration,
+      TextDecoration.none,
+    );
     expect(glassBar.tabs, hasLength(4));
     expect(glassBar.selectedIndex, 3);
 
@@ -66,6 +73,15 @@ void main() {
     expect(find.byType(ParticleField), findsNothing);
     expect(find.byType(GlassTabBar), findsNothing);
     expect(find.byType(SnapRailNavigationBar), findsOneWidget);
+    final normalScaffold = tester.widget<Scaffold>(
+      find
+          .ancestor(
+            of: find.byType(SnapRailNavigationBar),
+            matching: find.byType(Scaffold),
+          )
+          .first,
+    );
+    expect(normalScaffold.extendBody, isTrue);
     expect(tester.takeException(), isNull);
   });
 }
