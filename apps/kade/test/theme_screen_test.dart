@@ -73,15 +73,13 @@ void main() {
     expect(find.byType(ParticleField), findsNothing);
     expect(find.byType(GlassTabBar), findsNothing);
     expect(find.byType(SnapRailNavigationBar), findsOneWidget);
-    final normalScaffold = tester.widget<Scaffold>(
-      find
-          .ancestor(
-            of: find.byType(SnapRailNavigationBar),
-            matching: find.byType(Scaffold),
-          )
-          .first,
+    final normalScaffold = tester.widget<GlassScaffold>(
+      find.byType(GlassScaffold),
     );
     expect(normalScaffold.extendBody, isTrue);
+    expect(normalScaffold.backgroundColor, isNot(Colors.transparent));
+    expect(normalScaffold.bottomEdgeFade, isFalse);
+    expect(normalScaffold.bottomBar, isA<SnapRailNavigationBar>());
     expect(tester.takeException(), isNull);
   });
 }

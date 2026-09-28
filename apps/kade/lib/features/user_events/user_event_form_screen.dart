@@ -12,6 +12,7 @@ import '../../core/lunar_utils.dart';
 import '../../core/strings.dart';
 import '../../core/theme/kade_theme.dart';
 import '../../core/theme/kade_theme_extension.dart';
+import '../../core/widgets/tab_pill_glide.dart';
 import '../../data/models/user_event.dart';
 import '../../data/reminder_scheduler.dart';
 import '../../data/settings_provider.dart';
@@ -231,6 +232,14 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
     final colors = Theme.of(context).extension<KadeColors>()!;
     final text = Theme.of(context).textTheme;
     final isLunar = _type == CalendarType.lunar;
+    final leapRules = <LeapMonthRule>[
+      LeapMonthRule.firstMonth,
+      LeapMonthRule.secondMonth,
+      if (_yearly) LeapMonthRule.both,
+    ];
+    final selectedLeapRule = !_yearly && _leapRule == LeapMonthRule.both
+        ? LeapMonthRule.firstMonth
+        : _leapRule;
     return Scaffold(
       appBar: AppBar(
         title: Text(_existing == null ? Strings.newEvent : Strings.editEvent),
@@ -260,21 +269,16 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                       (v ?? '').trim().isEmpty ? Strings.titleRequired : null,
                 ),
                 const SizedBox(height: 10),
-                SegmentedButton<CalendarType>(
-                  showSelectedIcon: false,
-                  style: _segmentStyle(colors),
-                  segments: const [
-                    ButtonSegment(
-                      value: CalendarType.solar,
-                      label: Text(Strings.solarType),
-                    ),
-                    ButtonSegment(
-                      value: CalendarType.lunar,
-                      label: Text(Strings.lunarType),
-                    ),
+                TabPillGlide(
+                  key: const ValueKey('event-calendar-type'),
+                  tabs: const [
+                    TabPillGlideOption(label: Strings.solarType),
+                    TabPillGlideOption(label: Strings.lunarType),
                   ],
-                  selected: {_type},
-                  onSelectionChanged: (s) => _setType(s.first),
+                  index: _type == CalendarType.solar ? 0 : 1,
+                  onChanged: (index) => _setType(
+                    index == 0 ? CalendarType.solar : CalendarType.lunar,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -331,32 +335,17 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
                     padding: const EdgeInsets.only(top: 4, bottom: 8),
                     child: Text(Strings.leapRuleLabel, style: text.bodyMedium),
                   ),
-                  SegmentedButton<LeapMonthRule>(
-                    showSelectedIcon: false,
-                    style: _segmentStyle(colors),
-                    segments: [
-                      const ButtonSegment(
-                        value: LeapMonthRule.firstMonth,
-                        label: Text(Strings.leapFirst),
-                      ),
-                      const ButtonSegment(
-                        value: LeapMonthRule.secondMonth,
-                        label: Text(Strings.leapSecond),
-                      ),
+                  TabPillGlide(
+                    key: const ValueKey('event-leap-rule'),
+                    tabs: [
+                      const TabPillGlideOption(label: Strings.leapFirst),
+                      const TabPillGlideOption(label: Strings.leapSecond),
                       if (_yearly)
-                        const ButtonSegment(
-                          value: LeapMonthRule.both,
-                          label: Text(Strings.leapBoth),
-                        ),
+                        const TabPillGlideOption(label: Strings.leapBoth),
                     ],
-                    selected: {
-                      if (!_yearly && _leapRule == LeapMonthRule.both)
-                        LeapMonthRule.firstMonth
-                      else
-                        _leapRule,
-                    },
-                    onSelectionChanged: (s) =>
-                        setState(() => _leapRule = s.first),
+                    index: leapRules.indexOf(selectedLeapRule),
+                    onChanged: (index) =>
+                        setState(() => _leapRule = leapRules[index]),
                   ),
                 ],
                 const SizedBox(height: 10),
@@ -534,17 +523,6 @@ InputDecoration _pillDecoration(
     ),
   );
 }
-
-ButtonStyle _segmentStyle(KadeColors colors) => ButtonStyle(
-  backgroundColor: WidgetStateProperty.resolveWith(
-    (states) => states.contains(WidgetState.selected) ? colors.ac : colors.sf,
-  ),
-  foregroundColor: WidgetStateProperty.resolveWith(
-    (states) => states.contains(WidgetState.selected) ? colors.on : colors.tx,
-  ),
-  side: WidgetStatePropertyAll(BorderSide(color: colors.line)),
-  shape: const WidgetStatePropertyAll(StadiumBorder()),
-);
 
 /// Route `/events/:id`: tìm sự kiện rồi mở form sửa; không có → về danh sách.
 class UserEventEditScreen extends ConsumerWidget {

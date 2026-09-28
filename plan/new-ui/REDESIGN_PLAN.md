@@ -264,7 +264,12 @@ picker và Sự kiện của tôi; Sự kiện của tôi mở Form).
   màu `ac`+`b`, tên palette, viền `ac` khi đang chọn) → gọi
   `ThemeIdNotifier.set(...)` (thêm method `set` theo đúng pattern
   `HolidayRemindDaysNotifier.set`).
-- Segmented control Sáng/Tối → gọi `DarkModeNotifier.set(...)`.
+- Tab pill glide ba lựa chọn Sáng/Tối/Theo hệ thống → gọi
+  `DarkModeNotifier.set(false/true/null)`; “Theo hệ thống” nằm cùng một dải,
+  không còn là nút riêng bên dưới.
+- Dải Chế độ, Đồ họa và các lựa chọn phân đoạn trong form sự kiện dùng chung
+  chuyển động Tab Pill Glide lấy từ `Snipz` (pill trượt theo vị trí/chiều rộng,
+  label đổi màu theo animation).
 - 4 ô preview nhỏ minh hoạ theme đang chọn (tĩnh, không cần data thật, có
   thể dùng dữ liệu mẫu cố định giống cách `mau-giao-dien.png` làm).
 

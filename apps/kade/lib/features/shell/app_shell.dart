@@ -49,6 +49,7 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (layoutOf(MediaQuery.sizeOf(context).width) == AppLayout.compact) {
       final fancy = ref.watch(graphicsModeProvider) == GraphicsMode.fancy;
+      final colors = Theme.of(context).extension<KadeColors>()!;
       final compactBody = Padding(
         padding: EdgeInsets.only(
           bottom:
@@ -57,60 +58,61 @@ class AppShell extends ConsumerWidget {
         ),
         child: shell,
       );
+      final Widget bottomBar;
       if (fancy) {
-        final colors = Theme.of(context).extension<KadeColors>()!;
-        return GlassScaffold(
-          backgroundColor: Colors.transparent,
-          topEdgeFade: false,
-          bottomEdgeFadeExtent: -20,
-          body: compactBody,
-          bottomBar: GlassTabBar.bottom(
-            tabs: [
-              for (final item in _items)
-                GlassTab(
-                  icon: Icon(item.icon),
-                  activeIcon: Icon(item.selectedIcon),
-                  label: item.label,
-                  glowColor: colors.ac,
-                ),
-            ],
-            selectedIndex: shell.currentIndex,
-            onTabSelected: _select,
-            horizontalPadding: 12,
-            verticalPadding: 8,
-            barHeight: 64,
-            quality: GlassQuality.premium,
-            backgroundQuality: GlassQuality.premium,
-            settings: LiquidGlassSettings(
-              glassColor: colors.sf.withValues(alpha: .12),
-              backerColor: colors.sf.withValues(alpha: .08),
-              blur: 4,
-              thickness: 28,
-              refractiveIndex: 1.25,
-              lightIntensity: .75,
-              ambientStrength: .12,
-              saturation: 1.4,
-            ),
-            indicatorColor: colors.ac.withValues(alpha: .2),
-            selectedIconColor: colors.acT,
-            selectedLabelColor: colors.acT,
-            unselectedIconColor: colors.mu,
-            unselectedLabelColor: colors.mu,
-            textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-              decoration: TextDecoration.none,
-              decorationColor: Colors.transparent,
-            ),
+        bottomBar = GlassTabBar.bottom(
+          tabs: [
+            for (final item in _items)
+              GlassTab(
+                icon: Icon(item.icon),
+                activeIcon: Icon(item.selectedIcon),
+                label: item.label,
+                glowColor: colors.ac,
+              ),
+          ],
+          selectedIndex: shell.currentIndex,
+          onTabSelected: _select,
+          horizontalPadding: 12,
+          verticalPadding: 8,
+          barHeight: 64,
+          quality: GlassQuality.premium,
+          backgroundQuality: GlassQuality.premium,
+          settings: LiquidGlassSettings(
+            glassColor: colors.sf.withValues(alpha: .12),
+            backerColor: colors.sf.withValues(alpha: .08),
+            blur: 4,
+            thickness: 28,
+            refractiveIndex: 1.25,
+            lightIntensity: .75,
+            ambientStrength: .12,
+            saturation: 1.4,
+          ),
+          indicatorColor: colors.ac.withValues(alpha: .2),
+          selectedIconColor: colors.acT,
+          selectedLabelColor: colors.acT,
+          unselectedIconColor: colors.mu,
+          unselectedLabelColor: colors.mu,
+          textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+            decoration: TextDecoration.none,
+            decorationColor: Colors.transparent,
           ),
         );
-      }
-      return Scaffold(
-        extendBody: true,
-        body: compactBody,
-        bottomNavigationBar: SnapRailNavigationBar(
+      } else {
+        bottomBar = SnapRailNavigationBar(
           items: _items,
           selectedIndex: shell.currentIndex,
           onSelected: _select,
-        ),
+        );
+      }
+
+      return GlassScaffold(
+        backgroundColor: fancy ? Colors.transparent : colors.bg,
+        topEdgeFade: false,
+        bottomEdgeFade: fancy,
+        bottomEdgeFadeExtent: fancy ? -20 : 0,
+        extendBody: true,
+        body: compactBody,
+        bottomBar: bottomBar,
       );
     }
     return Scaffold(

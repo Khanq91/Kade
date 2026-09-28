@@ -5,6 +5,7 @@ import '../../core/strings.dart';
 import '../../core/theme/kade_palette.dart';
 import '../../core/theme/kade_theme.dart';
 import '../../core/theme/kade_theme_extension.dart';
+import '../../core/widgets/tab_pill_glide.dart';
 import '../../data/settings_provider.dart';
 
 /// Chọn một trong sáu bảng màu và chế độ sáng/tối.
@@ -18,6 +19,11 @@ class ThemeScreen extends ConsumerWidget {
     final selectedId = ref.watch(themeIdProvider);
     final darkOverride = ref.watch(darkModeProvider);
     final graphicsMode = ref.watch(graphicsModeProvider);
+    final darkModeIndex = darkOverride == null
+        ? 2
+        : darkOverride
+        ? 1
+        : 0;
     final isDark =
         darkOverride ??
         MediaQuery.platformBrightnessOf(context) == Brightness.dark;
@@ -123,72 +129,52 @@ class ThemeScreen extends ConsumerWidget {
                 style: text.labelSmall?.copyWith(color: colors.mu),
               ),
               const SizedBox(height: 8),
-              Material(
-                color: colors.sf,
-                borderRadius: BorderRadius.circular(kadePillRadius),
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: Row(
-                    children: [
-                      _ModeButton(
-                        label: Strings.themeLight,
-                        icon: Icons.wb_sunny_outlined,
-                        selected: !isDark,
-                        onTap: () =>
-                            ref.read(darkModeProvider.notifier).set(false),
-                      ),
-                      _ModeButton(
-                        label: Strings.themeDark,
-                        icon: Icons.nightlight_outlined,
-                        selected: isDark,
-                        onTap: () =>
-                            ref.read(darkModeProvider.notifier).set(true),
-                      ),
-                    ],
+              TabPillGlide(
+                key: const ValueKey('theme-mode-control'),
+                tabs: const [
+                  TabPillGlideOption(
+                    label: Strings.themeLight,
+                    icon: Icons.wb_sunny_outlined,
                   ),
-                ),
+                  TabPillGlideOption(
+                    label: Strings.themeDark,
+                    icon: Icons.nightlight_outlined,
+                  ),
+                  TabPillGlideOption(
+                    label: Strings.themeSystem,
+                    icon: Icons.brightness_auto_outlined,
+                  ),
+                ],
+                index: darkModeIndex,
+                onChanged: (index) =>
+                    ref.read(darkModeProvider.notifier).set(switch (index) {
+                      0 => false,
+                      1 => true,
+                      _ => null,
+                    }),
               ),
-              if (darkOverride != null)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () =>
-                        ref.read(darkModeProvider.notifier).set(null),
-                    child: const Text(Strings.themeSystem),
-                  ),
-                ),
               const SizedBox(height: 14),
               Text(
                 Strings.graphicsLabel.toUpperCase(),
                 style: text.labelSmall?.copyWith(color: colors.mu),
               ),
               const SizedBox(height: 8),
-              Material(
-                color: colors.sf,
-                borderRadius: BorderRadius.circular(kadePillRadius),
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: Row(
-                    children: [
-                      _ModeButton(
-                        label: Strings.graphicsNormal,
-                        icon: Icons.eco_outlined,
-                        selected: graphicsMode == GraphicsMode.normal,
-                        onTap: () => ref
-                            .read(graphicsModeProvider.notifier)
-                            .set(GraphicsMode.normal),
-                      ),
-                      _ModeButton(
-                        label: Strings.graphicsFancy,
-                        icon: Icons.auto_awesome_outlined,
-                        selected: graphicsMode == GraphicsMode.fancy,
-                        onTap: () => ref
-                            .read(graphicsModeProvider.notifier)
-                            .set(GraphicsMode.fancy),
-                      ),
-                    ],
+              TabPillGlide(
+                key: const ValueKey('graphics-mode-control'),
+                tabs: const [
+                  TabPillGlideOption(
+                    label: Strings.graphicsNormal,
+                    icon: Icons.eco_outlined,
                   ),
-                ),
+                  TabPillGlideOption(
+                    label: Strings.graphicsFancy,
+                    icon: Icons.auto_awesome_outlined,
+                  ),
+                ],
+                index: graphicsMode == GraphicsMode.normal ? 0 : 1,
+                onChanged: (index) => ref
+                    .read(graphicsModeProvider.notifier)
+                    .set(index == 0 ? GraphicsMode.normal : GraphicsMode.fancy),
               ),
               const SizedBox(height: 14),
               Text(
@@ -206,56 +192,6 @@ class ThemeScreen extends ConsumerWidget {
                       ),
                     ),
                 ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ModeButton extends StatelessWidget {
-  const _ModeButton({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<KadeColors>()!;
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(kadePillRadius),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: selected ? colors.ac : Colors.transparent,
-            borderRadius: BorderRadius.circular(kadePillRadius),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 15, color: selected ? colors.on : colors.mu),
-              const SizedBox(width: 5),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: selected ? colors.on : colors.tx,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ),
             ],
           ),

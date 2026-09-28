@@ -314,3 +314,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: ở layout compact, AppShell dành 96 logical pixels cộng safe area dưới cho mọi tab, áp dụng cho cả Snap Rail và GlassTabBar. Danh sách dài vẫn cuộn trong phần nội dung đã thu hẹp; lịch tháng và nội dung không cuộn kết thúc phía trên nav.
 - Lý do: khoảng trống chung xử lý đồng thời các trang có list cuộn và bố cục co giãn không có scroll, không phải lặp padding theo từng màn.
 - Hệ quả: cập nhật kỳ vọng R.8; nội dung tab không còn chạy sau pill, thay cho phần tương ứng trong D050. Không đổi schema hay dữ liệu.
+
+## 2026-09-28 — D053 — Giữ layout Giao diện ổn định và dùng Tab Pill Glide
+- Bởi: user yêu cầu Settings không nhảy khi đổi đồ họa, thêm “Theo hệ thống” cùng nhóm chế độ, và dùng animation Tab Pill Glide từ Snipz cho các dải lựa chọn tương tự.
+- Quyết định: compact AppShell luôn dùng cùng `GlassScaffold`; chỉ thay bottom bar Snap Rail/GlassTabBar theo đồ họa. Dùng Tab Pill Glide cho Chế độ, Đồ họa, Âm/Dương lịch và quy tắc tháng nhuận; Chế độ có ba lựa chọn Sáng/Tối/Theo hệ thống.
+- Lý do: giữ Navigator/layout của tab ổn định khi đổi graphics mode và có một animation nhất quán cho nhóm lựa chọn dạng pill.
+- Hệ quả: giữ nguyên `darkMode` bool/null và `graphicsMode`; không migration/schema Hive. Cập nhật plan và checklist R.6/R.8.
