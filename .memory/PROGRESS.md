@@ -209,3 +209,4 @@ Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verif
 - 2026-09-28 — phase5-step19 — phát hành bản sửa bottom nav `v1.0.3+9` (D049): local analyze sạch, 136/136 test pass, build web + APK debug OK; đã push `main` + tag; Actions build/deploy Web và release Android success, Pages HTTP 200, Release có `kade-v1.0.3+9.apk` + `.aab` — fe76671
 - 2026-09-28 — phase5-step19 — sửa R.8: nav Xịn xò lên `GlassQuality.premium`, bỏ gạch chân nhãn; Bình thường cho list cuộn dưới pill; analyze sạch, 136/136 test pass, build web release + APK debug pass → 🧪 — 39c4d2a
 - 2026-09-28 — phase5-step19 — phát hành `v1.0.4+10` (D051): push `main` + tag; Actions build/deploy Web và release Android thành công; Pages HTTP 200; Release có APK + AAB — a7c5382
+- 2026-09-28 — phase5-step19 — AppShell chừa vùng cuối cao hơn floating nav cho mọi tab compact; R.8 cập nhật; analyze + build web + APK debug pass; chờ yêu cầu bổ sung, chưa commit theo yêu cầu user —

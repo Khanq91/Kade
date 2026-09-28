@@ -308,3 +308,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: tăng app từ `1.0.3+9` lên `1.0.4+10`, commit trên `main`, push `main`, tạo và push tag `v1.0.4+10`.
 - Lý do: đây là patch sửa bottom nav; Android `versionCode` tăng tuần tự từ 9 lên 10.
 - Hệ quả: push `main` kích hoạt workflow deploy web; tag `v1.0.4+10` kích hoạt workflow release Android APK + AAB.
+
+## 2026-09-28 — D052 — Chừa vùng an toàn dưới floating nav
+- Bởi: user báo nội dung màn hình bị floating nav che và yêu cầu luôn có khoảng trống lớn hơn nav ở cuối nội dung.
+- Quyết định: ở layout compact, AppShell dành 96 logical pixels cộng safe area dưới cho mọi tab, áp dụng cho cả Snap Rail và GlassTabBar. Danh sách dài vẫn cuộn trong phần nội dung đã thu hẹp; lịch tháng và nội dung không cuộn kết thúc phía trên nav.
+- Lý do: khoảng trống chung xử lý đồng thời các trang có list cuộn và bố cục co giãn không có scroll, không phải lặp padding theo từng màn.
+- Hệ quả: cập nhật kỳ vọng R.8; nội dung tab không còn chạy sau pill, thay cho phần tương ứng trong D050. Không đổi schema hay dữ liệu.
