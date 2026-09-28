@@ -290,3 +290,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: đồ họa `normal` giữ `SnapRailNavigationBar`; đồ họa `fancy` thay hẳn thanh này bằng `GlassTabBar.bottom` trong `GlassScaffold` nền trong suốt, `extendBody` mặc định bật để nội dung/particle nằm phía sau bar. Màu kính, indicator, icon và glow lấy từ `KadeColors` của palette đang chọn.
 - Lý do: user xác nhận Xịn xò phải dùng chính bottom navigation của package, không phải bọc/cải tiến Snap Rail hiện tại; `GlassScaffold` là pattern chính thức của package cho z-order, safe area và bar floating.
 - Hệ quả: bỏ `liquidGlass` và `GlassContainer` khỏi Snap Rail; `liquid_glass_widgets` vẫn chỉ xuất hiện ở duy nhất bottom nav compact của chế độ Xịn xò. Phần D046 nói `GlassContainer` là surface của Snap Rail không còn áp dụng.
+
+## 2026-09-28 — D049 — Phát hành v1.0.3+9
+- Bởi: user yêu cầu tăng version, push và tạo tag mới
+- Quyết định: tăng app từ `1.0.2+8` lên `1.0.3+9`, push `main` rồi tạo/push tag `v1.0.3+9`.
+- Lý do: đây là bản patch sửa bottom nav Xịn xò; Android `versionCode` tăng tuần tự từ 8 lên 9.
+- Hệ quả: push `main` kích hoạt build/deploy Web và APK debug; tag `v1.0.3+9` kích hoạt release APK + AAB.
