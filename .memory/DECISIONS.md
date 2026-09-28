@@ -272,3 +272,15 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: widget 4c dùng đúng màu palette và chế độ Sáng/Tối đã chọn trong app. `WidgetUpdater` đẩy cả bảng màu sáng/tối cùng `days_json` và cập nhật ngay khi `themeId` hoặc `darkMode` đổi; Kotlin chọn màu tương ứng, với "Theo hệ thống" lấy chế độ từ Android khi widget vẽ lại.
 - Lý do: widget là phần mở rộng của giao diện app; giữ cố định Hồng phấn như D044 không phản ánh lựa chọn của người dùng. Dùng chung token `KadePalette` từ Dart tránh hai bảng màu bị lệch.
 - Hệ quả: bổ sung trường `theme` vào payload widget (không đổi Hive/schema sync), tô drawable qua ImageView/RemoteViews; tag ÂL/DL dùng nền trung tính để hợp mọi palette. Thay phần D044 nói widget luôn lấy Hồng phấn mặc định.
+
+## 2026-09-28 — D046 — Hiệu ứng UI từ Snipz và hai mức đồ họa
+- Bởi: user yêu cầu; agent chọn cách tích hợp
+- Quyết định: port `Snap Rail`, `Notification Slide-in`, `Undo snackbar` và `Particle Field` từ Snipz vào Kade. Bottom nav compact dùng chuyển động Snap Rail; notification dùng một host chung với dot success/info/warning/error; xóa sự kiện giữ dialog xác nhận rồi cho hoàn tác thật; cài đặt `GraphicsMode` gồm `normal`/`fancy`, mặc định `normal`, lưu key `graphicsMode` trong box settings. `fancy` bật Particle Field mật độ 1.6 (tối đa 140 hạt) với màu `ac`/`b`/`sun` của palette và dùng `liquid_glass_widgets` đúng một surface ở bottom nav.
+- Lý do: host chung giữ feedback sống qua đổi route; mặc định Bình thường bảo toàn pin/hiệu năng; particle lấy token theme để không lệch 6 palette; `GlassContainer` riêng ở nav đáp ứng giới hạn chỉ dùng package một chỗ.
+- Hệ quả: không đổi schema Hive/UserEvent/SyncEnvelope; thêm dependency `liquid_glass_widgets ^1.7.2`; `UserEventsNotifier.restore` bỏ tombstone với `updatedAt` mới để sync được thao tác hoàn tác. Các vị trí liquid glass khác chỉ đề xuất, không sửa.
+
+## 2026-09-28 — D047 — Phát hành v1.0.2+8
+- Bởi: user yêu cầu tăng version, push và tạo tag
+- Quyết định: tăng app từ `1.0.1+7` lên `1.0.2+8`, commit trên `main`, push `main` rồi tạo/push tag `v1.0.2+8`.
+- Lý do: đây là bản patch UI kế tiếp và Android `versionCode` phải tăng từ 7 lên 8; format tag giữ đúng chuỗi các tag release hiện có.
+- Hệ quả: push `main` kích hoạt workflow build/deploy web + APK debug; tag `v*` kích hoạt workflow release APK + AAB.

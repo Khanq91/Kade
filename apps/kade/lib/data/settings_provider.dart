@@ -108,6 +108,33 @@ final darkModeProvider = NotifierProvider<DarkModeNotifier, bool?>(
   DarkModeNotifier.new,
 );
 
+/// Mức đồ họa của giao diện. `fancy` bật particle toàn app và liquid glass
+/// cho bottom nav; mặc định `normal` để ưu tiên pin/hiệu năng.
+enum GraphicsMode { normal, fancy }
+
+class GraphicsModeNotifier extends Notifier<GraphicsMode> {
+  static const key = 'graphicsMode';
+
+  @override
+  GraphicsMode build() {
+    final raw = ref.watch(settingsBoxProvider).get(key);
+    return GraphicsMode.values.firstWhere(
+      (mode) => mode.name == raw,
+      orElse: () => GraphicsMode.normal,
+    );
+  }
+
+  Future<void> set(GraphicsMode mode) async {
+    state = mode;
+    await ref.read(settingsBoxProvider).put(key, mode.name);
+  }
+}
+
+final graphicsModeProvider =
+    NotifierProvider<GraphicsModeNotifier, GraphicsMode>(
+      GraphicsModeNotifier.new,
+    );
+
 /// Box `settings` (đã mở) — override trong `main()`; test dùng box in-memory.
 final settingsBoxProvider = Provider<Box<dynamic>>(
   (ref) => throw UnimplementedError(

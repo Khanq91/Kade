@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kade/core/strings.dart';
 import 'package:kade/features/month_view/month_view_screen.dart';
 import 'package:kade/features/month_view/today_card.dart';
+import 'package:kade/features/shell/snap_rail_navigation_bar.dart';
 import 'package:kade/features/upcoming/upcoming_screen.dart';
 
 import 'test_app.dart';
@@ -24,7 +25,7 @@ void main() {
     await tester.pumpWidget(await testApp('/2027/02', today: today));
     await tester.pumpAndSettle();
     expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(SnapRailNavigationBar), findsNothing);
     expect(find.byType(DayTile), findsNWidgets(28));
 
     // Hero: dữ liệu hôm nay từ engine + cache tháng.
@@ -102,7 +103,7 @@ void main() {
     await tester.pumpWidget(await testApp('/2027/02', today: today));
     await tester.pumpAndSettle();
     expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(SnapRailNavigationBar), findsNothing);
     expect(find.byType(TodayCard), findsNothing);
     expect(find.byType(UpcomingList), findsOneWidget);
     expect(find.byType(FilterChip), findsNothing);
@@ -125,7 +126,7 @@ void main() {
     setViewport(tester, const Size(400, 800));
     await tester.pumpWidget(await testApp('/2027/02', today: today));
     await tester.pumpAndSettle();
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(SnapRailNavigationBar), findsOneWidget);
     expect(find.byType(NavigationRail), findsNothing);
     expect(find.byType(TodayCard), findsNothing);
     expect(find.byType(UpcomingList), findsNothing);

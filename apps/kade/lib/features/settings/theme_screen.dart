@@ -17,6 +17,7 @@ class ThemeScreen extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final selectedId = ref.watch(themeIdProvider);
     final darkOverride = ref.watch(darkModeProvider);
+    final graphicsMode = ref.watch(graphicsModeProvider);
     final isDark =
         darkOverride ??
         MediaQuery.platformBrightnessOf(context) == Brightness.dark;
@@ -158,6 +159,39 @@ class ThemeScreen extends ConsumerWidget {
                 ),
               const SizedBox(height: 14),
               Text(
+                Strings.graphicsLabel.toUpperCase(),
+                style: text.labelSmall?.copyWith(color: colors.mu),
+              ),
+              const SizedBox(height: 8),
+              Material(
+                color: colors.sf,
+                borderRadius: BorderRadius.circular(kadePillRadius),
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: Row(
+                    children: [
+                      _ModeButton(
+                        label: Strings.graphicsNormal,
+                        icon: Icons.eco_outlined,
+                        selected: graphicsMode == GraphicsMode.normal,
+                        onTap: () => ref
+                            .read(graphicsModeProvider.notifier)
+                            .set(GraphicsMode.normal),
+                      ),
+                      _ModeButton(
+                        label: Strings.graphicsFancy,
+                        icon: Icons.auto_awesome_outlined,
+                        selected: graphicsMode == GraphicsMode.fancy,
+                        onTap: () => ref
+                            .read(graphicsModeProvider.notifier)
+                            .set(GraphicsMode.fancy),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
                 Strings.themePreview.toUpperCase(),
                 style: text.labelSmall?.copyWith(color: colors.mu),
               ),
@@ -212,11 +246,15 @@ class _ModeButton extends StatelessWidget {
             children: [
               Icon(icon, size: 15, color: selected ? colors.on : colors.mu),
               const SizedBox(width: 5),
-              Text(
-                label,
-                style: TextStyle(
-                  color: selected ? colors.on : colors.tx,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? colors.on : colors.tx,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

@@ -78,6 +78,11 @@ class UserEventsNotifier extends Notifier<List<UserEvent>> {
     await _write(e.copyWith(deletedAt: now, updatedAt: now));
   }
 
+  /// Khôi phục một sự kiện vừa xóa: bỏ tombstone và tạo mốc sửa mới để sync.
+  Future<void> restore(UserEvent event) => _write(
+    event.copyWith(deletedAt: null, updatedAt: DateTime.now().toUtc()),
+  );
+
   /// Nhập từ file (bước 9): ghi đè theo id, KHÔNG so `updatedAt`, mọi bản
   /// nhận `updatedAt = now` (D027); rồi đọc lại box → cache tháng và "Sắp tới"
   /// tự tính lại.

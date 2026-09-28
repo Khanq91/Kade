@@ -27,7 +27,11 @@ const kadeDayTileRadius = 12.0;
 
 /// Dựng [ThemeData] đầy đủ cho 1 [KadePalette] ở biến thể sáng ([dark]
 /// false) hoặc tối ([dark] true).
-ThemeData buildKadeTheme(KadePalette palette, {required bool dark}) {
+ThemeData buildKadeTheme(
+  KadePalette palette, {
+  required bool dark,
+  bool transparentScaffold = false,
+}) {
   final KadeColorSet set = dark ? palette.dark : palette.light;
   final brightness = dark ? Brightness.dark : Brightness.light;
   final base = ThemeData(
@@ -67,11 +71,11 @@ ThemeData buildKadeTheme(KadePalette palette, {required bool dark}) {
 
   return base.copyWith(
     colorScheme: colorScheme,
-    scaffoldBackgroundColor: set.bg,
+    scaffoldBackgroundColor: transparentScaffold ? Colors.transparent : set.bg,
     textTheme: _buildTextTheme(base.textTheme, set),
     extensions: <ThemeExtension<dynamic>>[KadeColors.fromSet(set)],
     appBarTheme: AppBarTheme(
-      backgroundColor: set.bg,
+      backgroundColor: transparentScaffold ? Colors.transparent : set.bg,
       foregroundColor: set.tx,
       surfaceTintColor: Colors.transparent,
       elevation: 0,

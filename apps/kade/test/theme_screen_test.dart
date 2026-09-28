@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kade/core/strings.dart';
+import 'package:kade/core/effects/particle_field.dart';
 import 'package:kade/features/settings/theme_screen.dart';
+import 'package:kade/features/shell/snap_rail_navigation_bar.dart';
 
 import 'test_app.dart';
 
@@ -37,6 +39,24 @@ void main() {
     await tester.tap(find.text(Strings.themeSystem));
     await tester.pumpAndSettle();
     expect(box.containsKey('darkMode'), isFalse);
+
+    expect(box.containsKey('graphicsMode'), isFalse);
+    await tester.tap(find.text(Strings.graphicsFancy));
+    // ParticleField chạy liên tục nên không dùng pumpAndSettle ở chế độ này.
+    await tester.pump();
+    expect(box.get('graphicsMode'), 'fancy');
+    expect(find.byType(ParticleField), findsOneWidget);
+    expect(
+      tester
+          .widget<SnapRailNavigationBar>(find.byType(SnapRailNavigationBar))
+          .liquidGlass,
+      isTrue,
+    );
+
+    await tester.tap(find.text(Strings.graphicsNormal));
+    await tester.pumpAndSettle();
+    expect(box.get('graphicsMode'), 'normal');
+    expect(find.byType(ParticleField), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

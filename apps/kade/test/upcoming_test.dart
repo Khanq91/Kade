@@ -12,6 +12,7 @@ import 'package:kade/data/settings_provider.dart';
 import 'package:kade/data/upcoming_provider.dart';
 import 'package:kade/data/user_events_provider.dart';
 import 'package:kade/features/upcoming/upcoming_screen.dart';
+import 'package:kade/features/shell/snap_rail_navigation_bar.dart';
 import 'package:lunar_core/lunar_core.dart';
 
 import 'test_app.dart';
@@ -193,13 +194,17 @@ void main() {
     setViewport(tester, const Size(400, 800));
     await tester.pumpWidget(await testApp('/2027/02'));
     await tester.pumpAndSettle();
-    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
-    expect(bar.destinations.length, 4);
+    final bar = tester.widget<SnapRailNavigationBar>(
+      find.byType(SnapRailNavigationBar),
+    );
+    expect(bar.items.length, 4);
     await tester.tap(find.byIcon(Icons.upcoming_outlined));
     await tester.pumpAndSettle();
     expect(find.byType(UpcomingScreen), findsOneWidget);
     expect(
-      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      tester
+          .widget<SnapRailNavigationBar>(find.byType(SnapRailNavigationBar))
+          .selectedIndex,
       1,
     );
   });

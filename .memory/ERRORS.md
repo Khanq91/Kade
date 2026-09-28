@@ -207,3 +207,17 @@ Append-only. Lỗi/quirk đã gặp để không dẫm lại. Format: `AGENTS.md
 - Nguyên nhân: `apply_patch` không nhận hai operation trên một file trong cùng patch.
 - Cách xử lý: xóa layout trong một lần gọi, thêm nội dung mới ở lần gọi sau.
 - Trạng thái: fixed
+
+## 2026-09-28 — E027 — Dart format hoàn tất nhưng lỗi ghi telemetry ngoài workspace
+- Bối cảnh: phase5-step19, format các file hiệu ứng bằng `dart.exe` trực tiếp của Flutter 3.44.5 trong sandbox.
+- Triệu chứng: formatter báo đã format xong rồi ném `FileSystemException` khi set modification time cho `C:\Users\HUIT\AppData\Roaming\.dart-tool\dart-flutter-telemetry-session.json`.
+- Nguyên nhân: SDK cố cập nhật telemetry nằm ngoài writable workspace; nội dung source đã được format trước khi bước telemetry chạy.
+- Cách xử lý: xác nhận formatter đã xử lý đủ file, dùng Flutter analyze/test ngoài sandbox theo approval; không sửa quyền hay file telemetry của user.
+- Trạng thái: workaround
+
+## 2026-09-28 — E028 — Font widget test làm nhãn đồ họa tràn; animation undo cần hai pump
+- Bối cảnh: phase5-step19, test ThemeScreen và xóa/hoàn tác sự kiện.
+- Triệu chứng: `_ModeButton` tràn 18px với nhãn “Bình thường”; lần pump 600ms đầu vẫn để Undo snackbar ở offset ngoài viewport nên tap miss.
+- Nguyên nhân: font FlutterTest rộng 1em/ký tự (cùng E018); pump có duration đầu tiên mới dựng widget sau pop nên animation bắt đầu ở cuối pump đó.
+- Cách xử lý: bọc label bằng `Flexible`, một dòng ellipsis; test undo gọi `pump()` để dựng rồi `pump(600ms)` để animation settle.
+- Trạng thái: fixed

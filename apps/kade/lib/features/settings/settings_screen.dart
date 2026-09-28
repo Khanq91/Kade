@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/env.dart';
+import '../../core/effects/kade_feedback.dart';
 import '../../core/formats.dart';
 import '../../core/strings.dart';
 import '../../core/theme/kade_palette.dart';
@@ -52,11 +53,15 @@ class _RemoteConfigSection extends ConsumerWidget {
     final colors = Theme.of(context).extension<KadeColors>()!;
     final selected = ref.watch(themeIdProvider);
     final darkOverride = ref.watch(darkModeProvider);
+    final graphicsMode = ref.watch(graphicsModeProvider);
     final mode = darkOverride == null
         ? Strings.themeSystem
         : darkOverride
         ? Strings.themeDark
         : Strings.themeLight;
+    final graphics = graphicsMode == GraphicsMode.fancy
+        ? Strings.graphicsFancy
+        : Strings.graphicsNormal;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 720),
@@ -71,7 +76,9 @@ class _RemoteConfigSection extends ConsumerWidget {
                     child: Icon(Icons.palette_outlined, color: colors.acT),
                   ),
                   title: const Text(Strings.themeTitle),
-                  subtitle: Text('${kadePaletteById(selected).name} · $mode'),
+                  subtitle: Text(
+                    '${kadePaletteById(selected).name} · $mode · $graphics',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -173,9 +180,15 @@ class _RemoteConfigSection extends ConsumerWidget {
         .read(remoteConfigProvider.notifier)
         .checkForUpdates(force: true);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(fetchResultText(result))));
+    showKadeNotice(
+      context,
+      fetchResultText(result),
+      kind: switch (result.outcome) {
+        FetchOutcome.updated || FetchOutcome.upToDate => KadeNoticeKind.success,
+        FetchOutcome.skipped || FetchOutcome.noUrl => KadeNoticeKind.warning,
+        FetchOutcome.failed => KadeNoticeKind.error,
+      },
+    );
   }
 }
 
@@ -256,11 +269,11 @@ class _RemindSection extends ConsumerWidget {
     if (days == 0 || !context.mounted) return;
     final ok = await ref.read(reminderSchedulerProvider).requestPermission();
     if (ok || !context.mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text(Strings.notificationsDenied)),
-      );
+    showKadeNotice(
+      context,
+      Strings.notificationsDenied,
+      kind: KadeNoticeKind.warning,
+    );
   }
 }
 
@@ -408,9 +421,15 @@ class _SyncSection extends ConsumerWidget {
       SyncOutcome.busy => Strings.syncBusy,
       SyncOutcome.failed => r.error ?? Strings.syncFailed,
     };
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(text)));
+    showKadeNotice(
+      context,
+      text,
+      kind: switch (r.outcome) {
+        SyncOutcome.synced => KadeNoticeKind.success,
+        SyncOutcome.noAuth || SyncOutcome.busy => KadeNoticeKind.warning,
+        SyncOutcome.failed => KadeNoticeKind.error,
+      },
+    );
   }
 
   /// "Xóa dữ liệu trên Drive" (plan §3.10): xác nhận → xóa file → đăng xuất.
@@ -435,11 +454,11 @@ class _SyncSection extends ConsumerWidget {
     if (ok != true || !context.mounted) return;
     final error = await ref.read(syncProvider.notifier).deleteRemote();
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(error ?? Strings.deleteRemoteDone)),
-      );
+    showKadeNotice(
+      context,
+      error ?? Strings.deleteRemoteDone,
+      kind: error == null ? KadeNoticeKind.success : KadeNoticeKind.error,
+    );
   }
 }
 
@@ -519,11 +538,17 @@ class _BackupSection extends ConsumerWidget {
           .read(fileIoProvider)
           .saveJson(SyncEnvelope.fileName(DateTime.now()), envelope.encode());
     } catch (e) {
-      if (context.mounted) _snack(context, '${Strings.exportFailed} ($e)');
+      if (context.mounted) {
+        _notice(context, '${Strings.exportFailed} ($e)', KadeNoticeKind.error);
+      }
       return;
     }
     if (!saved || !context.mounted) return;
-    _snack(context, Strings.exported(envelope.activeCount));
+    _notice(
+      context,
+      Strings.exported(envelope.activeCount),
+      KadeNoticeKind.success,
+    );
   }
 
   /// Chọn file → parse → dialog xác nhận → ghi đè theo id (D027).
@@ -532,13 +557,15 @@ class _BackupSection extends ConsumerWidget {
     try {
       text = await ref.read(fileIoProvider).pickJson();
     } catch (e) {
-      if (context.mounted) _snack(context, '${Strings.importFailed} ($e)');
+      if (context.mounted) {
+        _notice(context, '${Strings.importFailed} ($e)', KadeNoticeKind.error);
+      }
       return;
     }
     if (text == null || !context.mounted) return;
     switch (SyncEnvelope.parse(text)) {
       case EnvelopeError(:final message):
-        _snack(context, message);
+        _notice(context, message, KadeNoticeKind.error);
       case EnvelopeOk(:final envelope):
         final n = envelope.activeCount;
         final ok = await showDialog<bool>(
@@ -561,15 +588,12 @@ class _BackupSection extends ConsumerWidget {
         if (ok != true || !context.mounted) return;
         await ref.read(userEventsProvider.notifier).importAll(envelope.events);
         if (!context.mounted) return;
-        _snack(context, Strings.imported(n));
+        _notice(context, Strings.imported(n), KadeNoticeKind.success);
     }
   }
 
-  void _snack(BuildContext context, String text) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(text)));
-  }
+  void _notice(BuildContext context, String text, KadeNoticeKind kind) =>
+      showKadeNotice(context, text, kind: kind);
 }
 
 class _YearTile extends StatelessWidget {

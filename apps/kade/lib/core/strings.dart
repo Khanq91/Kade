@@ -187,6 +187,9 @@ abstract final class Strings {
   static const themeLight = 'Sáng';
   static const themeDark = 'Tối';
   static const themeSystem = 'Theo hệ thống';
+  static const graphicsLabel = 'Đồ họa';
+  static const graphicsNormal = 'Bình thường';
+  static const graphicsFancy = 'Xịn xò';
   static const themePreview = 'Xem trước';
   static const remoteConfigSection = 'Lịch nghỉ bù theo năm';
   static const remoteConfigHint =
@@ -256,6 +259,9 @@ abstract final class Strings {
   static const deleteRemoteBody =
       'Xóa file đồng bộ trong thư mục riêng của app trên Google Drive rồi đăng xuất. Sự kiện trên máy này vẫn giữ nguyên.';
   static const deleteRemoteDone = 'Đã xóa dữ liệu trên Drive và đăng xuất';
+
+  static String eventDeleted(String title) => 'Đã xóa “$title”';
+  static const undo = 'Hoàn tác';
 
   /// "Đồng bộ lần cuối: 10/09/2026 16:40".
   static String lastSync(String when) => 'Đồng bộ lần cuối: $when';

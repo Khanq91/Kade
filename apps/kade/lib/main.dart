@@ -5,12 +5,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import 'core/effects/kade_feedback.dart';
+import 'core/effects/particle_field.dart';
 import 'core/env.dart';
 import 'core/router.dart';
 import 'core/strings.dart';
 import 'core/theme/kade_palette.dart';
 import 'core/theme/kade_theme.dart';
+import 'core/theme/kade_theme_extension.dart';
 import 'data/local/hive_boxes.dart';
 import 'data/local/user_event_repository.dart';
 import 'data/reminder_scheduler.dart';
@@ -37,6 +41,7 @@ Future<void> main() async {
   final userEvents = UserEventRepository(
     Hive.box<String>(HiveBoxes.userEvents),
   );
+  await LiquidGlassWidgets.initialize(enablePerformanceMonitor: false);
   runApp(
     ProviderScope(
       overrides: [
@@ -79,22 +84,59 @@ class KadeApp extends ConsumerWidget {
     final r = router ?? appRouter;
     final palette = kadePaletteById(ref.watch(themeIdProvider));
     final darkOverride = ref.watch(darkModeProvider);
-    return AppLifecycle(
-      router: r,
-      child: MaterialApp.router(
-        title: Strings.appName,
-        theme: buildKadeTheme(palette, dark: false),
-        darkTheme: buildKadeTheme(palette, dark: true),
-        themeMode: switch (darkOverride) {
-          true => ThemeMode.dark,
-          false => ThemeMode.light,
-          null => ThemeMode.system,
-        },
-        routerConfig: r,
-        locale: const Locale('vi'),
-        supportedLocales: const [Locale('vi')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+    final graphicsMode = ref.watch(graphicsModeProvider);
+    final fancy = graphicsMode == GraphicsMode.fancy;
+    return LiquidGlassWidgets.wrap(
+      child: AppLifecycle(
+        router: r,
+        child: MaterialApp.router(
+          title: Strings.appName,
+          theme: buildKadeTheme(
+            palette,
+            dark: false,
+            transparentScaffold: fancy,
+          ),
+          darkTheme: buildKadeTheme(
+            palette,
+            dark: true,
+            transparentScaffold: fancy,
+          ),
+          themeMode: switch (darkOverride) {
+            true => ThemeMode.dark,
+            false => ThemeMode.light,
+            null => ThemeMode.system,
+          },
+          routerConfig: r,
+          locale: const Locale('vi'),
+          supportedLocales: const [Locale('vi')],
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          builder: (context, child) => _KadeBackdrop(
+            fancy: fancy,
+            child: KadeFeedbackHost(child: child ?? const SizedBox.shrink()),
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class _KadeBackdrop extends StatelessWidget {
+  const _KadeBackdrop({required this.fancy, required this.child});
+
+  final bool fancy;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<KadeColors>()!;
+    if (!fancy) return ColoredBox(color: colors.bg, child: child);
+    return ParticleField(
+      density: 1.6,
+      maxParticles: 140,
+      colors: [colors.ac, colors.b, colors.sun],
+      backgroundColor: colors.bg,
+      animate: !MediaQuery.disableAnimationsOf(context),
+      child: child,
     );
   }
 }

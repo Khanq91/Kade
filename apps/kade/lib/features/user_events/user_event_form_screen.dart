@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lunar_core/lunar_core.dart';
 
 import '../../core/event_style.dart';
+import '../../core/effects/kade_feedback.dart';
 import '../../core/formats.dart';
 import '../../core/lunar_utils.dart';
 import '../../core/strings.dart';
@@ -181,14 +182,14 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
     if (!mounted) return;
     // Xin quyền thông báo khi user bật nhắc (plan §5.4), không lúc mở app.
     if (_remind != null) {
-      final messenger = ScaffoldMessenger.of(context);
       final ok = await ref.read(reminderSchedulerProvider).requestPermission();
+      if (!mounted) return;
       if (!ok) {
-        messenger
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text(Strings.notificationsDenied)),
-          );
+        showKadeNotice(
+          context,
+          Strings.notificationsDenied,
+          kind: KadeNoticeKind.warning,
+        );
       }
     }
     if (mounted) context.pop();
@@ -213,9 +214,16 @@ class _UserEventFormScreenState extends ConsumerState<UserEventFormScreen> {
         ],
       ),
     );
-    if (ok != true) return;
-    await ref.read(userEventsProvider.notifier).remove(e.id);
-    if (mounted) context.pop();
+    if (ok != true || !mounted) return;
+    final feedback = KadeFeedbackHost.of(context);
+    final notifier = ref.read(userEventsProvider.notifier);
+    await notifier.remove(e.id);
+    if (!mounted) return;
+    context.pop();
+    feedback.showUndo(
+      message: Strings.eventDeleted(e.title),
+      onUndo: () => notifier.restore(e),
+    );
   }
 
   @override

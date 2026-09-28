@@ -79,12 +79,26 @@ void main() {
     expect(find.text('Giỗ bà'), findsOneWidget);
     expect(find.text('Giỗ ông'), findsNothing);
 
-    // Xóa: form sửa → nút xóa → xác nhận.
+    // Xóa: form sửa → nút xóa → xác nhận → có thể hoàn tác.
     await tester.tap(find.text('Giỗ bà'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip(Strings.delete));
     await tester.pumpAndSettle();
     expect(find.text(Strings.deleteEventTitle), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, Strings.delete));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text(Strings.noUserEvents), findsOneWidget);
+    expect(find.text(Strings.undo), findsOneWidget);
+    await tester.tap(find.text(Strings.undo));
+    await tester.pumpAndSettle();
+    expect(find.text('Giỗ bà'), findsOneWidget);
+
+    // Xóa lại và để thời hạn undo trôi qua → giữ tombstone như trước.
+    await tester.tap(find.text('Giỗ bà'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(Strings.delete));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(TextButton, Strings.delete));
     await tester.pumpAndSettle();
     expect(find.text('06/02/2027'), findsOneWidget);
