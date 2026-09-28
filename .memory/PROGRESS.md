@@ -16,7 +16,7 @@ Phase 4 bước 18 ⏸ — signing config release đọc `android/key.properties
 **Redesign UI (từ 2026-09-22, theo `REDESIGN_PLAN.md`):** làm song song, không đụng gì ở trên. Thứ tự: Phase 0 (nền theme) → Phase 2 (AppShell) → Phase 1 (Lịch tháng) → Phase 3 → 4 → 5 → 6 → 7 (widget Android, chốt biến thể thiết kế lúc bắt đầu). Redesign Phase 0 agent đã viết code (D039) nhưng CHƯA tự chạy `flutter analyze`/`flutter test`/`flutter build` (không có Flutter SDK ở môi trường viết file) — xem "Cần user làm".
 
 ## Đang dở
-Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verify; `flutter test --timeout 90s` pass 135/135 và `flutter analyze` sạch. Còn `flutter build web`/`apk --debug` và test tay trước khi sang Phase 2.
+Floating nav scroll spacing — giữ nav overlay; danh sách tab compact có scroll tail, riêng Lịch tháng co lưới vừa phần trên spacer để không phải cuộn. Analyze, build web và APK debug pass; test tay còn chờ theo R.8. Đang phát hành bản `1.0.6+12` theo yêu cầu user.
 
 2026-09-25 — Cập nhật: Phase 0, 2, 1, 3, 4 đã có code ở các commit trước; analyze, 135 test, build web và APK debug đều pass. Phase 5 (Đổi ngày) đã restyle, verify tự động pass và render ảnh để đối chiếu với `screenshot/doi-ngay.png`. Đang tiếp tục Phase 6; test tay UI toàn bộ gom cuối theo D031.
 
@@ -210,5 +210,7 @@ Redesign Phase 0 (nền theme pastel) — đã sửa lỗi layout/text sau verif
 - 2026-09-28 — phase5-step19 — sửa R.8: nav Xịn xò lên `GlassQuality.premium`, bỏ gạch chân nhãn; Bình thường cho list cuộn dưới pill; analyze sạch, 136/136 test pass, build web release + APK debug pass → 🧪 — 39c4d2a
 - 2026-09-28 — phase5-step19 — phát hành `v1.0.4+10` (D051): push `main` + tag; Actions build/deploy Web và release Android thành công; Pages HTTP 200; Release có APK + AAB — a7c5382
 - 2026-09-28 — phase5-step19 — AppShell chừa vùng cuối cao hơn floating nav cho mọi tab compact; R.8 cập nhật; analyze + build web + APK debug pass; chờ yêu cầu bổ sung, chưa commit theo yêu cầu user —
+- 2026-09-28 — phase5-step19 — sửa D052 theo user: giữ nav nhìn xuyên nội dung, thêm scroll tail cuối list và lịch tháng cuộn được; analyze + build web + APK debug pass; chờ yêu cầu bổ sung, chưa commit/push theo yêu cầu user —
+- 2026-09-28 — phase5-step19 — sửa D053 theo user: Lịch tháng không cuộn, spacer cuối nav chiếm chỗ và lưới co vừa phần còn lại; danh sách khác giữ scroll tail; analyze + build web + APK debug pass, R.8 cập nhật; chưa commit/push theo yêu cầu user —
 - 2026-09-28 — phase5-step19 — giữ GlassScaffold compact ổn định khi đổi đồ họa; thêm Tab Pill Glide cho Chế độ/Đồ họa/Âm-Dương/quy tắc nhuận, gộp Theo hệ thống vào cùng dải; version `1.0.5+11`; analyze + web release + APK debug pass → 🧪 — 63cd4e1
 - 2026-09-28 — phase5-step19 — phát hành `1.0.5+11` (D054): push `main` + tag `v1.0.5+11`; Actions build/deploy Web và release Android success; Pages HTTP 200; Release có `kade-v1.0.5+11.apk` + `.aab` — 0f03197

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/breakpoints.dart';
 import '../../core/event_style.dart';
 import '../../core/formats.dart';
 import '../../core/router.dart';
@@ -108,7 +109,7 @@ class UpcomingList extends ConsumerWidget {
                     compact ? 16 : 10,
                     0,
                     compact ? 16 : 10,
-                    16,
+                    16 + compactNavigationScrollPadding(context),
                   ),
                   children: [
                     for (final day in days)

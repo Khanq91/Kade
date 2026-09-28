@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lunar_core/lunar_core.dart';
 
+import '../../core/breakpoints.dart';
 import '../../core/formats.dart';
 import '../../core/strings.dart';
 import '../../core/theme/kade_theme.dart';
@@ -101,7 +102,12 @@ class _ConverterScreenState extends State<ConverterScreen> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
           child: ListView(
-            padding: const EdgeInsets.all(18),
+            padding: EdgeInsets.fromLTRB(
+              18,
+              18,
+              18,
+              18 + compactNavigationScrollPadding(context),
+            ),
             children: [
               Card(
                 color: colors.sf,

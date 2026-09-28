@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/breakpoints.dart';
 import '../../core/env.dart';
 import '../../core/effects/kade_feedback.dart';
 import '../../core/formats.dart';
@@ -66,7 +67,12 @@ class _RemoteConfigSection extends ConsumerWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 720),
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + compactNavigationScrollPadding(context),
+          ),
           children: [
             _SettingsCard(
               children: [

@@ -315,6 +315,18 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Lý do: khoảng trống chung xử lý đồng thời các trang có list cuộn và bố cục co giãn không có scroll, không phải lặp padding theo từng màn.
 - Hệ quả: cập nhật kỳ vọng R.8; nội dung tab không còn chạy sau pill, thay cho phần tương ứng trong D050. Không đổi schema hay dữ liệu.
 
+## 2026-09-28 — D053 — Giữ nội dung chạy dưới nav và thêm scroll tail (sửa D052)
+- Bởi: user làm rõ nav phải tiếp tục nhìn xuyên nội dung như cũ; khoảng trống chỉ nằm sau nội dung trong vùng cuộn.
+- Quyết định: giữ `extendBody` và overlay hiện tại. Scroll view của các tab compact nhận trailing padding 96 logical pixels cộng safe area; lịch tháng giữ kích thước ban đầu và có thể cuộn dọc qua khoảng đệm cuối để đưa hàng cuối lên trên nav.
+- Lý do: cách này giữ hiệu ứng floating/liquid glass và cho phép cuộn tới phần nội dung trước đó bị nav che.
+- Hệ quả: thay cách bố trí D052; R.8 kiểm tra nội dung vẫn thấy xuyên dưới bar và cuối list cuộn lên trên bar. Không đổi schema hay dữ liệu.
+
+## 2026-09-28 — D054 — Lịch tháng vừa khít phía trên nav, không cần cuộn
+- Bởi: user muốn xem đủ tháng ngay mà không phải cuộn; khoảng trống cuối vẫn dành cho vùng nav.
+- Quyết định: riêng Lịch tháng giữ lưới co giãn theo chiều cao còn lại và đặt spacer cuối 96 logical pixels cộng safe area bên dưới; không bọc toàn màn trong scroll view. Các tab dạng danh sách vẫn dùng trailing scroll padding như D053.
+- Lý do: lịch tháng là lưới hữu hạn cần xem trọn ngay; giữ lưới phía trên spacer để hàng cuối không nằm dưới nav.
+- Hệ quả: sửa phần Lịch tháng trong D053; nav tiếp tục nổi/nhìn xuyên, lưới có thể thấp hơn trên màn hình ngắn. Không đổi schema hay dữ liệu.
+
 ## 2026-09-28 — D053 — Giữ layout Giao diện ổn định và dùng Tab Pill Glide
 - Bởi: user yêu cầu Settings không nhảy khi đổi đồ họa, thêm “Theo hệ thống” cùng nhóm chế độ, và dùng animation Tab Pill Glide từ Snipz cho các dải lựa chọn tương tự.
 - Quyết định: compact AppShell luôn dùng cùng `GlassScaffold`; chỉ thay bottom bar Snap Rail/GlassTabBar theo đồ họa. Dùng Tab Pill Glide cho Chế độ, Đồ họa, Âm/Dương lịch và quy tắc tháng nhuận; Chế độ có ba lựa chọn Sáng/Tối/Theo hệ thống.
@@ -326,3 +338,15 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: tăng app từ `1.0.4+10` lên `1.0.5+11`, push `main`, tạo và push tag `v1.0.5+11`.
 - Lý do: bản này sửa ổn định layout Giao diện và bổ sung chuyển động cho các pill; Android `versionCode` tăng từ 10 lên 11.
 - Hệ quả: push `main` kích hoạt deploy Web; tag `v1.0.5+11` kích hoạt workflow release APK + AAB.
+
+## 2026-09-28 — D055 — Giữ nav xuyên nội dung, thêm khoảng cuối vùng cuộn
+- Bởi: user làm rõ yêu cầu scroll tail và muốn Lịch tháng không cần cuộn.
+- Quyết định: giữ `extendBody`/nav overlay; các ListView compact thêm 96 logical pixels cộng safe area ở cuối. Riêng Lịch tháng dành spacer cùng chiều cao dưới lưới co giãn để mọi hàng hiện ngay mà không cuộn.
+- Lý do: danh sách dài vẫn đưa mục cuối lên khỏi nav; lịch tháng hữu hạn xem trọn ngay, trong khi nav giữ kiểu nổi trong suốt.
+- Hệ quả: thay phần layout-reservation/scroll-month của D052/D053; R.8 kiểm tra cả hai hành vi. Không đổi schema hay dữ liệu.
+
+## 2026-09-28 — D056 — Phát hành v1.0.6+12
+- Bởi: user yêu cầu tăng version, push và tạo tag mới để release Web/APK.
+- Quyết định: tăng app từ `1.0.5+11` lên `1.0.6+12`, commit trên `main`, push `main` và tag `v1.0.6+12`.
+- Lý do: đưa cách xử lý scroll tail và khoảng cuối Lịch tháng đã chốt vào bản kế tiếp; Android `versionCode` tăng tuần tự từ 11 lên 12.
+- Hệ quả: push `main` kích hoạt deploy Web; tag `v1.0.6+12` kích hoạt release APK + AAB.

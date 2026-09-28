@@ -155,6 +155,8 @@ class MonthViewScreen extends ConsumerWidget {
             children: [
               if (ref.watch(webNoticeProvider)) const _WebNotice(),
               Expanded(child: body),
+              if (layout == AppLayout.compact)
+                SizedBox(height: compactNavigationScrollPadding(context)),
             ],
           ),
         ),

@@ -9,8 +9,6 @@ import '../../core/theme/kade_theme_extension.dart';
 import '../../data/settings_provider.dart';
 import 'snap_rail_navigation_bar.dart';
 
-const _compactNavigationContentClearance = 96.0;
-
 /// Khung điều hướng [Lịch] [Sắp tới] [Đổi ngày] [Cài đặt] (plan §5.1):
 /// < 600 bottom nav, ≥ 600 NavigationRail bên trái (plan §4.2).
 /// `StatefulShellRoute` giữ tháng đang xem khi chuyển tab.
@@ -50,14 +48,6 @@ class AppShell extends ConsumerWidget {
     if (layoutOf(MediaQuery.sizeOf(context).width) == AppLayout.compact) {
       final fancy = ref.watch(graphicsModeProvider) == GraphicsMode.fancy;
       final colors = Theme.of(context).extension<KadeColors>()!;
-      final compactBody = Padding(
-        padding: EdgeInsets.only(
-          bottom:
-              _compactNavigationContentClearance +
-              MediaQuery.viewPaddingOf(context).bottom,
-        ),
-        child: shell,
-      );
       final Widget bottomBar;
       if (fancy) {
         bottomBar = GlassTabBar.bottom(
@@ -111,7 +101,7 @@ class AppShell extends ConsumerWidget {
         bottomEdgeFade: fancy,
         bottomEdgeFadeExtent: fancy ? -20 : 0,
         extendBody: true,
-        body: compactBody,
+        body: shell,
         bottomBar: bottomBar,
       );
     }

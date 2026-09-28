@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/breakpoints.dart';
 import '../../core/strings.dart';
 import '../../core/theme/kade_palette.dart';
 import '../../core/theme/kade_theme.dart';
@@ -34,7 +35,12 @@ class ThemeScreen extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 680),
           child: ListView(
-            padding: const EdgeInsets.all(18),
+            padding: EdgeInsets.fromLTRB(
+              18,
+              18,
+              18,
+              18 + compactNavigationScrollPadding(context),
+            ),
             children: [
               Text(
                 Strings.themePaletteLabel.toUpperCase(),
