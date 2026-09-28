@@ -320,3 +320,9 @@ Format và quy tắc ghi: xem `AGENTS.md` §4.
 - Quyết định: compact AppShell luôn dùng cùng `GlassScaffold`; chỉ thay bottom bar Snap Rail/GlassTabBar theo đồ họa. Dùng Tab Pill Glide cho Chế độ, Đồ họa, Âm/Dương lịch và quy tắc tháng nhuận; Chế độ có ba lựa chọn Sáng/Tối/Theo hệ thống.
 - Lý do: giữ Navigator/layout của tab ổn định khi đổi graphics mode và có một animation nhất quán cho nhóm lựa chọn dạng pill.
 - Hệ quả: giữ nguyên `darkMode` bool/null và `graphicsMode`; không migration/schema Hive. Cập nhật plan và checklist R.6/R.8.
+
+## 2026-09-28 — D054 — Phát hành v1.0.5+11
+- Bởi: user yêu cầu sau khi hoàn tất sửa UI thì tăng version, push và tạo tag để phát hành web/APK.
+- Quyết định: tăng app từ `1.0.4+10` lên `1.0.5+11`, push `main`, tạo và push tag `v1.0.5+11`.
+- Lý do: bản này sửa ổn định layout Giao diện và bổ sung chuyển động cho các pill; Android `versionCode` tăng từ 10 lên 11.
+- Hệ quả: push `main` kích hoạt deploy Web; tag `v1.0.5+11` kích hoạt workflow release APK + AAB.
